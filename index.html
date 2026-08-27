@@ -3,169 +3,465 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="موثوق - منصة الدعم والخدمات الأكاديمية">
-<title>موثوق | الدعم والخدمات الأكاديمية</title>
-<link rel="stylesheet" href="assets/style.css">
+<title>معاينة — منصة موثوق</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700;800&display=swap');
+:root{
+  --ink:#1a2140; --ink-2:#242f5c;
+  --paper:#f6f2e7; --paper-2:#efe7d2; --card:#fffdf8;
+  --gold:#a9812f; --gold-deep:#8a6a26; --gold-bright:#d4af6a; --gold-tint:#f1e4bf;
+  --green:#2f6b4f;
+  --text:#1e2337; --muted:#726d5c; --line:#e4dcc4;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Cairo,Arial,sans-serif;background:var(--paper);color:var(--text);line-height:1.75}
+h1,h2,h3{font-family:Amiri,serif}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--gold-bright);outline-offset:2px}
+
+header{height:76px;background:var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 7%;position:sticky;top:0;z-index:20;border-bottom:1px solid #ffffff14}
+.brand{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;font-family:Amiri,serif;text-decoration:none;color:#faf6ea;cursor:pointer}
+.brand-mark{width:38px;height:38px;border-radius:50%;background:var(--gold);color:var(--ink);display:grid;place-items:center;font-weight:800;font-family:Cairo,sans-serif;flex-shrink:0}
+nav{display:flex;gap:30px}
+nav a{text-decoration:none;color:#c7cadd;font-weight:600;font-size:14px;cursor:pointer}
+nav a:hover{color:var(--gold-bright)}
+.actions{display:flex;gap:10px;align-items:center}
+
+button,.btn{font:inherit;cursor:pointer;border-radius:11px;padding:10px 20px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid transparent}
+.btn-primary{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.btn-primary:hover{background:var(--gold-deep);border-color:var(--gold-deep)}
+.btn-outline-invert{background:transparent;color:var(--gold-bright);border-color:#d4af6a55}
+.btn-outline-invert:hover{border-color:var(--gold-bright)}
+.btn-ghost-invert{background:transparent;color:#e7e2d0;border-color:transparent}
+.btn-outline{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:transparent}
+button:disabled{opacity:.6;cursor:not-allowed}
+.large{padding:14px 26px;font-size:15px}
+
+.hero{background:linear-gradient(160deg,var(--ink),#0f1530);color:#f3efe2;padding:70px 8% 84px;display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.eyebrow{color:var(--gold-bright);font-weight:800;font-size:13px;letter-spacing:.3px}
+.hero h1{font-size:48px;line-height:1.35;margin:14px 0 20px;font-weight:700}
+.hero h1 span{color:var(--gold-bright)}
+.hero p{color:#c7cadd;font-size:17px;max-width:600px}
+.hero-actions{margin:26px 0;display:flex;gap:10px;flex-wrap:wrap}
+.trust{font-size:13px;color:#9aa0bd;font-weight:600}
+.seal-wrap{display:flex;align-items:center;justify-content:center}
+.seal-wrap svg{max-width:270px;width:100%;filter:drop-shadow(0 18px 40px #00000055)}
+
+section{padding:70px 8%}
+.heading{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:34px}
+.heading h2,.center h2{font-size:31px;margin:6px 0;font-weight:700}
+.heading p{color:var(--muted);font-size:14px}
+.center{text-align:center;margin-bottom:34px}
+
+.search-bar{display:flex;align-items:center;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:10px 15px;gap:8px;max-width:420px;margin:0 0 30px}
+.search-bar input{border:0;outline:0;width:100%;font:inherit;background:transparent}
+
+.service-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:17px}
+.service{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;transition:.2s}
+.service:hover{transform:translateY(-3px);box-shadow:0 14px 34px #1a214014}
+.icon-ring{width:44px;height:44px;border-radius:50%;background:var(--gold-tint);display:grid;place-items:center;font-size:19px;margin-bottom:12px}
+.service h3{margin:0 0 4px;font-size:16px;font-family:Cairo,sans-serif;font-weight:700}
+.service p{color:var(--muted);font-size:13px}
+.link{background:none;border:0;color:var(--gold-deep);padding:0;font-weight:700}
+
+.alt{background:var(--paper-2)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:26px}
+.step{border-top:3px solid var(--gold);padding-top:16px}
+.step b{color:var(--gold-deep);font-family:Amiri,serif;font-size:22px}
+.step h3{font-family:Cairo,sans-serif;font-size:16px;margin:6px 0}
+.step p{color:var(--muted);font-size:14px}
+
+.expert-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.expert{text-align:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px}
+.expert .avatar{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:var(--gold-tint);color:var(--gold-deep);font-weight:800;font-size:22px;margin:0 auto 12px}
+.expert h3{font-family:Cairo,sans-serif;font-size:17px;margin:0 0 2px}
+.expert p{color:var(--muted);font-size:13px;margin:0 0 8px}
+.expert b{font-size:13px}
+.seal-badge{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:12px;font-weight:800;color:var(--gold-deep)}
+
+.cta{margin:0 8% 66px;border-radius:22px;background:linear-gradient(135deg,var(--gold-tint),#f7eecb);padding:42px 48px;display:flex;align-items:center;justify-content:space-between;gap:25px;border:1px solid #e6d6a0}
+.cta .eyebrow{color:var(--gold-deep)}
+.cta h2{color:var(--ink)}
+.cta p{color:#7a6f4a}
+
+footer{background:var(--ink);color:#dfe1ee;padding:36px 8%;display:flex;align-items:center;gap:25px}
+footer .brand{color:#faf6ea}
+footer p{color:#9aa0bd;margin-right:auto;font-size:14px}
+footer small{color:#6e759a}
+
+.modal{display:none;position:fixed;inset:0;background:#0d113499;z-index:50;align-items:center;justify-content:center;padding:18px}
+.modal.show{display:flex}
+.modal-box{background:var(--card);width:min(720px,100%);max-height:90vh;overflow:auto;border-radius:20px;padding:32px;position:relative;border:1px solid var(--line)}
+.modal-box h2{margin-top:0}
+.close{position:absolute;left:16px;top:10px;background:none;border:0;color:var(--muted);font-size:26px;padding:0}
+.notice{background:var(--gold-tint);color:#5c4a1f;border-radius:11px;padding:12px 14px;margin-bottom:17px;font-size:13px;border:1px solid #e6d6a0}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:700}
+.full{grid-column:1/-1}
+.field input,.field select,.field textarea{font:inherit;border:1px solid var(--line);border-radius:10px;padding:10px 12px;outline:none;background:var(--card)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold)}
+.field textarea{min-height:100px;resize:vertical}
+.form-actions{margin-top:18px;display:flex;gap:8px}
+
+.auth-wrap{min-height:calc(100vh - 76px);display:flex;align-items:center;justify-content:center;padding:44px 6%;background:radial-gradient(circle at 30% 20%,#efe6cb,var(--paper) 60%)}
+.auth-card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:40px;width:min(440px,100%);box-shadow:0 24px 60px #1a214014;position:relative;overflow:hidden}
+.auth-card::before{content:'';position:absolute;top:-40px;left:-40px;width:150px;height:150px;background:var(--gold-tint);border-radius:50%;opacity:.5;z-index:0}
+.auth-card>*{position:relative;z-index:1}
+.auth-card h1{font-size:27px;margin:0 0 6px;font-weight:700}
+.auth-card p.sub{color:var(--muted);font-size:14px;margin:0 0 24px}
+.auth-card .field{margin-bottom:15px}
+.auth-card button[type=submit]{width:100%;padding:13px;font-size:15px;margin-top:6px}
+.auth-foot{text-align:center;margin-top:20px;font-size:14px;color:var(--muted)}
+.auth-foot a{color:var(--gold-deep);font-weight:700;text-decoration:none;cursor:pointer}
+.alert{border-radius:11px;padding:12px 14px;font-size:13px;margin-bottom:17px;display:none}
+.alert.show{display:block}
+.alert-success{background:#e8f3ec;color:var(--green)}
+.spinner{width:15px;height:15px;border:2px solid #1a214055;border-top-color:var(--ink);border-radius:50%;animation:spin .7s linear infinite;display:none;margin-left:8px}
+button.loading .spinner{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.admin-bar{background:var(--ink);color:#fff;padding:16px 7%;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.admin-bar .who{font-size:13px;color:#c7cadd}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:30px}
+.stat-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.stat-card b{font-size:30px;display:block;color:var(--ink);font-family:Amiri,serif}
+.stat-card span{color:var(--muted);font-size:13px}
+.table-wrap{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:var(--paper-2);text-align:right;padding:13px 16px;color:var(--muted);font-weight:700;font-size:12px;border-bottom:1px solid var(--line)}
+td{padding:13px 16px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+.badge-admin{background:var(--gold-tint);color:var(--gold-deep);padding:3px 11px;border-radius:20px;font-size:11px;font-weight:800}
+
+.preview-badge{position:fixed;top:12px;left:12px;z-index:200;background:var(--gold-deep);color:#fff;padding:7px 15px;border-radius:20px;font-size:12px;font-weight:800;box-shadow:0 6px 18px #0004}
+.view{display:none}
+.view.active{display:block}
+
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+@media(max-width:900px){
+  nav{display:none}
+  .hero{grid-template-columns:1fr;padding:52px 6% 56px;text-align:center}
+  .hero-actions{justify-content:center}
+  .hero p{margin:0 auto}
+  .seal-wrap{order:-1;margin-bottom:6px}
+  .seal-wrap svg{max-width:180px}
+  .service-grid{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr 1fr}
+  .expert-grid{grid-template-columns:1fr}
+  .cta{margin:0 6% 52px;flex-direction:column;align-items:flex-start;text-align:right}
+  section{padding:52px 6%}
+  .heading{display:block}
+  .stat-row{grid-template-columns:1fr}
+  .search-bar{max-width:100%}
+}
+@media(max-width:520px){
+  header{padding:0 4%}
+  .hero h1{font-size:32px}
+  .hero p{font-size:15px}
+  .hero-actions{flex-direction:column}
+  .hero-actions button{width:100%}
+  .chips,.service-grid,.steps,.form{grid-template-columns:1fr}
+  .full{grid-column:auto}
+  .cta{padding:28px 20px}
+  footer{flex-wrap:wrap;padding:28px 6%}
+  footer p{width:100%;margin:0}
+  .auth-card{padding:24px}
+  .admin-bar{flex-direction:column;align-items:flex-start;gap:10px}
+  .table-wrap{overflow-x:auto}
+  table{min-width:520px}
+  .preview-badge{font-size:11px;padding:5px 11px}
+}
+</style>
 </head>
 <body>
 
-<header>
-  <a href="index.html" class="brand"><span class="brand-mark">م</span><span>منصة موثوق</span></a>
-  <nav><a href="#services">الخدمات</a><a href="#how">كيف تعمل؟</a><a href="#experts">الخبراء</a></nav>
-  <div class="actions" id="headerActions">
-    <a href="login.html" class="ghost btn">دخول</a>
-    <button onclick="openRequest()">اطلب خدمة</button>
-  </div>
-</header>
+<div class="preview-badge">🔍 معاينة تصميم — بدون Supabase</div>
 
-<main>
-<section class="hero">
-  <div>
-    <div class="eyebrow">منصة الدعم والخدمات الأكاديمية</div>
-    <h1>مساعدتك الأكاديمية<br><span>تبدأ من هنا.</span></h1>
-    <p>اربط احتياجك الأكاديمي بخبير موثوق يساعدك على تطوير بحثك، فهم بياناتك، وتحسين عملك العلمي.</p>
-    <div class="hero-actions">
-      <button class="large" onclick="openRequest()">ابدأ طلبك الآن</button>
-      <button class="outline large" onclick="document.querySelector('#how').scrollIntoView()">كيف تعمل موثوق؟</button>
+<!-- ============ الصفحة الرئيسية ============ -->
+<div id="view-home" class="view active">
+  <header>
+    <a class="brand" onclick="goHome()"><span class="brand-mark">م</span><span>منصة موثوق</span></a>
+    <nav><a onclick="goHome('services')">الخدمات</a><a onclick="goHome('how')">كيف تعمل؟</a><a onclick="goHome('experts')">الخبراء</a></nav>
+    <div class="actions" id="headerActions">
+      <a class="btn btn-outline-invert" onclick="switchView('login')">دخول</a>
+      <button class="btn-primary" onclick="openRequest()">اطلب خدمة</button>
     </div>
-    <div class="trust">✓ خبراء موثقون　 ✓ دفع محمي　 ✓ دعم أكاديمي مسؤول</div>
-  </div>
-  <div class="hero-card">
-    <div class="search"><span>⌕</span><input placeholder="ابحث عن خدمة..." oninput="filterServices(this.value)"></div>
-    <div class="chips">
-      <button onclick="openRequest('التحليل الإحصائي')">📊 التحليل الإحصائي</button>
-      <button onclick="openRequest('الدراسات السابقة')">📚 الدراسات السابقة</button>
-      <button onclick="openRequest('منهجية البحث')">🔬 منهجية البحث</button>
-      <button onclick="openRequest('التدقيق الأكاديمي')">✍️ التدقيق الأكاديمي</button>
+  </header>
+
+  <main>
+  <section class="hero">
+    <div>
+      <div class="eyebrow">منصة الدعم والخدمات الأكاديمية</div>
+      <h1>مساعدتك الأكاديمية<br><span>تبدأ من هنا.</span></h1>
+      <p>اربط احتياجك الأكاديمي بخبير موثوق يساعدك على تطوير بحثك، فهم بياناتك، وتحسين عملك العلمي.</p>
+      <div class="hero-actions">
+        <button class="btn-primary large" onclick="openRequest()">ابدأ طلبك الآن</button>
+        <button class="btn btn-outline-invert large" onclick="goHome('how')">كيف تعمل موثوق؟</button>
+      </div>
+      <div class="trust">✦ خبراء موثقون　 ✦ دفع محمي　 ✦ دعم أكاديمي مسؤول</div>
     </div>
-    <div class="match">
-      <div class="match-head"><span>مطابقة ذكية</span><strong>96%</strong></div>
-      <div class="person"><div class="avatar">د</div><div class="info"><b>د. أحمد محمد</b><small>إدارة عامة · SPSS</small></div><span>⭐ 4.9</span></div>
+    <div class="seal-wrap">
+      <svg viewBox="0 0 220 220" role="img" aria-label="ختم التوثيق — منصة موثوق">
+        <circle cx="110" cy="110" r="100" fill="none" stroke="#8a6a26" stroke-width="1" opacity="0.5"/>
+        <circle cx="110" cy="110" r="90" fill="none" stroke="#d4af6a" stroke-width="2" stroke-dasharray="3 7" stroke-linecap="round"/>
+        <circle cx="110" cy="110" r="76" fill="#141a35" stroke="#d4af6a" stroke-width="2.5"/>
+        <g fill="#d4af6a" font-size="13" font-family="Cairo, sans-serif">
+          <text x="110" y="15" text-anchor="middle">✦</text>
+          <text x="110" y="212" text-anchor="middle">✦</text>
+          <text x="15" y="114" text-anchor="middle">✦</text>
+          <text x="205" y="114" text-anchor="middle">✦</text>
+          <text x="180" y="43" text-anchor="middle">✦</text>
+          <text x="40" y="43" text-anchor="middle">✦</text>
+          <text x="180" y="184" text-anchor="middle">✦</text>
+          <text x="40" y="184" text-anchor="middle">✦</text>
+        </g>
+        <path d="M77,112 L99,133 L144,83" fill="none" stroke="#d4af6a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
+  </section>
+
+  <section id="services">
+    <div class="heading"><div><div class="eyebrow">خدماتنا</div><h2>اختر ما تحتاجه</h2></div><p>خدمات مساعدة وتطوير أكاديمي مع الحفاظ على أصالة عمل الباحث.</p></div>
+    <div class="search-bar"><span>⌕</span><input placeholder="ابحث عن خدمة..." oninput="filterServices(this.value)"></div>
+    <div class="service-grid" id="serviceGrid">
+      <article class="service" data-name="الاستشارات البحثية"><div class="icon-ring">🔎</div><h3>الاستشارات البحثية</h3><p>تحديد المشكلة والأسئلة والأهداف وبناء خطة البحث.</p><button class="link" onclick="openRequest('الاستشارات البحثية')">اطلب الخدمة ←</button></article>
+      <article class="service" data-name="الدراسات السابقة"><div class="icon-ring">📚</div><h3>الدراسات السابقة</h3><p>تنظيم الأدبيات ومقارنتها واستخلاص الفجوات البحثية.</p><button class="link" onclick="openRequest('الدراسات السابقة')">اطلب الخدمة ←</button></article>
+      <article class="service" data-name="الإطار النظري"><div class="icon-ring">📖</div><h3>الإطار النظري</h3><p>مراجعة الهيكل والمفاهيم والمصادر بصورة أكاديمية.</p><button class="link" onclick="openRequest('الإطار النظري')">اطلب الخدمة ←</button></article>
+      <article class="service" data-name="منهجية البحث"><div class="icon-ring">🧪</div><h3>منهجية البحث</h3><p>مراجعة المنهج والمجتمع والعينة وأداة جمع البيانات.</p><button class="link" onclick="openRequest('منهجية البحث')">اطلب الخدمة ←</button></article>
+      <article class="service" data-name="التحليل الإحصائي"><div class="icon-ring">📊</div><h3>التحليل الإحصائي</h3><p>تحليل البيانات وشرح المخرجات الإحصائية للباحث.</p><button class="link" onclick="openRequest('التحليل الإحصائي')">اطلب الخدمة ←</button></article>
+      <article class="service" data-name="التدقيق الأكاديمي"><div class="icon-ring">✍️</div><h3>التدقيق الأكاديمي واللغوي</h3><p>تحسين اللغة والترابط والتنسيق دون المساس بأصالة العمل.</p><button class="link" onclick="openRequest('التدقيق الأكاديمي')">اطلب الخدمة ←</button></article>
+      <article class="service" data-name="الترجمة الأكاديمية"><div class="icon-ring">🌐</div><h3>الترجمة الأكاديمية</h3><p>ترجمة عربية–إنجليزية للمحتوى الأكاديمي.</p><button class="link" onclick="openRequest('الترجمة الأكاديمية')">اطلب الخدمة ←</button></article>
+      <article class="service" data-name="التنسيق والمراجع"><div class="icon-ring">📑</div><h3>التنسيق والمراجع</h3><p>تنسيق الرسائل والمراجع وفق الأنماط الأكاديمية.</p><button class="link" onclick="openRequest('التنسيق والمراجع')">اطلب الخدمة ←</button></article>
+    </div>
+  </section>
+
+  <section id="how" class="alt">
+    <div class="center"><div class="eyebrow">ببساطة</div><h2>كيف تعمل موثوق؟</h2></div>
+    <div class="steps">
+      <div class="step"><b>01</b><h3>اطلب الخدمة</h3><p>حدد المرحلة والتخصص وما تحتاجه والموعد.</p></div>
+      <div class="step"><b>02</b><h3>اختر الخبير</h3><p>قارن المؤهلات والتقييم والسعر والمدة.</p></div>
+      <div class="step"><b>03</b><h3>اعمل بأمان</h3><p>تواصل وادفع عبر المنصة مع حماية للطرفين.</p></div>
+      <div class="step"><b>04</b><h3>استلم وقيّم</h3><p>راجع التسليم وقيّم تجربتك.</p></div>
+    </div>
+  </section>
+
+  <section id="experts">
+    <div class="center"><div class="eyebrow">خبراؤنا</div><h2>خبراء موثوقون</h2></div>
+    <div class="expert-grid">
+      <article class="expert"><div class="avatar">د</div><h3>د. أحمد محمد</h3><p>دكتوراه في الإدارة العامة</p><b>⭐ 4.9 · 126 مشروعًا</b>
+        <div class="seal-badge"><svg viewBox="0 0 60 60" width="20" height="20" aria-hidden="true"><circle cx="30" cy="30" r="27" fill="none" stroke="#d4af6a" stroke-width="2" stroke-dasharray="2 4"/><circle cx="30" cy="30" r="21" fill="#141a35"/><path d="M21,31 L27,37 L40,22" fill="none" stroke="#d4af6a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>خبير موثّق</span></div>
+      </article>
+      <article class="expert"><div class="avatar">أ</div><h3>أ. سارة علي</h3><p>مناهج البحث والتدقيق الأكاديمي</p><b>⭐ 4.8 · 94 مشروعًا</b>
+        <div class="seal-badge"><svg viewBox="0 0 60 60" width="20" height="20" aria-hidden="true"><circle cx="30" cy="30" r="27" fill="none" stroke="#d4af6a" stroke-width="2" stroke-dasharray="2 4"/><circle cx="30" cy="30" r="21" fill="#141a35"/><path d="M21,31 L27,37 L40,22" fill="none" stroke="#d4af6a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>خبير موثّق</span></div>
+      </article>
+      <article class="expert"><div class="avatar">د</div><h3>د. خالد سالم</h3><p>إحصاء تطبيقي وSPSS</p><b>⭐ 4.9 · 118 مشروعًا</b>
+        <div class="seal-badge"><svg viewBox="0 0 60 60" width="20" height="20" aria-hidden="true"><circle cx="30" cy="30" r="27" fill="none" stroke="#d4af6a" stroke-width="2" stroke-dasharray="2 4"/><circle cx="30" cy="30" r="21" fill="#141a35"/><path d="M21,31 L27,37 L40,22" fill="none" stroke="#d4af6a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>خبير موثّق</span></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div><div class="eyebrow">ابدأ الآن</div><h2>حوّل احتياجك الأكاديمي إلى طلب واضح.</h2><p>هذه نسخة MVP أولية قابلة للتطوير إلى منصة كاملة.</p></div>
+    <button class="btn-primary large" onclick="openRequest()">إنشاء طلب خدمة</button>
+  </section>
+  </main>
+
+  <footer>
+    <div class="brand"><span class="brand-mark">م</span><span>منصة موثوق</span></div>
+    <p>منصة دعم وخدمات أكاديمية مسؤولة.</p>
+    <small>© 2026 موثوق — Prototype</small>
+  </footer>
+
+  <div id="modal" class="modal" onclick="backdrop(event)">
+    <div class="modal-box"><button class="close" onclick="closeModal()">×</button><div id="modalBody"></div></div>
   </div>
-</section>
-
-<section id="services">
-  <div class="heading"><div><div class="eyebrow">خدماتنا</div><h2>اختر ما تحتاجه</h2></div><p>خدمات مساعدة وتطوير أكاديمي مع الحفاظ على أصالة عمل الباحث.</p></div>
-  <div class="service-grid" id="serviceGrid">
-    <article class="service" data-name="الاستشارات البحثية"><div class="icon">🔎</div><h3>الاستشارات البحثية</h3><p>تحديد المشكلة والأسئلة والأهداف وبناء خطة البحث.</p><button class="link" onclick="openRequest('الاستشارات البحثية')">اطلب الخدمة ←</button></article>
-    <article class="service" data-name="الدراسات السابقة"><div class="icon">📚</div><h3>الدراسات السابقة</h3><p>تنظيم الأدبيات ومقارنتها واستخلاص الفجوات البحثية.</p><button class="link" onclick="openRequest('الدراسات السابقة')">اطلب الخدمة ←</button></article>
-    <article class="service" data-name="الإطار النظري"><div class="icon">📖</div><h3>الإطار النظري</h3><p>مراجعة الهيكل والمفاهيم والمصادر بصورة أكاديمية.</p><button class="link" onclick="openRequest('الإطار النظري')">اطلب الخدمة ←</button></article>
-    <article class="service" data-name="منهجية البحث"><div class="icon">🧪</div><h3>منهجية البحث</h3><p>مراجعة المنهج والمجتمع والعينة وأداة جمع البيانات.</p><button class="link" onclick="openRequest('منهجية البحث')">اطلب الخدمة ←</button></article>
-    <article class="service" data-name="التحليل الإحصائي"><div class="icon">📊</div><h3>التحليل الإحصائي</h3><p>تحليل البيانات وشرح المخرجات الإحصائية للباحث.</p><button class="link" onclick="openRequest('التحليل الإحصائي')">اطلب الخدمة ←</button></article>
-    <article class="service" data-name="التدقيق الأكاديمي"><div class="icon">✍️</div><h3>التدقيق الأكاديمي واللغوي</h3><p>تحسين اللغة والترابط والتنسيق دون المساس بأصالة العمل.</p><button class="link" onclick="openRequest('التدقيق الأكاديمي')">اطلب الخدمة ←</button></article>
-    <article class="service" data-name="الترجمة الأكاديمية"><div class="icon">🌐</div><h3>الترجمة الأكاديمية</h3><p>ترجمة عربية–إنجليزية للمحتوى الأكاديمي.</p><button class="link" onclick="openRequest('الترجمة الأكاديمية')">اطلب الخدمة ←</button></article>
-    <article class="service" data-name="التنسيق والمراجع"><div class="icon">📑</div><h3>التنسيق والمراجع</h3><p>تنسيق الرسائل والمراجع وفق الأنماط الأكاديمية.</p><button class="link" onclick="openRequest('التنسيق والمراجع')">اطلب الخدمة ←</button></article>
-  </div>
-</section>
-
-<section id="how" class="alt">
-  <div class="center"><div class="eyebrow">ببساطة</div><h2>كيف تعمل موثوق؟</h2></div>
-  <div class="steps">
-    <div class="step"><b>01</b><h3>اطلب الخدمة</h3><p>حدد المرحلة والتخصص وما تحتاجه والموعد.</p></div>
-    <div class="step"><b>02</b><h3>اختر الخبير</h3><p>قارن المؤهلات والتقييم والسعر والمدة.</p></div>
-    <div class="step"><b>03</b><h3>اعمل بأمان</h3><p>تواصل وادفع عبر المنصة مع حماية للطرفين.</p></div>
-    <div class="step"><b>04</b><h3>استلم وقيّم</h3><p>راجع التسليم وقيّم تجربتك.</p></div>
-  </div>
-</section>
-
-<section id="experts">
-  <div class="center"><div class="eyebrow">خبراؤنا</div><h2>خبراء موثوقون</h2></div>
-  <div class="expert-grid">
-    <article class="expert"><div class="avatar">د</div><h3>د. أحمد محمد</h3><p>دكتوراه في الإدارة العامة</p><b>⭐ 4.9 · 126 مشروعًا</b><label class="verified">✓ خبير موثق</label></article>
-    <article class="expert"><div class="avatar">أ</div><h3>أ. سارة علي</h3><p>مناهج البحث والتدقيق الأكاديمي</p><b>⭐ 4.8 · 94 مشروعًا</b><label class="verified">✓ خبير موثق</label></article>
-    <article class="expert"><div class="avatar">د</div><h3>د. خالد سالم</h3><p>إحصاء تطبيقي وSPSS</p><b>⭐ 4.9 · 118 مشروعًا</b><label class="verified">✓ خبير موثق</label></article>
-  </div>
-</section>
-
-<section class="cta">
-  <div><div class="eyebrow">ابدأ الآن</div><h2>حوّل احتياجك الأكاديمي إلى طلب واضح.</h2><p>هذه نسخة MVP أولية قابلة للتطوير إلى منصة كاملة.</p></div>
-  <button class="white large" onclick="openRequest()">إنشاء طلب خدمة</button>
-</section>
-</main>
-
-<footer>
-  <div class="brand"><span class="brand-mark">م</span><span>منصة موثوق</span></div>
-  <p>منصة دعم وخدمات أكاديمية مسؤولة.</p>
-  <small>© 2026 موثوق — Prototype</small>
-</footer>
-
-<div id="modal" class="modal" onclick="backdrop(event)">
-  <div class="modal-box"><button class="close" onclick="closeModal()">×</button><div id="modalBody"></div></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/supabase-config.js"></script>
-<script src="assets/auth.js"></script>
+<!-- ============ تسجيل الدخول ============ -->
+<div id="view-login" class="view">
+  <header>
+    <a class="brand" onclick="goHome()"><span class="brand-mark">م</span><span>منصة موثوق</span></a>
+    <nav><a onclick="goHome('services')">الخدمات</a><a onclick="goHome('how')">كيف تعمل؟</a><a onclick="goHome('experts')">الخبراء</a></nav>
+    <div class="actions"><a class="btn btn-primary" onclick="switchView('register')">إنشاء حساب</a></div>
+  </header>
+  <main class="auth-wrap">
+    <div class="auth-card">
+      <h1>تسجيل الدخول</h1>
+      <p class="sub">أدخل بيانات حسابك للمتابعة إلى منصة موثوق.</p>
+      <div class="notice">معاينة تصميم فقط — جرّبي اسم المستخدم <b>فهد اليحيائي</b> لمشاهدة لوحة المشرف، أو أي اسم آخر لمشاهدة تجربة المستخدم العادي.</div>
+      <form id="loginForm" onsubmit="mockLogin(event)">
+        <div class="field"><label>اسم المستخدم</label><input id="loginUsername" type="text" required></div>
+        <div class="field"><label>كلمة المرور</label><input type="password" required></div>
+        <button type="submit" class="btn-primary"><span class="spinner"></span>دخول</button>
+      </form>
+      <div class="auth-foot">ليس لديك حساب؟ <a onclick="switchView('register')">إنشاء حساب جديد</a></div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ إنشاء حساب ============ -->
+<div id="view-register" class="view">
+  <header>
+    <a class="brand" onclick="goHome()"><span class="brand-mark">م</span><span>منصة موثوق</span></a>
+    <nav><a onclick="goHome('services')">الخدمات</a><a onclick="goHome('how')">كيف تعمل؟</a><a onclick="goHome('experts')">الخبراء</a></nav>
+    <div class="actions"><a class="btn btn-outline-invert" onclick="switchView('login')">دخول</a></div>
+  </header>
+  <main class="auth-wrap">
+    <div class="auth-card">
+      <h1>إنشاء حساب جديد</h1>
+      <p class="sub">انضم إلى منصة موثوق للاستفادة من خدماتها.</p>
+      <div id="regAlert" class="alert alert-success"></div>
+      <form id="registerForm" onsubmit="mockRegister(event)">
+        <div class="field"><label>اسم المستخدم</label><input id="regUsername" type="text" required></div>
+        <div class="field"><label>البريد الإلكتروني</label><input type="email" required></div>
+        <div class="field"><label>رقم الهاتف</label><input type="tel" placeholder="+968 9xxxxxxx" required></div>
+        <div class="field"><label>كلمة المرور</label><input type="password" minlength="6" required></div>
+        <div class="field"><label>تأكيد كلمة المرور</label><input type="password" minlength="6" required></div>
+        <button type="submit" class="btn-primary"><span class="spinner"></span>إنشاء الحساب</button>
+      </form>
+      <div class="auth-foot">لديك حساب بالفعل؟ <a onclick="switchView('login')">تسجيل الدخول</a></div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ لوحة المشرف ============ -->
+<div id="view-admin" class="view">
+  <div class="admin-bar">
+    <a class="brand" onclick="goHome()"><span class="brand-mark">م</span><span>منصة موثوق</span></a>
+    <div style="display:flex;align-items:center;gap:16px">
+      <span class="who" id="adminWho">مرحبًا، فهد اليحيائي</span>
+      <button class="btn btn-outline-invert" onclick="mockLogout()">تسجيل الخروج</button>
+    </div>
+  </div>
+  <main style="padding:34px 7%">
+    <div class="heading"><div><div class="eyebrow">لوحة المشرف</div><h2 style="margin:5px 0">المستخدمون المسجّلون</h2></div></div>
+    <div class="stat-row">
+      <div class="stat-card"><b id="totalCount">0</b><span>إجمالي المسجّلين</span></div>
+      <div class="stat-card"><b id="todayCount">0</b><span>تسجيلات اليوم</span></div>
+      <div class="stat-card"><b id="weekCount">0</b><span>آخر 7 أيام</span></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>اسم المستخدم</th><th>البريد الإلكتروني</th><th>رقم الهاتف</th><th>تاريخ التسجيل</th><th>الصلاحية</th></tr></thead>
+        <tbody id="usersBody"></tbody>
+      </table>
+    </div>
+    <p style="color:var(--muted);font-size:13px;margin-top:16px">↑ بيانات تجريبية للمعاينة فقط. بعد ربط Supabase ستظهر هنا قائمة المسجّلين الحقيقيين تلقائيًا.</p>
+  </main>
+</div>
+
 <script>
-const modal=document.getElementById('modal'),body=document.getElementById('modalBody');
-function show(html){body.innerHTML=html;modal.classList.add('show')}
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goHome(anchor){
+  switchView('home');
+  if(anchor){ setTimeout(()=>{ const el=document.getElementById(anchor); if(el) el.scrollIntoView({behavior:'smooth'}); }, 60); }
+}
+
+function mockLogin(e){
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type=submit]');
+  const username = document.getElementById('loginUsername').value.trim();
+  btn.classList.add('loading'); btn.disabled = true;
+  setTimeout(()=>{
+    btn.classList.remove('loading'); btn.disabled = false;
+    const isAdmin = username === 'فهد اليحيائي';
+    setLoggedIn(username || 'مستخدم', isAdmin);
+    if (isAdmin) { switchView('admin'); } else { goHome(); }
+  }, 600);
+}
+function mockRegister(e){
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type=submit]');
+  const username = document.getElementById('regUsername').value.trim();
+  const alertBox = document.getElementById('regAlert');
+  btn.classList.add('loading'); btn.disabled = true;
+  setTimeout(()=>{
+    btn.classList.remove('loading'); btn.disabled = false;
+    alertBox.textContent = 'تم إنشاء الحساب بنجاح. جارٍ تحويلك...';
+    alertBox.className = 'alert alert-success show';
+    setTimeout(()=>{
+      alertBox.className = 'alert alert-success';
+      setLoggedIn(username || 'مستخدم', false);
+      goHome();
+    }, 900);
+  }, 600);
+}
+function mockLogout(){ setLoggedIn(null, false); goHome(); }
+
+function setLoggedIn(username, isAdmin){
+  const actions = document.getElementById('headerActions');
+  if (!username){
+    actions.innerHTML = `<a class="btn btn-outline-invert" onclick="switchView('login')">دخول</a><button class="btn-primary" onclick="openRequest()">اطلب خدمة</button>`;
+    return;
+  }
+  actions.innerHTML = `
+    <span style="color:#c7cadd;font-size:14px">مرحبًا، ${escapeHtml(username)}</span>
+    ${isAdmin ? '<a class="btn btn-outline-invert" onclick="switchView(\'admin\')">لوحة التحكم</a>' : ''}
+    <button class="btn btn-ghost-invert" onclick="mockLogout()">خروج</button>
+    <button class="btn-primary" onclick="openRequest()">اطلب خدمة</button>`;
+  if (isAdmin) document.getElementById('adminWho').textContent = 'مرحبًا، ' + username;
+}
+
+const mockUsers = [
+  {username:'فهد اليحيائي', email:'fahad.alyahyai@example.com', phone:'+968 9123 4567', is_admin:true,  created_at:'2026-08-20'},
+  {username:'سالم_راشد',    email:'salem.r@example.com',        phone:'+968 9234 5678', is_admin:false, created_at:'2026-08-22'},
+  {username:'نورة٩٩',       email:'noura99@example.com',        phone:'+968 9345 6789', is_admin:false, created_at:'2026-08-24'},
+  {username:'ahmed_stat',   email:'ahmed.stat@example.com',     phone:'+968 9456 7890', is_admin:false, created_at:'2026-08-25'},
+  {username:'مريم.ك',       email:'mariam.k@example.com',       phone:'+968 9567 8901', is_admin:false, created_at:'2026-08-26'},
+  {username:'yousuf22',     email:'yousuf22@example.com',       phone:'+968 9678 9012', is_admin:false, created_at:'2026-08-27'}
+];
+function renderMockAdmin(){
+  const tbody = document.getElementById('usersBody');
+  tbody.innerHTML = mockUsers.map(u => `
+    <tr>
+      <td>${escapeHtml(u.username)}</td>
+      <td>${escapeHtml(u.email)}</td>
+      <td>${escapeHtml(u.phone)}</td>
+      <td>${formatDate(u.created_at)}</td>
+      <td>${u.is_admin ? '<span class="badge-admin">مشرف</span>' : 'مستخدم'}</td>
+    </tr>`).join('');
+  const now = new Date('2026-08-27');
+  const today = mockUsers.filter(u => u.created_at === '2026-08-27').length;
+  const weekAgo = new Date(now.getTime() - 7*24*60*60*1000);
+  const week = mockUsers.filter(u => new Date(u.created_at) >= weekAgo).length;
+  document.getElementById('totalCount').textContent = mockUsers.length;
+  document.getElementById('todayCount').textContent = today;
+  document.getElementById('weekCount').textContent = week;
+}
+function escapeHtml(str){ const d=document.createElement('div'); d.textContent = str ?? ''; return d.innerHTML; }
+function formatDate(iso){ const d=new Date(iso); return d.toLocaleDateString('ar-OM',{year:'numeric',month:'short',day:'numeric'}); }
+renderMockAdmin();
+
+const modal=document.getElementById('modal'),modalBody=document.getElementById('modalBody');
+function show(html){modalBody.innerHTML=html;modal.classList.add('show')}
 function closeModal(){modal.classList.remove('show')}
 function backdrop(e){if(e.target===modal)closeModal()}
 
-// --- طلب خدمة: تبقى وظيفة تجريبية كما في النسخة الأصلية (لم يُطلب ربطها بقاعدة البيانات) ---
 function openRequest(service=''){
 show(`<h2>إنشاء طلب خدمة</h2>
-<div class="notice">اكتب احتياجك بوضوح ليتم ترشيح الخبراء المناسبين. المنصة مخصصة للدعم والتطوير الأكاديمي مع الحفاظ على أصالة عمل الباحث.</div>
+<div class="notice">اكتب احتياجك بوضوح ليتم ترشيح الخبراء المناسبين.</div>
 <div class="form">
 <div class="field"><label>المرحلة العلمية</label><select><option>بكالوريوس</option><option>ماجستير</option><option>دكتوراه</option></select></div>
 <div class="field"><label>التخصص</label><input placeholder="مثال: الإدارة العامة"></div>
-<div class="field full"><label>الخدمة المطلوبة</label><select id="serviceSelect">
-<option>${service||'اختر الخدمة'}</option><option>الاستشارات البحثية</option><option>الدراسات السابقة</option><option>الإطار النظري</option><option>منهجية البحث</option><option>التحليل الإحصائي</option><option>التدقيق الأكاديمي</option><option>الترجمة الأكاديمية</option><option>التنسيق والمراجع</option></select></div>
-<div class="field full"><label>عنوان البحث</label><input placeholder="عنوان البحث"></div>
+<div class="field full"><label>الخدمة المطلوبة</label><select><option>${service||'اختر الخدمة'}</option><option>الاستشارات البحثية</option><option>الدراسات السابقة</option><option>التحليل الإحصائي</option></select></div>
 <div class="field full"><label>تفاصيل الطلب</label><textarea placeholder="ما الذي تحتاجه تحديدًا؟"></textarea></div>
 <div class="field"><label>الموعد النهائي</label><input type="date"></div>
 <div class="field"><label>الميزانية التقريبية (ر.ع)</label><input type="number" placeholder="50"></div>
-<div class="field full"><label>إرفاق الملفات</label><input type="file" multiple></div>
 </div>
-<div class="form-actions"><button onclick="submitted()">نشر الطلب</button><button class="outline" onclick="closeModal()">إلغاء</button></div>`);
+<div class="form-actions"><button class="btn-primary" onclick="closeModal()">نشر الطلب</button><button class="btn btn-outline" onclick="closeModal()">إلغاء</button></div>`);
 }
-
-function submitted(){
-show(`<div style="text-align:center;padding:25px"><div style="font-size:48px">✓</div><h2>تم إنشاء الطلب بنجاح</h2><p>رقم الطلب التجريبي: <b>MW-2026-00125</b></p><p style="color:#69758b">سيقوم نظام المطابقة الذكية بترشيح الخبراء المناسبين.</p><button onclick="matches()">عرض الخبراء المقترحين</button></div>`);
-}
-
-function matches(){
-const data=[
-['د. أحمد محمد','إدارة عامة · SPSS','96%','40 ر.ع','3 أيام'],
-['د. خالد سالم','إحصاء تطبيقي · SPSS','91%','35 ر.ع','يومان'],
-['أ. سارة علي','مناهج البحث','84%','30 ر.ع','4 أيام']
-];
-show(`<h2>خبراء مناسبون لطلبك 🎯</h2><div class="notice">المطابقة التجريبية تجمع بين التخصص والخدمة والخبرة والتقييم والموعد.</div>`+
-data.map(x=>`<div style="border:1px solid #e5eaf2;border-radius:14px;padding:14px;margin:10px 0;display:flex;align-items:center;gap:10px">
-<div class="avatar">${x[0][2]}</div><div style="flex:1"><b>${x[0]}</b><small style="display:block;color:#69758b">${x[1]} · ${x[2]} تطابق · ${x[4]}</small></div><b>${x[3]}</b><button onclick="done('تم اختيار الخبير تجريبيًا')">اختيار</button></div>`).join(''));
-}
-
-function done(msg){
-show(`<div style="text-align:center;padding:28px"><div style="font-size:46px">✓</div><h2>${msg}</h2><p style="color:#69758b">هذه وظيفة تجريبية في نسخة MVP.</p><button onclick="closeModal()">إغلاق</button></div>`);
-}
-
 function filterServices(q){
 q=q.trim().toLowerCase();
 document.querySelectorAll('#serviceGrid .service').forEach(card=>{
 card.style.display=!q||card.dataset.name.toLowerCase().includes(q)?'block':'none';
 });
 }
-
-// --- حالة الدخول الحقيقية في الترويسة (تحل محل نافذة الدخول التجريبية السابقة) ---
-function escapeHtmlLite(str){
-  const div = document.createElement('div');
-  div.textContent = str ?? '';
-  return div.innerHTML;
-}
-
-(async function(){
-  const profile = await getCurrentProfile();
-  const actions = document.getElementById('headerActions');
-  if (profile) {
-    actions.innerHTML = `
-      <span style="color:var(--muted);font-size:14px">مرحبًا، ${escapeHtmlLite(profile.username)}</span>
-      ${profile.is_admin ? '<a href="admin.html" class="outline btn">لوحة التحكم</a>' : ''}
-      <button class="ghost" onclick="logoutUser()">خروج</button>
-      <button onclick="openRequest()">اطلب خدمة</button>
-    `;
-  }
-})();
 </script>
 </body>
 </html>
