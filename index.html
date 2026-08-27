@@ -1,92 +1,171 @@
-م
-مِداد
-دخول
-اطلب خدمة
-منصة الدعم والخدمات الأكاديمية
-مساعدتك الأكاديمية تبدأ من هنا.
-اربط احتياجك الأكاديمي بخبير موثوق يساعدك على تطوير بحثك، فهم بياناتك، وتحسين عملك العلمي.
-ابدأ طلبك الآن كيف تعمل مِداد؟
-✓ خبراء موثقون　 ✓ دفع محمي　 ✓ دعم أكاديمي مسؤول
-⌕
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="موثوق - منصة الدعم والخدمات الأكاديمية">
+<title>موثوق | الدعم والخدمات الأكاديمية</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
 
-📊 التحليل الإحصائي
-📚 الدراسات السابقة
-🔬 منهجية البحث
-✍️ التدقيق الأكاديمي
-مطابقة ذكية
-96%
-د
-د. أحمد محمد
-إدارة عامة · SPSS
-⭐ 4.9
-خدماتنا
-اختر ما تحتاجه
-خدمات مساعدة وتطوير أكاديمي مع الحفاظ على أصالة عمل الباحث.
-🔎
-الاستشارات البحثية
-تحديد المشكلة والأسئلة والأهداف وبناء خطة البحث.
-اطلب الخدمة ←
-📚
-الدراسات السابقة
-تنظيم الأدبيات ومقارنتها واستخلاص الفجوات البحثية.
-اطلب الخدمة ←
-📖
-الإطار النظري
-مراجعة الهيكل والمفاهيم والمصادر بصورة أكاديمية.
-اطلب الخدمة ←
-🧪
-منهجية البحث
-مراجعة المنهج والمجتمع والعينة وأداة جمع البيانات.
-اطلب الخدمة ←
-📊
-التحليل الإحصائي
-تحليل البيانات وشرح المخرجات الإحصائية للباحث.
-اطلب الخدمة ←
-✍️
-التدقيق الأكاديمي واللغوي
-تحسين اللغة والترابط والتنسيق دون المساس بأصالة العمل.
-اطلب الخدمة ←
-🌐
-الترجمة الأكاديمية
-ترجمة عربية–إنجليزية للمحتوى الأكاديمي.
-اطلب الخدمة ←
-📑
-التنسيق والمراجع
-تنسيق الرسائل والمراجع وفق الأنماط الأكاديمية.
-اطلب الخدمة ←
-ببساطة
-كيف تعمل مِداد؟
-01
-اطلب الخدمة
-حدد المرحلة والتخصص وما تحتاجه والموعد.
-02
-اختر الخبير
-قارن المؤهلات والتقييم والسعر والمدة.
-03
-اعمل بأمان
-تواصل وادفع عبر المنصة مع حماية للطرفين.
-04
-استلم وقيّم
-راجع التسليم وقيّم تجربتك.
-خبراؤنا
-خبراء موثوقون
-د
-د. أحمد محمد
-دكتوراه في الإدارة العامة
-⭐ 4.9 · 126 مشروعًا✓ خبير موثق
-أ
-أ. سارة علي
-مناهج البحث والتدقيق الأكاديمي
-⭐ 4.8 · 94 مشروعًا✓ خبير موثق
-د
-د. خالد سالم
-إحصاء تطبيقي وSPSS
-⭐ 4.9 · 118 مشروعًا✓ خبير موثق
-ابدأ الآن
-حوّل احتياجك الأكاديمي إلى طلب واضح.
-هذه نسخة MVP أولية قابلة للتطوير إلى منصة كاملة.
-إنشاء طلب خدمة
-م
-مِداد
-منصة دعم وخدمات أكاديمية مسؤولة.
-© 2026 MIDAD — Prototype
+<header>
+  <a href="index.html" class="brand"><span class="brand-mark">م</span><span>منصة موثوق</span></a>
+  <nav><a href="#services">الخدمات</a><a href="#how">كيف تعمل؟</a><a href="#experts">الخبراء</a></nav>
+  <div class="actions" id="headerActions">
+    <a href="login.html" class="ghost btn">دخول</a>
+    <button onclick="openRequest()">اطلب خدمة</button>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div>
+    <div class="eyebrow">منصة الدعم والخدمات الأكاديمية</div>
+    <h1>مساعدتك الأكاديمية<br><span>تبدأ من هنا.</span></h1>
+    <p>اربط احتياجك الأكاديمي بخبير موثوق يساعدك على تطوير بحثك، فهم بياناتك، وتحسين عملك العلمي.</p>
+    <div class="hero-actions">
+      <button class="large" onclick="openRequest()">ابدأ طلبك الآن</button>
+      <button class="outline large" onclick="document.querySelector('#how').scrollIntoView()">كيف تعمل موثوق؟</button>
+    </div>
+    <div class="trust">✓ خبراء موثقون　 ✓ دفع محمي　 ✓ دعم أكاديمي مسؤول</div>
+  </div>
+  <div class="hero-card">
+    <div class="search"><span>⌕</span><input placeholder="ابحث عن خدمة..." oninput="filterServices(this.value)"></div>
+    <div class="chips">
+      <button onclick="openRequest('التحليل الإحصائي')">📊 التحليل الإحصائي</button>
+      <button onclick="openRequest('الدراسات السابقة')">📚 الدراسات السابقة</button>
+      <button onclick="openRequest('منهجية البحث')">🔬 منهجية البحث</button>
+      <button onclick="openRequest('التدقيق الأكاديمي')">✍️ التدقيق الأكاديمي</button>
+    </div>
+    <div class="match">
+      <div class="match-head"><span>مطابقة ذكية</span><strong>96%</strong></div>
+      <div class="person"><div class="avatar">د</div><div class="info"><b>د. أحمد محمد</b><small>إدارة عامة · SPSS</small></div><span>⭐ 4.9</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="heading"><div><div class="eyebrow">خدماتنا</div><h2>اختر ما تحتاجه</h2></div><p>خدمات مساعدة وتطوير أكاديمي مع الحفاظ على أصالة عمل الباحث.</p></div>
+  <div class="service-grid" id="serviceGrid">
+    <article class="service" data-name="الاستشارات البحثية"><div class="icon">🔎</div><h3>الاستشارات البحثية</h3><p>تحديد المشكلة والأسئلة والأهداف وبناء خطة البحث.</p><button class="link" onclick="openRequest('الاستشارات البحثية')">اطلب الخدمة ←</button></article>
+    <article class="service" data-name="الدراسات السابقة"><div class="icon">📚</div><h3>الدراسات السابقة</h3><p>تنظيم الأدبيات ومقارنتها واستخلاص الفجوات البحثية.</p><button class="link" onclick="openRequest('الدراسات السابقة')">اطلب الخدمة ←</button></article>
+    <article class="service" data-name="الإطار النظري"><div class="icon">📖</div><h3>الإطار النظري</h3><p>مراجعة الهيكل والمفاهيم والمصادر بصورة أكاديمية.</p><button class="link" onclick="openRequest('الإطار النظري')">اطلب الخدمة ←</button></article>
+    <article class="service" data-name="منهجية البحث"><div class="icon">🧪</div><h3>منهجية البحث</h3><p>مراجعة المنهج والمجتمع والعينة وأداة جمع البيانات.</p><button class="link" onclick="openRequest('منهجية البحث')">اطلب الخدمة ←</button></article>
+    <article class="service" data-name="التحليل الإحصائي"><div class="icon">📊</div><h3>التحليل الإحصائي</h3><p>تحليل البيانات وشرح المخرجات الإحصائية للباحث.</p><button class="link" onclick="openRequest('التحليل الإحصائي')">اطلب الخدمة ←</button></article>
+    <article class="service" data-name="التدقيق الأكاديمي"><div class="icon">✍️</div><h3>التدقيق الأكاديمي واللغوي</h3><p>تحسين اللغة والترابط والتنسيق دون المساس بأصالة العمل.</p><button class="link" onclick="openRequest('التدقيق الأكاديمي')">اطلب الخدمة ←</button></article>
+    <article class="service" data-name="الترجمة الأكاديمية"><div class="icon">🌐</div><h3>الترجمة الأكاديمية</h3><p>ترجمة عربية–إنجليزية للمحتوى الأكاديمي.</p><button class="link" onclick="openRequest('الترجمة الأكاديمية')">اطلب الخدمة ←</button></article>
+    <article class="service" data-name="التنسيق والمراجع"><div class="icon">📑</div><h3>التنسيق والمراجع</h3><p>تنسيق الرسائل والمراجع وفق الأنماط الأكاديمية.</p><button class="link" onclick="openRequest('التنسيق والمراجع')">اطلب الخدمة ←</button></article>
+  </div>
+</section>
+
+<section id="how" class="alt">
+  <div class="center"><div class="eyebrow">ببساطة</div><h2>كيف تعمل موثوق؟</h2></div>
+  <div class="steps">
+    <div class="step"><b>01</b><h3>اطلب الخدمة</h3><p>حدد المرحلة والتخصص وما تحتاجه والموعد.</p></div>
+    <div class="step"><b>02</b><h3>اختر الخبير</h3><p>قارن المؤهلات والتقييم والسعر والمدة.</p></div>
+    <div class="step"><b>03</b><h3>اعمل بأمان</h3><p>تواصل وادفع عبر المنصة مع حماية للطرفين.</p></div>
+    <div class="step"><b>04</b><h3>استلم وقيّم</h3><p>راجع التسليم وقيّم تجربتك.</p></div>
+  </div>
+</section>
+
+<section id="experts">
+  <div class="center"><div class="eyebrow">خبراؤنا</div><h2>خبراء موثوقون</h2></div>
+  <div class="expert-grid">
+    <article class="expert"><div class="avatar">د</div><h3>د. أحمد محمد</h3><p>دكتوراه في الإدارة العامة</p><b>⭐ 4.9 · 126 مشروعًا</b><label class="verified">✓ خبير موثق</label></article>
+    <article class="expert"><div class="avatar">أ</div><h3>أ. سارة علي</h3><p>مناهج البحث والتدقيق الأكاديمي</p><b>⭐ 4.8 · 94 مشروعًا</b><label class="verified">✓ خبير موثق</label></article>
+    <article class="expert"><div class="avatar">د</div><h3>د. خالد سالم</h3><p>إحصاء تطبيقي وSPSS</p><b>⭐ 4.9 · 118 مشروعًا</b><label class="verified">✓ خبير موثق</label></article>
+  </div>
+</section>
+
+<section class="cta">
+  <div><div class="eyebrow">ابدأ الآن</div><h2>حوّل احتياجك الأكاديمي إلى طلب واضح.</h2><p>هذه نسخة MVP أولية قابلة للتطوير إلى منصة كاملة.</p></div>
+  <button class="white large" onclick="openRequest()">إنشاء طلب خدمة</button>
+</section>
+</main>
+
+<footer>
+  <div class="brand"><span class="brand-mark">م</span><span>منصة موثوق</span></div>
+  <p>منصة دعم وخدمات أكاديمية مسؤولة.</p>
+  <small>© 2026 موثوق — Prototype</small>
+</footer>
+
+<div id="modal" class="modal" onclick="backdrop(event)">
+  <div class="modal-box"><button class="close" onclick="closeModal()">×</button><div id="modalBody"></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+const modal=document.getElementById('modal'),body=document.getElementById('modalBody');
+function show(html){body.innerHTML=html;modal.classList.add('show')}
+function closeModal(){modal.classList.remove('show')}
+function backdrop(e){if(e.target===modal)closeModal()}
+
+// --- طلب خدمة: تبقى وظيفة تجريبية كما في النسخة الأصلية (لم يُطلب ربطها بقاعدة البيانات) ---
+function openRequest(service=''){
+show(`<h2>إنشاء طلب خدمة</h2>
+<div class="notice">اكتب احتياجك بوضوح ليتم ترشيح الخبراء المناسبين. المنصة مخصصة للدعم والتطوير الأكاديمي مع الحفاظ على أصالة عمل الباحث.</div>
+<div class="form">
+<div class="field"><label>المرحلة العلمية</label><select><option>بكالوريوس</option><option>ماجستير</option><option>دكتوراه</option></select></div>
+<div class="field"><label>التخصص</label><input placeholder="مثال: الإدارة العامة"></div>
+<div class="field full"><label>الخدمة المطلوبة</label><select id="serviceSelect">
+<option>${service||'اختر الخدمة'}</option><option>الاستشارات البحثية</option><option>الدراسات السابقة</option><option>الإطار النظري</option><option>منهجية البحث</option><option>التحليل الإحصائي</option><option>التدقيق الأكاديمي</option><option>الترجمة الأكاديمية</option><option>التنسيق والمراجع</option></select></div>
+<div class="field full"><label>عنوان البحث</label><input placeholder="عنوان البحث"></div>
+<div class="field full"><label>تفاصيل الطلب</label><textarea placeholder="ما الذي تحتاجه تحديدًا؟"></textarea></div>
+<div class="field"><label>الموعد النهائي</label><input type="date"></div>
+<div class="field"><label>الميزانية التقريبية (ر.ع)</label><input type="number" placeholder="50"></div>
+<div class="field full"><label>إرفاق الملفات</label><input type="file" multiple></div>
+</div>
+<div class="form-actions"><button onclick="submitted()">نشر الطلب</button><button class="outline" onclick="closeModal()">إلغاء</button></div>`);
+}
+
+function submitted(){
+show(`<div style="text-align:center;padding:25px"><div style="font-size:48px">✓</div><h2>تم إنشاء الطلب بنجاح</h2><p>رقم الطلب التجريبي: <b>MW-2026-00125</b></p><p style="color:#69758b">سيقوم نظام المطابقة الذكية بترشيح الخبراء المناسبين.</p><button onclick="matches()">عرض الخبراء المقترحين</button></div>`);
+}
+
+function matches(){
+const data=[
+['د. أحمد محمد','إدارة عامة · SPSS','96%','40 ر.ع','3 أيام'],
+['د. خالد سالم','إحصاء تطبيقي · SPSS','91%','35 ر.ع','يومان'],
+['أ. سارة علي','مناهج البحث','84%','30 ر.ع','4 أيام']
+];
+show(`<h2>خبراء مناسبون لطلبك 🎯</h2><div class="notice">المطابقة التجريبية تجمع بين التخصص والخدمة والخبرة والتقييم والموعد.</div>`+
+data.map(x=>`<div style="border:1px solid #e5eaf2;border-radius:14px;padding:14px;margin:10px 0;display:flex;align-items:center;gap:10px">
+<div class="avatar">${x[0][2]}</div><div style="flex:1"><b>${x[0]}</b><small style="display:block;color:#69758b">${x[1]} · ${x[2]} تطابق · ${x[4]}</small></div><b>${x[3]}</b><button onclick="done('تم اختيار الخبير تجريبيًا')">اختيار</button></div>`).join(''));
+}
+
+function done(msg){
+show(`<div style="text-align:center;padding:28px"><div style="font-size:46px">✓</div><h2>${msg}</h2><p style="color:#69758b">هذه وظيفة تجريبية في نسخة MVP.</p><button onclick="closeModal()">إغلاق</button></div>`);
+}
+
+function filterServices(q){
+q=q.trim().toLowerCase();
+document.querySelectorAll('#serviceGrid .service').forEach(card=>{
+card.style.display=!q||card.dataset.name.toLowerCase().includes(q)?'block':'none';
+});
+}
+
+// --- حالة الدخول الحقيقية في الترويسة (تحل محل نافذة الدخول التجريبية السابقة) ---
+function escapeHtmlLite(str){
+  const div = document.createElement('div');
+  div.textContent = str ?? '';
+  return div.innerHTML;
+}
+
+(async function(){
+  const profile = await getCurrentProfile();
+  const actions = document.getElementById('headerActions');
+  if (profile) {
+    actions.innerHTML = `
+      <span style="color:var(--muted);font-size:14px">مرحبًا، ${escapeHtmlLite(profile.username)}</span>
+      ${profile.is_admin ? '<a href="admin.html" class="outline btn">لوحة التحكم</a>' : ''}
+      <button class="ghost" onclick="logoutUser()">خروج</button>
+      <button onclick="openRequest()">اطلب خدمة</button>
+    `;
+  }
+})();
+</script>
+</body>
+</html>
