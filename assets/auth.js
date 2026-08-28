@@ -6,7 +6,7 @@
 // ويقوم مُشغّل (trigger) في قاعدة البيانات بإنشاء صف الملف الشخصي تلقائيًا
 // (انظر handle_new_user في supabase/schema.sql) — بذلك تبقى العملية ذرّية
 // (تنجح كاملة أو تفشل كاملة، دون حسابات ناقصة).
-async function registerUser({ username, password, email, phone, accountType, bankAccountNumber, paymentMethod }) {
+async function registerUser({ username, password, email, phone, accountType, bankAccountNumber, paymentMethod, providerServiceType }) {
   const { data, error } = await supabaseClient.auth.signUp({
     email,
     password,
@@ -15,7 +15,8 @@ async function registerUser({ username, password, email, phone, accountType, ban
         username, phone,
         account_type: accountType || 'seeker',
         bank_account_number: bankAccountNumber || null,
-        payment_method: paymentMethod || null
+        payment_method: paymentMethod || null,
+        provider_service_type: providerServiceType || null
       }
     }
   });
@@ -97,7 +98,7 @@ function translateAuthError(message) {
     return 'هذا البريد الإلكتروني مسجل مسبقًا.';
   }
   if (/Password should be at least|password.*6 characters/i.test(message)) {
-    return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.';
+    return 'كلمة المرور يجب أن تكون 8 أحرف على الأقل.';
   }
   if (/valid email/i.test(message)) {
     return 'يرجى إدخال بريد إلكتروني صحيح.';

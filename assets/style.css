@@ -45,9 +45,41 @@ button.loading .spinner{display:inline-block;margin-right:8px}button.loading .bt
 .type-option-title{font-weight:700;font-size:14px}
 .type-option-sub{font-size:12px;color:var(--muted)}
 .type-option.selected{border-color:var(--navy);background:var(--light)}
-.provider-fields{border-top:1px dashed var(--line);margin-top:4px;padding-top:16px;display:flex;flex-direction:column;gap:15px}
+.provider-fields{border-top:1px dashed var(--line);margin-top:4px;padding-top:16px;flex-direction:column;gap:15px}
+.provider-fields:not([hidden]){display:flex}
 .badge-seeker{background:var(--light);color:#3a5a8c;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800}
 .badge-provider{background:#fdf3e0;color:#9a6b00;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800}
+.messages-layout{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 74px)}
+.conv-list{border-left:1px solid var(--line);overflow-y:auto;padding:16px 12px;background:#fff}
+.conv-item{padding:11px 10px;border-radius:10px;cursor:pointer;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.conv-item:hover,.conv-item.active{background:var(--light)}
+.conv-item .ci-text{flex:1;min-width:0}
+.conv-item b{display:block;font-size:14px}
+.conv-item span{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv-item .unread-dot{width:9px;height:9px;background:var(--blue);border-radius:50%;flex-shrink:0}
+.chat-panel{display:flex;flex-direction:column;height:100%}
+.chat-header{padding:16px 20px;border-bottom:1px solid var(--line);font-weight:800;display:flex;align-items:center;gap:10px}
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:70%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.5;word-wrap:break-word}
+.msg.mine{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-left-radius:4px}
+.msg.theirs{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-right-radius:4px}
+.msg small{display:block;opacity:.65;font-size:11px;margin-top:4px}
+.chat-input-row{display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--line)}
+.chat-input-row input{flex:1;border:1px solid var(--line);border-radius:24px;padding:10px 16px;font:inherit;outline:none}
+.chat-input-row input:focus{border-color:var(--blue)}
+.back-to-list{display:none;font-size:18px;padding:4px 10px}
+.unread-badge{background:var(--blue);color:#fff;border-radius:20px;font-size:11px;font-weight:800;padding:1px 7px;margin-right:4px}
+@media(max-width:800px){
+  .messages-layout{grid-template-columns:1fr}
+  .conv-list.mobile-hide{display:none}
+  .chat-panel.mobile-hide{display:none}
+  .back-to-list{display:inline-flex}
+}
+.admin-tabs{display:flex;gap:8px;margin-bottom:22px;border-bottom:1px solid var(--line)}
+.tab-btn{background:none;border:0;border-bottom:2.5px solid transparent;color:var(--muted);padding:10px 4px;margin-left:22px;font-weight:700;font-size:14px;cursor:pointer;border-radius:0}
+.tab-btn.active{color:var(--navy);border-bottom-color:var(--navy)}
+.admin-tab{display:none}
+.admin-tab.active{display:block}
 .stat-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px}.stat-card b{font-size:28px;display:block;color:var(--navy)}.stat-card span{color:var(--muted);font-size:13px}
 .table-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
 table{width:100%;border-collapse:collapse;font-size:14px}
