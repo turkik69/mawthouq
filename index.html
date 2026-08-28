@@ -220,6 +220,7 @@ async function messageProvider(providerId){
   window.location.href = 'messages.html?with=' + encodeURIComponent(providerId);
 }
 loadProviders();
+initMessageNotifications();
 
 // --- حالة الدخول الحقيقية في الترويسة (تحل محل نافذة الدخول التجريبية السابقة) ---
 function escapeHtmlLite(str){
