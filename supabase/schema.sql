@@ -194,6 +194,32 @@ $$;
 
 grant execute on function public.get_all_service_requests() to authenticated;
 
+-- عرض الطلبات المفتوحة لمقدمي الخدمة (لتصفّحها واختيار ما يناسب تخصصهم).
+-- لا تُرجع الملفات المرفقة عمدًا — تبقى خاصة بالطالب والمشرف فقط حتى تُفتح
+-- محادثة فعلية؛ فقط ملخص الطلب (الخدمة والمرحلة والتخصص والتفاصيل).
+drop function if exists public.get_open_requests_for_providers();
+create or replace function public.get_open_requests_for_providers()
+returns table (
+  id uuid, seeker_id uuid, seeker_username text,
+  academic_level text, specialization text, service_type text,
+  title text, details text, created_at timestamptz
+)
+language sql
+security definer
+set search_path = public, auth
+stable
+as $$
+  select r.id, r.seeker_id, p.username,
+         r.academic_level, r.specialization, r.service_type,
+         r.title, r.details, r.created_at
+  from public.service_requests r
+  join public.profiles p on p.id = r.seeker_id
+  where r.status = 'open'
+  order by r.created_at desc;
+$$;
+
+grant execute on function public.get_open_requests_for_providers() to authenticated;
+
 -- ============================================================
 -- تخزين ملفات الطلبات (Supabase Storage) — bucket خاص، الوصول محكوم بالسياسات فقط
 -- ============================================================
@@ -241,6 +267,43 @@ create policy "select_own_conversations" on public.conversations
 drop policy if exists "seeker_creates_conversation" on public.conversations;
 create policy "seeker_creates_conversation" on public.conversations
   for insert with check (seeker_id = auth.uid());
+
+-- يسمح لمقدم الخدمة ببدء محادثة أيضًا، لكن فقط إذا كانت مرتبطة بطلب خدمة
+-- حقيقي وقائم فعلاً لنفس الطالب المحدَّد — يمنع مراسلة أي طالب عشوائيًا
+-- دون طلب خدمة فعلي يربطهما
+drop policy if exists "provider_creates_conversation_from_request" on public.conversations;
+create policy "provider_creates_conversation_from_request" on public.conversations
+  for insert with check (
+    provider_id = auth.uid()
+    and request_id is not null
+    and exists (
+      select 1 from public.service_requests r
+      where r.id = request_id and r.seeker_id = conversations.seeker_id
+    )
+  );
+
+-- عند بدء محادثة مرتبطة بطلب، يتحول الطلب تلقائيًا لحالة "قيد المعالجة"
+-- حتى لا يستمر ظهوره كمفتوح لبقية مقدمي الخدمة
+create or replace function public.mark_request_in_progress()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.request_id is not null then
+    update public.service_requests
+    set status = 'in_progress'
+    where id = new.request_id and status = 'open';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_conversation_created_mark_request on public.conversations;
+create trigger on_conversation_created_mark_request
+  after insert on public.conversations
+  for each row execute function public.mark_request_in_progress();
 
 -- علامة استلام الخدمة — يضبطها الطالب فقط، عبر الدالة أدناه فقط (لا توجد
 -- سياسة UPDATE عامة على هذا الجدول، متعمّد: لمنع أي طرف من تعديل أي عمود
