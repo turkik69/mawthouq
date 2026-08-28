@@ -69,6 +69,14 @@ button.loading .spinner{display:inline-block;margin-right:8px}button.loading .bt
 .chat-input-row input:focus{border-color:var(--blue)}
 .back-to-list{display:none;font-size:18px;padding:4px 10px}
 .unread-badge{background:var(--blue);color:#fff;border-radius:20px;font-size:11px;font-weight:800;padding:1px 7px;margin-right:4px}
+.status-pill{font-size:12px;font-weight:800;padding:5px 12px;border-radius:20px;border:0;cursor:pointer}
+.status-pill.action{background:var(--navy);color:#fff}
+.status-pill.done{background:#edf8f0;color:var(--green);cursor:default}
+.rating-form-box{padding:16px 20px;border-bottom:1px solid var(--line);background:var(--light)}
+.star-picker{display:flex;gap:4px;font-size:26px;margin:8px 0}
+.star-picker span{cursor:pointer;color:#d8dee8}
+.star-picker span.filled{color:#e8b53c}
+.rating-form-box textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;margin:8px 0;resize:vertical;min-height:60px}
 @media(max-width:800px){
   .messages-layout{grid-template-columns:1fr}
   .conv-list.mobile-hide{display:none}
