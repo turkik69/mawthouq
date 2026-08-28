@@ -8,27 +8,34 @@ let realtimeChannel = null;
 let conversationsCache = [];
 
 (async function initMessagesPage(){
-  const session = await requireAuth();
-  if (!session) return;
-  currentUserId = session.user.id;
+  try {
+    const session = await requireAuth();
+    if (!session) return;
+    currentUserId = session.user.id;
 
-  const profile = await getCurrentProfile();
-  if (profile && profile.account_type === 'provider') currentUserRole = 'provider';
+    const profile = await getCurrentProfile();
+    if (profile && profile.account_type === 'provider') currentUserRole = 'provider';
 
-  await loadConversations();
+    await loadConversations();
 
-  const params = new URLSearchParams(window.location.search);
-  const otherId = params.get('with');
-  const requestId = params.get('request');
-  if (otherId) {
-    await openOrCreateConversation(otherId, requestId);
+    const params = new URLSearchParams(window.location.search);
+    const otherId = params.get('with');
+    const requestId = params.get('request');
+    if (otherId) {
+      await openOrCreateConversation(otherId, requestId);
+    }
+
+    document.getElementById('sendForm').addEventListener('submit', sendMessage);
+  } catch (err) {
+    document.getElementById('convItems').innerHTML =
+      `<p style="color:var(--red);padding:0 4px">حدث خطأ أثناء التحميل: ${escapeHtml(err.message || String(err))}</p>`;
+    console.error('messages init error:', err);
   }
-
-  document.getElementById('sendForm').addEventListener('submit', sendMessage);
 })();
 
 async function loadConversations(){
-  const { data, error } = await supabaseClient.rpc('get_my_conversations');
+  const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('انتهت مهلة الاتصال بالخادم — تحقق من الشبكة وحاول مجددًا')), 10000));
+  const { data, error } = await Promise.race([supabaseClient.rpc('get_my_conversations'), timeout]);
   const container = document.getElementById('convItems');
 
   if (error) {
