@@ -84,10 +84,21 @@ async function getCurrentProfile() {
   if (!session) return null;
   const { data: profile } = await supabaseClient
     .from('profiles')
-    .select('username, is_admin')
+    .select('username, is_admin, account_type')
     .eq('id', session.user.id)
     .single();
   return profile;
+}
+
+// يوجّه كل دور لصفحته الصحيحة بعد الدخول أو التسجيل: مقدم الخدمة إلى تصفّح
+// طلبات الخدمة، وطالب الخدمة (أو أي حالة أخرى) إلى الصفحة الرئيسية.
+async function redirectAfterAuth() {
+  const profile = await getCurrentProfile();
+  if (profile && profile.account_type === 'provider') {
+    window.location.href = 'provider-requests.html';
+  } else {
+    window.location.href = 'index.html';
+  }
 }
 
 function translateAuthError(message) {
