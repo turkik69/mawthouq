@@ -97,6 +97,7 @@ $$;
 
 grant execute on function public.get_email_by_username(text) to anon, authenticated;
 
+drop function if exists public.get_all_registrants();
 create or replace function public.get_all_registrants()
 returns table (
   username text, email text, phone text, account_type text,
@@ -119,22 +120,6 @@ as $$
 $$;
 
 grant execute on function public.get_all_registrants() to authenticated;
-
--- دالة عامة: قائمة مقدمي الخدمة (لتصفّح طالبي الخدمة قبل مراسلتهم).
--- تُرجع فقط الاسم ونوع الخدمة — لا تكشف البريد أو الهاتف أو بيانات الدفع.
-create or replace function public.get_providers()
-returns table (id uuid, username text, provider_service_type text)
-language sql
-security definer
-set search_path = public
-stable
-as $$
-  select id, username, provider_service_type
-  from public.profiles
-  where account_type = 'provider';
-$$;
-
-grant execute on function public.get_providers() to anon, authenticated;
 
 -- ============================================================
 -- طلبات الخدمة
@@ -188,6 +173,7 @@ create policy "insert_own_request_files" on public.service_request_files
     exists (select 1 from public.service_requests r where r.id = request_id and r.seeker_id = auth.uid())
   );
 
+drop function if exists public.get_all_service_requests();
 create or replace function public.get_all_service_requests()
 returns table (
   id uuid, seeker_username text, academic_level text, specialization text,
@@ -256,6 +242,26 @@ drop policy if exists "seeker_creates_conversation" on public.conversations;
 create policy "seeker_creates_conversation" on public.conversations
   for insert with check (seeker_id = auth.uid());
 
+-- علامة استلام الخدمة — يضبطها الطالب فقط، عبر الدالة أدناه فقط (لا توجد
+-- سياسة UPDATE عامة على هذا الجدول، متعمّد: لمنع أي طرف من تعديل أي عمود
+-- آخر في محادثته، مثل تحويلها لمقدم خدمة مختلف)
+alter table public.conversations add column if not exists completed_at timestamptz;
+
+create or replace function public.mark_conversation_completed(p_conversation_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.conversations
+  set completed_at = now()
+  where id = p_conversation_id and seeker_id = auth.uid() and completed_at is null;
+end;
+$$;
+
+grant execute on function public.mark_conversation_completed(uuid) to authenticated;
+
 create table if not exists public.messages (
   id uuid primary key default gen_random_uuid(),
   conversation_id uuid not null references public.conversations(id) on delete cascade,
@@ -305,6 +311,98 @@ create policy "manage_own_read_markers" on public.conversation_reads
   for all using (user_id = auth.uid())
   with check (user_id = auth.uid());
 
+-- ============================================================
+-- تقييمات مقدمي الخدمة — يضعها الطالب بعد تأكيد استلام الخدمة فقط
+-- ============================================================
+create table if not exists public.provider_reviews (
+  id uuid primary key default gen_random_uuid(),
+  conversation_id uuid not null references public.conversations(id) on delete cascade,
+  seeker_id uuid not null references auth.users(id) on delete cascade,
+  provider_id uuid not null references auth.users(id) on delete cascade,
+  rating smallint not null check (rating between 1 and 5),
+  comment text,
+  created_at timestamptz not null default now(),
+  unique (conversation_id)
+);
+
+create index if not exists provider_reviews_provider_idx on public.provider_reviews (provider_id);
+
+alter table public.provider_reviews enable row level security;
+
+-- التقييمات مرئية للجميع (حتى الزوار) حتى يستفيد طالبو الخدمة منها قبل التسجيل
+drop policy if exists "reviews_public_read" on public.provider_reviews;
+create policy "reviews_public_read" on public.provider_reviews
+  for select using (true);
+
+-- لا يمكن التقييم إلا من الطالب صاحب المحادثة، وفقط بعد أن يؤكد استلام
+-- الخدمة (completed_at غير فارغ)، ومقدم الخدمة بالتقييم يجب أن يطابق
+-- مقدم الخدمة الفعلي في تلك المحادثة تحديدًا
+drop policy if exists "seeker_reviews_completed_conversation" on public.provider_reviews;
+create policy "seeker_reviews_completed_conversation" on public.provider_reviews
+  for insert with check (
+    seeker_id = auth.uid()
+    and exists (
+      select 1 from public.conversations c
+      where c.id = conversation_id
+      and c.seeker_id = auth.uid()
+      and c.provider_id = provider_reviews.provider_id
+      and c.completed_at is not null
+    )
+  );
+
+-- دالة عامة: قائمة مقدمي الخدمة (لتصفّح طالبي الخدمة قبل مراسلتهم).
+-- تُرجع الاسم ونوع الخدمة وعدد الخدمات المكتملة ومتوسط التقييم وعددها —
+-- لا تكشف البريد أو الهاتف أو بيانات الدفع.
+drop function if exists public.get_providers();
+create or replace function public.get_providers()
+returns table (
+  id uuid, username text, provider_service_type text,
+  completed_count bigint, avg_rating numeric, review_count bigint
+)
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select
+    p.id, p.username, p.provider_service_type,
+    coalesce(cc.completed_count, 0),
+    round(coalesce(rv.avg_rating, 0)::numeric, 1),
+    coalesce(rv.review_count, 0)
+  from public.profiles p
+  left join lateral (
+    select count(*) as completed_count
+    from public.conversations c
+    where c.provider_id = p.id and c.completed_at is not null
+  ) cc on true
+  left join lateral (
+    select avg(rating) as avg_rating, count(*) as review_count
+    from public.provider_reviews r
+    where r.provider_id = p.id
+  ) rv on true
+  where p.account_type = 'provider';
+$$;
+
+grant execute on function public.get_providers() to anon, authenticated;
+
+-- دالة: تقييمات مقدم خدمة محدد (للعرض التفصيلي)
+drop function if exists public.get_provider_reviews(uuid);
+create or replace function public.get_provider_reviews(p_provider_id uuid)
+returns table (seeker_username text, rating smallint, comment text, created_at timestamptz)
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select p.username, r.rating, r.comment, r.created_at
+  from public.provider_reviews r
+  join public.profiles p on p.id = r.seeker_id
+  where r.provider_id = p_provider_id
+  order by r.created_at desc;
+$$;
+
+grant execute on function public.get_provider_reviews(uuid) to anon, authenticated;
+
 -- تفعيل التحديث اللحظي (Realtime) على جدول الرسائل — بشكل آمن لإعادة التنفيذ
 do $$
 begin
@@ -317,11 +415,12 @@ begin
 end $$;
 
 -- دالة: محادثاتي الخاصة (بغض النظر إن كنت طالب أو مقدم خدمة فيها)
+drop function if exists public.get_my_conversations();
 create or replace function public.get_my_conversations()
 returns table (
   id uuid, other_username text, other_id uuid, my_role text,
   last_message text, last_message_at timestamptz, created_at timestamptz,
-  unread boolean
+  unread boolean, completed_at timestamptz, reviewed boolean
 )
 language sql
 security definer
@@ -337,7 +436,9 @@ as $$
     lm.created_at,
     c.created_at,
     coalesce(lm.created_at, c.created_at) > coalesce(cr.last_read_at, 'epoch'::timestamptz)
-      and coalesce(lm.sender_id, auth.uid()) != auth.uid()
+      and coalesce(lm.sender_id, auth.uid()) != auth.uid(),
+    c.completed_at,
+    exists (select 1 from public.provider_reviews r where r.conversation_id = c.id)
   from public.conversations c
   join public.profiles ps on ps.id = c.seeker_id
   join public.profiles pp on pp.id = c.provider_id
@@ -356,6 +457,7 @@ $$;
 grant execute on function public.get_my_conversations() to authenticated;
 
 -- دالة: كل المحادثات مع أسماء الطرفين — للمشرف فقط
+drop function if exists public.get_all_conversations_admin();
 create or replace function public.get_all_conversations_admin()
 returns table (
   id uuid, seeker_username text, provider_username text,
