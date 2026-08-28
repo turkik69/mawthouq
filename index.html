@@ -42,9 +42,9 @@
       <button onclick="openRequest('منهجية البحث')">🔬 منهجية البحث</button>
       <button onclick="openRequest('التدقيق الأكاديمي')">✍️ التدقيق الأكاديمي</button>
     </div>
-    <div class="match">
-      <div class="match-head"><span>مطابقة ذكية</span><strong>96%</strong></div>
-      <div class="person"><div class="avatar">د</div><div class="info"><b>د. أحمد محمد</b><small>إدارة عامة · SPSS</small></div><span>⭐ 4.9</span></div>
+    <div class="match" id="heroMatch">
+      <div class="match-head"><span>مقدّم خدمة موثّق</span></div>
+      <div class="person" id="heroMatchPerson"><small style="color:var(--muted)">جارٍ التحميل...</small></div>
     </div>
   </div>
 </section>
@@ -116,7 +116,7 @@ show(`<h2>إنشاء طلب خدمة</h2>
 <form id="reqForm">
 <div class="form">
 <div class="field"><label>المرحلة العلمية</label><select id="reqLevel"><option>بكالوريوس</option><option>ماجستير</option><option>دكتوراه</option></select></div>
-<div class="field"><label>التخصص</label><input id="reqSpecialization" placeholder="مثال: الإدارة العامة"></div>
+<div class="field"><label>التخصص</label><select id="reqSpecialization"><option>الإدارة</option><option>التربية</option><option>القانون</option><option>الاقتصاد</option><option>الهندسة</option><option>تقنية المعلومات</option><option>العلوم الاجتماعية</option><option>العلوم الإنسانية</option></select></div>
 <div class="field full"><label>الخدمة المطلوبة</label><select id="reqServiceType">
 <option>${service||'اختر الخدمة'}</option><option>الاستشارات البحثية</option><option>الدراسات السابقة</option><option>الإطار النظري</option><option>منهجية البحث</option><option>التحليل الإحصائي</option><option>تقارير</option><option>التدقيق الأكاديمي</option><option>الترجمة الأكاديمية</option><option>التنسيق والمراجع</option></select></div>
 <div class="field full"><label>عنوان البحث</label><input id="reqTitle" placeholder="عنوان البحث"></div>
@@ -181,20 +181,37 @@ card.style.display=!q||card.dataset.name.toLowerCase().includes(q)?'block':'none
 
 async function loadProviders(){
   const grid = document.getElementById('expertsGrid');
+  const heroPerson = document.getElementById('heroMatchPerson');
   const { data: providers, error } = await supabaseClient.rpc('get_providers');
+
   if (error || !providers || providers.length === 0) {
-    grid.innerHTML = '<p style="text-align:center;color:var(--muted);grid-column:1/-1">لا يوجد مقدمو خدمة مسجّلون بعد.</p>';
+    grid.innerHTML = '<p style="text-align:center;color:var(--muted);grid-column:1/-1">لا يوجد مقدمو خدمة مسجّلون بعد — كوني أول من يسجّل!</p>';
+    document.getElementById('heroMatch').style.display = 'none';
     return;
   }
+
   grid.innerHTML = providers.map(p => `
     <article class="expert">
       <div class="avatar">${escapeHtmlLite((p.username||'؟').charAt(0))}</div>
       <h3>${escapeHtmlLite(p.username)}</h3>
       <p>${escapeHtmlLite(p.provider_service_type || 'خبير أكاديمي')}</p>
+      <b style="font-size:13px">${ratingLine(p)}</b>
       <label class="verified">✓ خبير موثق</label>
       <div style="margin-top:12px"><button class="outline" onclick="messageProvider('${p.id}')">راسل</button></div>
     </article>
   `).join('');
+
+  const top = [...providers].sort((a, b) => (b.avg_rating - a.avg_rating) || (b.completed_count - a.completed_count))[0];
+  heroPerson.innerHTML = `
+    <div class="avatar">${escapeHtmlLite((top.username||'؟').charAt(0))}</div>
+    <div class="info"><b>${escapeHtmlLite(top.username)}</b><small>${escapeHtmlLite(top.provider_service_type || 'خبير أكاديمي')}</small></div>
+    <span>${ratingLine(top)}</span>
+  `;
+}
+
+function ratingLine(p){
+  if (!p.review_count) return `${p.completed_count} خدمة مكتملة`;
+  return `⭐ ${p.avg_rating} (${p.review_count}) · ${p.completed_count} خدمة`;
 }
 
 async function messageProvider(providerId){
