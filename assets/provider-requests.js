@@ -23,6 +23,7 @@ let allRequests = [];
 
   await loadRequests();
   applyFilters();
+  initMessageNotifications();
 })();
 
 async function loadRequests(){

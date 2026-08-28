@@ -26,6 +26,7 @@ let conversationsCache = [];
     }
 
     document.getElementById('sendForm').addEventListener('submit', sendMessage);
+    initMessageNotifications();
   } catch (err) {
     document.getElementById('convItems').innerHTML =
       `<p style="color:var(--red);padding:0 4px">حدث خطأ أثناء التحميل: ${escapeHtml(err.message || String(err))}</p>`;
