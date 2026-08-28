@@ -172,7 +172,7 @@ form.addEventListener('submit', async (e) => {
       providerServiceType: accountType === 'provider' ? providerServiceType : null
     });
     showSuccess('تم إنشاء الحساب بنجاح. جارٍ تحويلك...');
-    setTimeout(() => window.location.href = 'index.html', 1200);
+    setTimeout(() => redirectAfterAuth(), 1200);
   } catch (err) {
     showError(err.message);
     submitBtn.disabled = false;

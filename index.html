@@ -240,6 +240,7 @@ function escapeHtmlLite(str){
     actions.innerHTML = `
       <span style="color:var(--muted);font-size:14px">مرحبًا، ${escapeHtmlLite(profile.username)}</span>
       <a href="messages.html" class="ghost btn">${unreadBadge}رسائلي</a>
+      ${profile.account_type === 'provider' ? '<a href="provider-requests.html" class="outline btn">طلبات الخدمة</a>' : ''}
       ${profile.is_admin ? '<a href="admin.html" class="outline btn">لوحة التحكم</a>' : ''}
       <button class="ghost" onclick="logoutUser()">خروج</button>
       <button onclick="openRequest()">اطلب خدمة</button>

@@ -66,7 +66,7 @@ form.addEventListener('submit', async (e) => {
 
   try {
     await loginUser({ username, password });
-    window.location.href = 'index.html';
+    await redirectAfterAuth();
   } catch (err) {
     showError(err.message);
     submitBtn.disabled = false;
