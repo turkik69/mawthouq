@@ -101,19 +101,31 @@ async function redirectAfterAuth() {
   }
 }
 
-// إشعارات الرسائل الجديدة — تعمل ما دام الموقع مفتوحًا (حتى بتبويب أو تطبيق
-// آخر بالخلفية). لا تعمل إن كان المتصفح مغلقًا تمامًا؛ ذاك يحتاج بنية تحتية
-// منفصلة (Edge Function + service worker) — أخبريني إن رغبتِ بها لاحقًا.
+// إشعارات الرسائل الجديدة — نظام حقيقي (Web Push) عبر service worker.
+// تصل حتى لو كان الموقع غير مفتوح، طالما المتصفح مثبّت (وعلى آيفون: فقط إذا
+// كان الموقع مضافًا لـ"الشاشة الرئيسية" — قيد من آبل نفسها، لا علاقة للكود به).
+const VAPID_PUBLIC_KEY = 'BD6ITIJ6l8uTqjVblDfTz4ysQsQvGSdQubEFChrW4C_rpQi6Bj2tG1oF2JjuhlCx5RKzLWP56ACznvYCYgSq9MY';
+
 let __notificationChannel = null;
 
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0)));
+}
+
 async function initMessageNotifications() {
-  if (!('Notification' in window)) return;
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) return;
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) return;
   const userId = session.user.id;
 
+  // نشترك أيضًا بتحديث حي للرسائل — يحدّث البادج وينبّه فورًا أثناء التصفح
+  subscribeToRealtimeMessages(userId);
+
   if (Notification.permission === 'granted') {
-    subscribeToNewMessages(userId);
+    await subscribeToPush(userId);
   } else if (Notification.permission === 'default' && !localStorage.getItem('notifyPromptDismissed')) {
     showNotificationPrompt(userId);
   }
@@ -135,7 +147,7 @@ function showNotificationPrompt(userId) {
   document.getElementById('notifyEnableBtn').addEventListener('click', async () => {
     const permission = await Notification.requestPermission();
     banner.remove();
-    if (permission === 'granted') subscribeToNewMessages(userId);
+    if (permission === 'granted') await subscribeToPush(userId);
   });
   document.getElementById('notifyDismissBtn').addEventListener('click', () => {
     localStorage.setItem('notifyPromptDismissed', '1');
@@ -143,7 +155,34 @@ function showNotificationPrompt(userId) {
   });
 }
 
-function subscribeToNewMessages(userId) {
+async function subscribeToPush(userId) {
+  try {
+    const registration = await navigator.serviceWorker.register('/sw.js');
+    await navigator.serviceWorker.ready;
+
+    let subscription = await registration.pushManager.getSubscription();
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+    }
+
+    const sub = subscription.toJSON();
+    await supabaseClient.from('push_subscriptions').upsert({
+      user_id: userId,
+      endpoint: sub.endpoint,
+      p256dh: sub.keys.p256dh,
+      auth_key: sub.keys.auth
+    }, { onConflict: 'endpoint' });
+  } catch (err) {
+    console.error('push subscription failed:', err);
+  }
+}
+
+// تحديث حي أثناء التصفح (بادج + نافذة Notification داخل المتصفح نفسه إن كان
+// التبويب غير ظاهر حاليًا) — منفصل عن Push الحقيقي، ويعمل فورًا بدون انتظار
+function subscribeToRealtimeMessages(userId) {
   if (__notificationChannel) return;
   __notificationChannel = supabaseClient
     .channel('global-message-notifications')
