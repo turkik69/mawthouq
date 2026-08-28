@@ -23,26 +23,71 @@
 
 <main style="padding:34px 7%">
   <div class="heading">
-    <div><div class="eyebrow">لوحة المشرف</div><h2 style="margin:5px 0">المستخدمون المسجّلون</h2></div>
+    <div><div class="eyebrow">لوحة المشرف</div><h2 style="margin:5px 0">لوحة موثوق</h2></div>
   </div>
 
-  <div class="stat-row">
-    <div class="stat-card"><b id="totalCount">—</b><span>إجمالي المسجّلين</span></div>
-    <div class="stat-card"><b id="providerCount">—</b><span>مقدمو الخدمة</span></div>
-    <div class="stat-card"><b id="todayCount">—</b><span>تسجيلات اليوم</span></div>
-    <div class="stat-card"><b id="weekCount">—</b><span>آخر 7 أيام</span></div>
+  <div class="admin-tabs">
+    <button class="tab-btn active" id="tabBtnUsers" onclick="switchAdminTab('users')">المسجّلون</button>
+    <button class="tab-btn" id="tabBtnRequests" onclick="switchAdminTab('requests')">طلبات الخدمة</button>
+    <button class="tab-btn" id="tabBtnConversations" onclick="switchAdminTab('conversations')">المحادثات</button>
   </div>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr><th>اسم المستخدم</th><th>نوع الحساب</th><th>البريد الإلكتروني</th><th>رقم الهاتف</th><th>بيانات الدفع</th><th>تاريخ التسجيل</th><th>الصلاحية</th></tr>
-      </thead>
-      <tbody id="usersBody">
-        <tr><td colspan="7"><div class="skeleton" style="width:100%"></div></td></tr>
-      </tbody>
-    </table>
-    <div id="emptyState" class="empty-state" style="display:none">لا يوجد مستخدمون مسجّلون بعد.</div>
+  <div id="tab-users" class="admin-tab active">
+    <div class="stat-row">
+      <div class="stat-card"><b id="totalCount">—</b><span>إجمالي المسجّلين</span></div>
+      <div class="stat-card"><b id="providerCount">—</b><span>مقدمو الخدمة</span></div>
+      <div class="stat-card"><b id="todayCount">—</b><span>تسجيلات اليوم</span></div>
+      <div class="stat-card"><b id="weekCount">—</b><span>آخر 7 أيام</span></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>اسم المستخدم</th><th>نوع الحساب</th><th>الخدمة المقدَّمة</th><th>البريد الإلكتروني</th><th>رقم الهاتف</th><th>بيانات الدفع</th><th>تاريخ التسجيل</th><th>الصلاحية</th></tr>
+        </thead>
+        <tbody id="usersBody">
+          <tr><td colspan="8"><div class="skeleton" style="width:100%"></div></td></tr>
+        </tbody>
+      </table>
+      <div id="emptyState" class="empty-state" style="display:none">لا يوجد مستخدمون مسجّلون بعد.</div>
+    </div>
+  </div>
+
+  <div id="tab-requests" class="admin-tab">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>الطالب</th><th>الخدمة</th><th>المرحلة / التخصص</th><th>العنوان والتفاصيل</th><th>الملفات المرفقة</th><th>تاريخ الطلب</th></tr>
+        </thead>
+        <tbody id="requestsBody">
+          <tr><td colspan="6"><div class="skeleton" style="width:100%"></div></td></tr>
+        </tbody>
+      </table>
+      <div id="requestsEmptyState" class="empty-state" style="display:none">لا يوجد طلبات خدمة بعد.</div>
+    </div>
+  </div>
+
+  <div id="tab-conversations" class="admin-tab">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>طالب الخدمة</th><th>مقدم الخدمة</th><th>الطلب المرتبط</th><th>آخر رسالة</th><th>وقت آخر رسالة</th></tr>
+        </thead>
+        <tbody id="conversationsBody">
+          <tr><td colspan="5"><div class="skeleton" style="width:100%"></div></td></tr>
+        </tbody>
+      </table>
+      <div id="conversationsEmptyState" class="empty-state" style="display:none">لا يوجد محادثات بعد.</div>
+    </div>
+    <div id="conversationThreadView" style="display:none;margin-top:20px">
+      <div class="table-wrap" style="padding:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <b id="threadTitle"></b>
+          <button class="outline" onclick="closeThreadView()">إغلاق</button>
+        </div>
+        <div id="threadMessages" style="display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto"></div>
+      </div>
+    </div>
   </div>
 </main>
 

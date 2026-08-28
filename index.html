@@ -75,15 +75,13 @@
 
 <section id="experts">
   <div class="center"><div class="eyebrow">خبراؤنا</div><h2>خبراء موثوقون</h2></div>
-  <div class="expert-grid">
-    <article class="expert"><div class="avatar">د</div><h3>د. أحمد محمد</h3><p>دكتوراه في الإدارة العامة</p><b>⭐ 4.9 · 126 مشروعًا</b><label class="verified">✓ خبير موثق</label></article>
-    <article class="expert"><div class="avatar">أ</div><h3>أ. سارة علي</h3><p>مناهج البحث والتدقيق الأكاديمي</p><b>⭐ 4.8 · 94 مشروعًا</b><label class="verified">✓ خبير موثق</label></article>
-    <article class="expert"><div class="avatar">د</div><h3>د. خالد سالم</h3><p>إحصاء تطبيقي وSPSS</p><b>⭐ 4.9 · 118 مشروعًا</b><label class="verified">✓ خبير موثق</label></article>
+  <div class="expert-grid" id="expertsGrid">
+    <p style="text-align:center;color:var(--muted);grid-column:1/-1">جارٍ التحميل...</p>
   </div>
 </section>
 
 <section class="cta">
-  <div><div class="eyebrow">ابدأ الآن</div><h2>حوّل احتياجك الأكاديمي إلى طلب واضح.</h2><p>هذه نسخة MVP أولية قابلة للتطوير إلى منصة كاملة.</p></div>
+  <div><div class="eyebrow">ابدأ الآن</div><h2>حوّل احتياجك الأكاديمي إلى طلب واضح.</h2></div>
   <button class="white large" onclick="openRequest()">إنشاء طلب خدمة</button>
 </section>
 </main>
@@ -91,7 +89,7 @@
 <footer>
   <div class="brand"><span class="brand-mark">م</span><span>منصة موثوق</span></div>
   <p>منصة دعم وخدمات أكاديمية مسؤولة.</p>
-  <small>© 2026 موثوق — Prototype</small>
+  <small>© 2026 موثوق</small>
 </footer>
 
 <div id="modal" class="modal" onclick="backdrop(event)">
@@ -107,39 +105,71 @@ function show(html){body.innerHTML=html;modal.classList.add('show')}
 function closeModal(){modal.classList.remove('show')}
 function backdrop(e){if(e.target===modal)closeModal()}
 
-// --- طلب خدمة: تبقى وظيفة تجريبية كما في النسخة الأصلية (لم يُطلب ربطها بقاعدة البيانات) ---
-function openRequest(service=''){
+// --- طلب خدمة: يتطلب تسجيل دخول، يُحفظ فعليًا في قاعدة البيانات مع الملفات المرفقة ---
+async function openRequest(service=''){
+const { data: { session } } = await supabaseClient.auth.getSession();
+if (!session) { window.location.href = 'login.html'; return; }
+
 show(`<h2>إنشاء طلب خدمة</h2>
+<div id="reqAlert" class="alert alert-error"></div>
 <div class="notice">اكتب احتياجك بوضوح ليتم ترشيح الخبراء المناسبين.<br><br><b>كيف يعمل التواصل مع مقدم الخدمة؟</b><br>• <b>اطلب الخدمة:</b> راجع وصف الخدمة وتقييمات المشترين ثم اطلبها لفتح تواصل مع البائع.<br>• أو <b>تواصل مع البائع مباشرة</b> داخل منصة موثوق حتى استلام طلبك كاملاً.</div>
+<form id="reqForm">
 <div class="form">
-<div class="field"><label>المرحلة العلمية</label><select><option>بكالوريوس</option><option>ماجستير</option><option>دكتوراه</option></select></div>
-<div class="field"><label>التخصص</label><input placeholder="مثال: الإدارة العامة"></div>
-<div class="field full"><label>الخدمة المطلوبة</label><select id="serviceSelect">
+<div class="field"><label>المرحلة العلمية</label><select id="reqLevel"><option>بكالوريوس</option><option>ماجستير</option><option>دكتوراه</option></select></div>
+<div class="field"><label>التخصص</label><input id="reqSpecialization" placeholder="مثال: الإدارة العامة"></div>
+<div class="field full"><label>الخدمة المطلوبة</label><select id="reqServiceType">
 <option>${service||'اختر الخدمة'}</option><option>الاستشارات البحثية</option><option>الدراسات السابقة</option><option>الإطار النظري</option><option>منهجية البحث</option><option>التحليل الإحصائي</option><option>تقارير</option><option>التدقيق الأكاديمي</option><option>الترجمة الأكاديمية</option><option>التنسيق والمراجع</option></select></div>
-<div class="field full"><label>عنوان البحث</label><input placeholder="عنوان البحث"></div>
-<div class="field full"><label>تفاصيل الطلب</label><textarea placeholder="ما الذي تحتاجه تحديدًا؟"></textarea></div>
-<div class="field full"><label>إرفاق الملفات</label><input type="file" multiple></div>
+<div class="field full"><label>عنوان البحث</label><input id="reqTitle" placeholder="عنوان البحث"></div>
+<div class="field full"><label>تفاصيل الطلب</label><textarea id="reqDetails" placeholder="ما الذي تحتاجه تحديدًا؟"></textarea></div>
+<div class="field full"><label>إرفاق الملفات</label><input id="reqFiles" type="file" multiple accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.jpg,.jpeg,.png"><small style="color:var(--muted);font-size:12px">حتى 20 ميغابايت لكل ملف</small></div>
 </div>
-<div class="form-actions"><button onclick="submitted()">نشر الطلب</button><button class="outline" onclick="closeModal()">إلغاء</button></div>`);
+<div class="form-actions"><button type="submit" id="reqSubmitBtn"><span class="spinner"></span>نشر الطلب</button><button type="button" class="outline" onclick="closeModal()">إلغاء</button></div>
+</form>`);
+
+document.getElementById('reqForm').addEventListener('submit', submitRequest);
 }
 
-function submitted(){
-show(`<div style="text-align:center;padding:25px"><div style="font-size:48px">✓</div><h2>تم إنشاء الطلب بنجاح</h2><p>رقم الطلب التجريبي: <b>MW-2026-00125</b></p><p style="color:#69758b">سيقوم نظام المطابقة الذكية بترشيح الخبراء المناسبين.</p><button onclick="matches()">عرض الخبراء المقترحين</button></div>`);
+async function submitRequest(e){
+e.preventDefault();
+const alertBox = document.getElementById('reqAlert');
+const btn = document.getElementById('reqSubmitBtn');
+alertBox.className = 'alert alert-error';
+btn.disabled = true; btn.classList.add('loading');
+
+const { data: { session } } = await supabaseClient.auth.getSession();
+if (!session) { window.location.href = 'login.html'; return; }
+
+const payload = {
+  seeker_id: session.user.id,
+  academic_level: document.getElementById('reqLevel').value,
+  specialization: document.getElementById('reqSpecialization').value.trim(),
+  service_type: document.getElementById('reqServiceType').value,
+  title: document.getElementById('reqTitle').value.trim(),
+  details: document.getElementById('reqDetails').value.trim()
+};
+
+const { data: reqRow, error: reqError } = await supabaseClient.from('service_requests').insert(payload).select().single();
+
+if (reqError) {
+  alertBox.textContent = 'تعذر إرسال الطلب: ' + reqError.message;
+  alertBox.className = 'alert alert-error show';
+  btn.disabled = false; btn.classList.remove('loading');
+  return;
 }
 
-function matches(){
-const data=[
-['د. أحمد محمد','إدارة عامة · SPSS','96%','40 ر.ع','3 أيام'],
-['د. خالد سالم','إحصاء تطبيقي · SPSS','91%','35 ر.ع','يومان'],
-['أ. سارة علي','مناهج البحث','84%','30 ر.ع','4 أيام']
-];
-show(`<h2>خبراء مناسبون لطلبك 🎯</h2><div class="notice">المطابقة التجريبية تجمع بين التخصص والخدمة والخبرة والتقييم والموعد.</div>`+
-data.map(x=>`<div style="border:1px solid #e5eaf2;border-radius:14px;padding:14px;margin:10px 0;display:flex;align-items:center;gap:10px">
-<div class="avatar">${x[0][2]}</div><div style="flex:1"><b>${x[0]}</b><small style="display:block;color:#69758b">${x[1]} · ${x[2]} تطابق · ${x[4]}</small></div><b>${x[3]}</b><button onclick="done('تم اختيار الخبير تجريبيًا')">اختيار</button></div>`).join(''));
+const files = document.getElementById('reqFiles').files;
+let fileErrors = 0;
+for (let i = 0; i < files.length; i++) {
+  const file = files[i];
+  if (file.size > 20 * 1024 * 1024) { fileErrors++; continue; }
+  const path = `${session.user.id}/${reqRow.id}/${file.name}`;
+  const { error: uploadError } = await supabaseClient.storage.from('request-files').upload(path, file);
+  if (uploadError) { fileErrors++; continue; }
+  await supabaseClient.from('service_request_files').insert({ request_id: reqRow.id, file_path: path, file_name: file.name });
 }
 
-function done(msg){
-show(`<div style="text-align:center;padding:28px"><div style="font-size:46px">✓</div><h2>${msg}</h2><p style="color:#69758b">هذه وظيفة تجريبية في نسخة MVP.</p><button onclick="closeModal()">إغلاق</button></div>`);
+btn.disabled = false; btn.classList.remove('loading');
+show(`<div style="text-align:center;padding:28px"><div style="font-size:48px">✓</div><h2>تم إرسال طلبك بنجاح</h2><p style="color:var(--muted)">سيراجع فريق موثوق طلبك ويوصلك بالخبير المناسب.${fileErrors ? '<br><span style="color:var(--red)">تعذر رفع '+fileErrors+' ملف، حاول إرفاقه لاحقًا.</span>' : ''}</p><button onclick="closeModal()">إغلاق</button></div>`);
 }
 
 function filterServices(q){
@@ -148,6 +178,31 @@ document.querySelectorAll('#serviceGrid .service').forEach(card=>{
 card.style.display=!q||card.dataset.name.toLowerCase().includes(q)?'block':'none';
 });
 }
+
+async function loadProviders(){
+  const grid = document.getElementById('expertsGrid');
+  const { data: providers, error } = await supabaseClient.rpc('get_providers');
+  if (error || !providers || providers.length === 0) {
+    grid.innerHTML = '<p style="text-align:center;color:var(--muted);grid-column:1/-1">لا يوجد مقدمو خدمة مسجّلون بعد.</p>';
+    return;
+  }
+  grid.innerHTML = providers.map(p => `
+    <article class="expert">
+      <div class="avatar">${escapeHtmlLite((p.username||'؟').charAt(0))}</div>
+      <h3>${escapeHtmlLite(p.username)}</h3>
+      <p>${escapeHtmlLite(p.provider_service_type || 'خبير أكاديمي')}</p>
+      <label class="verified">✓ خبير موثق</label>
+      <div style="margin-top:12px"><button class="outline" onclick="messageProvider('${p.id}')">راسل</button></div>
+    </article>
+  `).join('');
+}
+
+async function messageProvider(providerId){
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return; }
+  window.location.href = 'messages.html?with=' + encodeURIComponent(providerId);
+}
+loadProviders();
 
 // --- حالة الدخول الحقيقية في الترويسة (تحل محل نافذة الدخول التجريبية السابقة) ---
 function escapeHtmlLite(str){
@@ -160,8 +215,14 @@ function escapeHtmlLite(str){
   const profile = await getCurrentProfile();
   const actions = document.getElementById('headerActions');
   if (profile) {
+    let unreadBadge = '';
+    const { data: convs } = await supabaseClient.rpc('get_my_conversations');
+    const unreadCount = (convs || []).filter(c => c.unread).length;
+    if (unreadCount > 0) unreadBadge = `<span class="unread-badge">${unreadCount}</span>`;
+
     actions.innerHTML = `
       <span style="color:var(--muted);font-size:14px">مرحبًا، ${escapeHtmlLite(profile.username)}</span>
+      <a href="messages.html" class="ghost btn">${unreadBadge}رسائلي</a>
       ${profile.is_admin ? '<a href="admin.html" class="outline btn">لوحة التحكم</a>' : ''}
       <button class="ghost" onclick="logoutUser()">خروج</button>
       <button onclick="openRequest()">اطلب خدمة</button>
