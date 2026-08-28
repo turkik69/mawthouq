@@ -101,6 +101,78 @@ async function redirectAfterAuth() {
   }
 }
 
+// إشعارات الرسائل الجديدة — تعمل ما دام الموقع مفتوحًا (حتى بتبويب أو تطبيق
+// آخر بالخلفية). لا تعمل إن كان المتصفح مغلقًا تمامًا؛ ذاك يحتاج بنية تحتية
+// منفصلة (Edge Function + service worker) — أخبريني إن رغبتِ بها لاحقًا.
+let __notificationChannel = null;
+
+async function initMessageNotifications() {
+  if (!('Notification' in window)) return;
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+  const userId = session.user.id;
+
+  if (Notification.permission === 'granted') {
+    subscribeToNewMessages(userId);
+  } else if (Notification.permission === 'default' && !localStorage.getItem('notifyPromptDismissed')) {
+    showNotificationPrompt(userId);
+  }
+}
+
+function showNotificationPrompt(userId) {
+  if (document.getElementById('notifyPrompt')) return;
+  const banner = document.createElement('div');
+  banner.id = 'notifyPrompt';
+  banner.style.cssText = 'position:fixed;bottom:16px;left:16px;right:16px;max-width:420px;margin:0 auto;background:var(--navy,#14213d);color:#fff;padding:14px 18px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:200;box-shadow:0 10px 30px #0004;font-family:Cairo,Arial,sans-serif';
+  banner.innerHTML = `
+    <span style="font-size:13px">فعّل الإشعارات عشان توصلك الرسائل الجديدة</span>
+    <div style="display:flex;gap:6px;flex-shrink:0">
+      <button id="notifyEnableBtn" style="background:#fff;color:#14213d;border:0;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">تفعيل</button>
+      <button id="notifyDismissBtn" style="background:transparent;color:#fff;border:0;padding:6px;cursor:pointer;font-size:14px">✕</button>
+    </div>`;
+  document.body.appendChild(banner);
+
+  document.getElementById('notifyEnableBtn').addEventListener('click', async () => {
+    const permission = await Notification.requestPermission();
+    banner.remove();
+    if (permission === 'granted') subscribeToNewMessages(userId);
+  });
+  document.getElementById('notifyDismissBtn').addEventListener('click', () => {
+    localStorage.setItem('notifyPromptDismissed', '1');
+    banner.remove();
+  });
+}
+
+function subscribeToNewMessages(userId) {
+  if (__notificationChannel) return;
+  __notificationChannel = supabaseClient
+    .channel('global-message-notifications')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+      const msg = payload.new;
+      if (msg.sender_id === userId) return;
+      bumpUnreadBadge();
+      if (document.visibilityState === 'visible') return;
+      if (Notification.permission === 'granted') {
+        new Notification('رسالة جديدة على منصة موثوق', { body: (msg.content || '').slice(0, 100) });
+      }
+    })
+    .subscribe();
+}
+
+function bumpUnreadBadge(){
+  const link = document.querySelector('a[href="messages.html"]');
+  if (!link) return;
+  let badge = link.querySelector('.unread-badge');
+  if (badge) {
+    badge.textContent = (parseInt(badge.textContent, 10) || 0) + 1;
+  } else {
+    badge = document.createElement('span');
+    badge.className = 'unread-badge';
+    badge.textContent = '1';
+    link.prepend(badge);
+  }
+}
+
 function translateAuthError(message) {
   if (/profiles_username_key|duplicate key.*username/i.test(message)) {
     return 'اسم المستخدم مستخدم بالفعل، يرجى اختيار اسم آخر.';
