@@ -27,6 +27,38 @@
     <div id="alert" class="alert alert-error"></div>
 
     <form id="registerForm" novalidate>
+      <div class="field full">
+        <label>نوع الحساب</label>
+        <div class="type-choice" id="typeChoice">
+          <label class="type-option selected">
+            <input type="radio" name="accountType" value="seeker" checked>
+            <span class="type-option-title">أبحث عن خدمة</span>
+            <span class="type-option-sub">طالب خدمة</span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="accountType" value="provider">
+            <span class="type-option-title">أقدّم خدمة</span>
+            <span class="type-option-sub">مقدم خدمة</span>
+          </label>
+        </div>
+      </div>
+
+      <div id="providerFields" class="provider-fields" hidden>
+        <div class="notice"><b>لمقدمي الخدمة:</b> تحصل منصة موثوق على نسبة 10% من قيمة كل خدمة مقابل استخدام المنصة والدفع الآمن. المبلغ الذي يصلك هو القيمة بعد خصم هذه النسبة.</div>
+        <div class="field">
+          <label for="bankAccount">رقم الحساب البنكي</label>
+          <input id="bankAccount" name="bankAccount" type="text" placeholder="مثال: OM00 XXXX XXXX XXXX XXXX XX">
+        </div>
+        <div class="field">
+          <label for="paymentMethod">طريقة الدفع</label>
+          <select id="paymentMethod" name="paymentMethod">
+            <option value="bank_transfer">تحويل بنكي</option>
+            <option value="mobile_wallet">محفظة إلكترونية</option>
+            <option value="other">أخرى</option>
+          </select>
+        </div>
+      </div>
+
       <div class="field">
         <label for="username">اسم المستخدم</label>
         <input id="username" name="username" type="text" autocomplete="username" required>
@@ -61,6 +93,18 @@
 const form = document.getElementById('registerForm');
 const alertBox = document.getElementById('alert');
 const submitBtn = document.getElementById('submitBtn');
+const providerFields = document.getElementById('providerFields');
+const bankAccountInput = document.getElementById('bankAccount');
+
+document.querySelectorAll('input[name="accountType"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    document.querySelectorAll('.type-option').forEach(opt => opt.classList.remove('selected'));
+    radio.closest('.type-option').classList.add('selected');
+    const isProvider = radio.value === 'provider';
+    providerFields.hidden = !isProvider;
+    bankAccountInput.required = isProvider;
+  });
+});
 
 function showError(msg){
   alertBox.textContent = msg;
@@ -82,6 +126,9 @@ form.addEventListener('submit', async (e) => {
   const phone = document.getElementById('phone').value.trim();
   const password = document.getElementById('password').value;
   const confirmPassword = document.getElementById('confirmPassword').value;
+  const accountType = document.querySelector('input[name="accountType"]:checked').value;
+  const bankAccountNumber = document.getElementById('bankAccount').value.trim();
+  const paymentMethod = document.getElementById('paymentMethod').value;
 
   if (password !== confirmPassword) {
     showError('كلمتا المرور غير متطابقتين.');
@@ -95,9 +142,19 @@ form.addEventListener('submit', async (e) => {
     submitBtn.classList.remove('loading');
     return;
   }
+  if (accountType === 'provider' && !bankAccountNumber) {
+    showError('يرجى إدخال رقم الحساب البنكي.');
+    submitBtn.disabled = false;
+    submitBtn.classList.remove('loading');
+    return;
+  }
 
   try {
-    await registerUser({ username, password, email, phone });
+    await registerUser({
+      username, password, email, phone, accountType,
+      bankAccountNumber: accountType === 'provider' ? bankAccountNumber : null,
+      paymentMethod: accountType === 'provider' ? paymentMethod : null
+    });
     showSuccess('تم إنشاء الحساب بنجاح. جارٍ تحويلك...');
     setTimeout(() => window.location.href = 'index.html', 1200);
   } catch (err) {
