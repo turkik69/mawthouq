@@ -212,6 +212,27 @@ function bumpUnreadBadge(){
   }
 }
 
+// إشعار خفيف غير معيق — بديل عن alert() القياسي لتجربة أكثر سلاسة
+function showToast(message, type){
+  let host = document.getElementById('toastHost');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'toastHost';
+    host.style.cssText = 'position:fixed;top:16px;left:16px;right:16px;max-width:420px;margin:0 auto;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none';
+    document.body.appendChild(host);
+  }
+  const toast = document.createElement('div');
+  toast.className = 'toast toast-' + (type || 'success');
+  toast.textContent = message;
+  host.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('toast-in'));
+  setTimeout(() => {
+    toast.classList.remove('toast-in');
+    toast.classList.add('toast-out');
+    setTimeout(() => toast.remove(), 250);
+  }, 3200);
+}
+
 function translateAuthError(message) {
   if (/profiles_username_key|duplicate key.*username/i.test(message)) {
     return 'اسم المستخدم مستخدم بالفعل، يرجى اختيار اسم آخر.';

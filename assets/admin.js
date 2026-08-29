@@ -77,8 +77,9 @@ async function toggleSuspend(providerId, suspend){
     : 'إلغاء إيقاف هذا الحساب وإعادته للعمل؟';
   if (!confirm(msg)) return;
   const { error } = await supabaseClient.rpc('admin_set_provider_suspended', { p_provider_id: providerId, p_suspended: suspend });
-  if (error) { alert('تعذر التنفيذ: ' + error.message); return; }
+  if (error) { showToast('تعذر التنفيذ: ' + error.message, 'error'); return; }
   await loadRegistrants();
+  showToast(suspend ? 'تم إيقاف الحساب' : 'تم إلغاء الإيقاف', 'success');
 }
 
 function paymentInfo(u) {
@@ -278,8 +279,9 @@ function setPaymentStats(held, owed, fees){
 async function markPaidOut(paymentId){
   if (!confirm('تأكيد إرسال التحويل البنكي لمقدم الخدمة؟ هذا للتسجيل فقط ولا يرسل تحويلًا فعليًا.')) return;
   const { error } = await supabaseClient.rpc('mark_payment_paid_out', { p_payment_id: paymentId });
-  if (error) { alert('تعذر التحديث: ' + error.message); return; }
+  if (error) { showToast('تعذر التحديث: ' + error.message, 'error'); return; }
   await loadPaymentsAdmin();
+  showToast('تم تسجيل الدفعة كمحوَّلة', 'success');
 }
 
 /* ============ تبويب: الخدمات ============ */
@@ -312,20 +314,22 @@ async function loadServiceTypesAdmin(){
 async function addServiceType(){
   const input = document.getElementById('newServiceName');
   const name = input.value.trim();
-  if (!name) { alert('اكتب اسم الخدمة.'); return; }
+  if (!name) { showToast('اكتب اسم الخدمة.', 'error'); return; }
 
   const { error } = await supabaseClient.rpc('admin_add_service_type', { p_name: name });
-  if (error) { alert('تعذرت الإضافة: ' + error.message); return; }
+  if (error) { showToast('تعذرت الإضافة: ' + error.message, 'error'); return; }
 
   input.value = '';
   await loadServiceTypesAdmin();
+  showToast('تمت إضافة الخدمة للكتالوج', 'success');
 }
 
 async function removeServiceType(id, name){
   if (!confirm(`حذف "${name}" من قائمة الخدمات؟ لن يؤثر على الطلبات السابقة، لكن لن يعود يظهر كخيار جديد.`)) return;
   const { error } = await supabaseClient.rpc('admin_remove_service_type', { p_id: id });
-  if (error) { alert('تعذر الحذف: ' + error.message); return; }
+  if (error) { showToast('تعذر الحذف: ' + error.message, 'error'); return; }
   await loadServiceTypesAdmin();
+  showToast('تم حذف الخدمة من الكتالوج', 'success');
 }
 
 /* ============ أدوات مشتركة ============ */

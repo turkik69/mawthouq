@@ -69,23 +69,19 @@ async function loadConversations(){
 }
 
 async function openOrCreateConversation(otherId, requestId){
-  const existing = conversationsCache.find(c => c.other_id === otherId && !c.completed_at);
+  const existing = requestId
+    ? conversationsCache.find(c => c.request_id === requestId)
+    : conversationsCache.find(c => c.other_id === otherId && !c.completed_at);
   if (existing) {
     await openConversation(existing.id, existing.other_username);
     return;
   }
 
-  // نحتاج اسم الطرف الآخر لعرضه فورًا؛ نجلبه من مصدره المناسب حسب دوري
+  // نحتاج اسم الطرف الآخر لعرضه فورًا؛ نجلبه مباشرة من الملف الشخصي (يعمل
+  // بغض النظر عن حالة الطلب، بخلاف الاعتماد على قوائم "المفتوح فقط")
   let otherName = 'مستخدم';
-  if (currentUserRole === 'seeker') {
-    const { data: providers } = await supabaseClient.rpc('get_providers');
-    const match = (providers || []).find(p => p.id === otherId);
-    if (match) otherName = match.username;
-  } else {
-    const { data: requests } = await supabaseClient.rpc('get_open_requests_for_providers');
-    const match = (requests || []).find(r => r.seeker_id === otherId);
-    if (match) otherName = match.seeker_username;
-  }
+  const { data: fetchedName } = await supabaseClient.rpc('get_username', { p_user_id: otherId });
+  if (fetchedName) otherName = fetchedName;
 
   const payload = currentUserRole === 'provider'
     ? { seeker_id: otherId, provider_id: currentUserId, request_id: requestId || null }
@@ -165,9 +161,10 @@ async function markReceived(){
   const fileNote = files && files.length ? `تم تسليم ${files.length} ملف/ملفات ضمن هذه المحادثة. ` : 'لم يُسلَّم أي ملف ضمن هذه المحادثة بعد. ';
   if (!confirm(fileNote + 'هل تؤكد استلام العمل واكتماله؟ لا يمكن التراجع عن هذا لاحقًا.')) return;
   const { error } = await supabaseClient.rpc('mark_conversation_completed', { p_conversation_id: currentConversationId });
-  if (error) { alert('تعذر التأكيد: ' + error.message); return; }
+  if (error) { showToast('تعذر التأكيد: ' + error.message, 'error'); return; }
   await loadConversations();
   renderCompletionArea(currentConversationId);
+  showToast('تم تأكيد الاستلام — شكرًا لتقييمك القادم', 'success');
 }
 
 function showRatingForm(){
@@ -207,9 +204,10 @@ async function submitReview(){
     comment: comment || null
   });
 
-  if (error) { alert('تعذر إرسال التقييم: ' + error.message); return; }
+  if (error) { showToast('تعذر إرسال التقييم: ' + error.message, 'error'); return; }
   await loadConversations();
   renderCompletionArea(currentConversationId);
+  showToast('شكرًا لتقييمك!', 'success');
 }
 
 /* ============ الدفع ============ */
@@ -256,7 +254,7 @@ async function loadPaymentStatus(conversationId){
 async function startPayment(){
   const input = document.getElementById('paymentAmount');
   const amount = parseFloat(input.value);
-  if (!amount || amount <= 0) { alert('أدخل مبلغًا صحيحًا.'); return; }
+  if (!amount || amount <= 0) { showToast('أدخل مبلغًا صحيحًا.', 'error'); return; }
 
   const conv = conversationsCache.find(c => c.id === currentConversationId);
   if (!conv) return;
@@ -269,8 +267,9 @@ async function startPayment(){
     status: 'pending'
   });
 
-  if (error) { alert('تعذر بدء الدفع: ' + error.message); return; }
+  if (error) { showToast('تعذر بدء الدفع: ' + error.message, 'error'); return; }
   await loadPaymentStatus(currentConversationId);
+  showToast('تم تسجيل الدفعة', 'success');
 }
 
 /* ============ الملفات (استلام وتسليم) ============ */
@@ -346,12 +345,12 @@ async function renderFileLink(f, uploaderName){
 async function uploadDeliveryFile(){
   const input = document.getElementById('deliveryFileInput');
   const file = input.files[0];
-  if (!file) { alert('اختر ملفًا أولاً.'); return; }
-  if (file.size > 20 * 1024 * 1024) { alert('الحجم الأقصى 20 ميغابايت.'); return; }
+  if (!file) { showToast('اختر ملفًا أولاً.', 'error'); return; }
+  if (file.size > 20 * 1024 * 1024) { showToast('الحجم الأقصى 20 ميغابايت.', 'error'); return; }
 
   const path = `${currentUserId}/conv-${currentConversationId}/${file.name}`;
   const { error: uploadError } = await supabaseClient.storage.from('request-files').upload(path, file, { upsert: true });
-  if (uploadError) { alert('تعذر رفع الملف: ' + uploadError.message); return; }
+  if (uploadError) { showToast('تعذر رفع الملف: ' + uploadError.message, 'error'); return; }
 
   const { error: insertError } = await supabaseClient.from('conversation_files').insert({
     conversation_id: currentConversationId,
@@ -359,8 +358,9 @@ async function uploadDeliveryFile(){
     file_path: path,
     file_name: file.name
   });
-  if (insertError) { alert('تعذر تسجيل الملف: ' + insertError.message); return; }
+  if (insertError) { showToast('تعذر تسجيل الملف: ' + insertError.message, 'error'); return; }
 
+  showToast('تم تسليم الملف بنجاح', 'success');
   input.value = '';
   await loadFilesPanel(currentConversationId);
 }
@@ -380,6 +380,9 @@ async function loadMessages(conversationId){
 
   box.innerHTML = (messages || []).map(renderMessage).join('');
   box.scrollTop = box.scrollHeight;
+  box.classList.remove('pane-fade');
+  void box.offsetWidth; // إعادة تشغيل الأنيميشن حتى لو نفس العنصر
+  box.classList.add('pane-fade');
 }
 
 function renderMessage(m){

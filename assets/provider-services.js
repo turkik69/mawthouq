@@ -68,18 +68,20 @@ async function addProviderService(){
     price_omr: price
   }, { onConflict: 'provider_id,service_type_id' });
 
-  if (error) { alert('تعذر الإضافة: ' + error.message); return; }
+  if (error) { showToast('تعذر الإضافة: ' + error.message, 'error'); return; }
 
   document.getElementById('priceInput').value = '';
   await loadMyServices(session.user.id);
+  showToast('تمت إضافة الخدمة بنجاح', 'success');
 }
 
 async function removeProviderService(id){
   if (!confirm('حذف هذه الخدمة من قائمتك؟')) return;
   const { error } = await supabaseClient.from('provider_services').delete().eq('id', id);
-  if (error) { alert('تعذر الحذف: ' + error.message); return; }
+  if (error) { showToast('تعذر الحذف: ' + error.message, 'error'); return; }
   const { data: { session } } = await supabaseClient.auth.getSession();
   await loadMyServices(session.user.id);
+  showToast('تم حذف الخدمة', 'success');
 }
 
 function escapeHtml(str){
