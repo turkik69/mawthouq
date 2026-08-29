@@ -115,6 +115,50 @@ function closeModal(){
   document.getElementById('modal').classList.remove('show');
 }
 
+let archiveLoaded = false;
+
+function switchRequestsTab(name){
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('tabBtn' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+  if (name === 'archive' && !archiveLoaded) loadArchive();
+}
+
+async function loadArchive(){
+  archiveLoaded = true;
+  const { data, error } = await supabaseClient.rpc('get_my_accepted_requests');
+  const tbody = document.getElementById('archiveBody');
+  const empty = document.getElementById('archiveEmpty');
+
+  if (error) {
+    tbody.innerHTML = `<tr><td colspan="5" style="color:var(--red)">تعذر التحميل: ${escapeHtml(error.message)}</td></tr>`;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  const statusLabels = {
+    in_progress: '<span class="payment-status held">قيد المعالجة</span>',
+    completed: '<span class="payment-status released">مكتمل</span>',
+    open: '<span class="payment-status pending">مفتوح</span>'
+  };
+
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td>${escapeHtml(r.title || '—')}</td>
+      <td>${escapeHtml(r.service_type)}</td>
+      <td>${escapeHtml(r.seeker_username)}</td>
+      <td>${statusLabels[r.status] || escapeHtml(r.status)}</td>
+      <td>${formatDate(r.created_at)}</td>
+    </tr>
+  `).join('');
+}
+
 async function contactSeeker(seekerId, requestId){
   window.location.href = `messages.html?with=${encodeURIComponent(seekerId)}&request=${encodeURIComponent(requestId)}`;
 }
