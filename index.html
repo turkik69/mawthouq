@@ -24,22 +24,22 @@
 
 <main>
 <section class="hero" style="position:relative;overflow:hidden">
-  <svg viewBox="0 0 220 220" style="position:absolute;left:-40px;bottom:-60px;width:320px;opacity:.08;pointer-events:none" aria-hidden="true">
+  <svg viewBox="0 0 220 220" style="position:absolute;left:-40px;bottom:-60px;width:320px;opacity:.08;pointer-events:none;z-index:0" aria-hidden="true">
     <circle cx="110" cy="110" r="100" fill="none" stroke="#d4af6a" stroke-width="1.5"/>
     <circle cx="110" cy="110" r="90" fill="none" stroke="#d4af6a" stroke-width="3" stroke-dasharray="3 8"/>
     <path d="M77,112 L99,133 L144,83" fill="none" stroke="#d4af6a" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
-  <div>
+  <div style="position:relative;z-index:1">
     <div class="eyebrow">منصة الدعم والخدمات الأكاديمية</div>
     <h1>مساعدتك الأكاديمية<br><span>تبدأ من هنا.</span></h1>
-    <p>اربط احتياجك الأكاديمي بخبير موثوق يساعدك على تطوير بحثك، فهم بياناتك، وتحسين عملك العلمي.</p>
+    <p>اربط احتياجك الأكاديمي بخبير موثوق يساعدك على تطوير بحثك وتحسين عملك العلمي.</p>
     <div class="hero-actions">
       <button class="large" onclick="openRequest()">ابدأ طلبك الآن</button>
-      <button class="outline large" onclick="document.querySelector('#how').scrollIntoView()">كيف تعمل موثوق؟</button>
+      <button class="btn outline-invert large" onclick="document.querySelector('#how').scrollIntoView()">كيف تعمل موثوق؟</button>
     </div>
     <div class="trust">✓ خبراء موثقون　 ✓ دفع محمي　 ✓ دعم أكاديمي مسؤول</div>
   </div>
-  <div class="hero-card">
+  <div class="hero-card" style="position:relative;z-index:1">
     <div class="search"><span>⌕</span><input placeholder="ابحث عن خدمة..." oninput="filterServices(this.value)"></div>
     <div class="chips">
       <button onclick="openRequest('التحليل الإحصائي')">📊 التحليل الإحصائي</button>
@@ -244,7 +244,7 @@ function escapeHtmlLite(str){
     if (unreadCount > 0) unreadBadge = `<span class="unread-badge">${unreadCount}</span>`;
 
     actions.innerHTML = `
-      <span style="color:var(--muted);font-size:14px">مرحبًا، ${escapeHtmlLite(profile.username)}</span>
+      <span class="hero-greet" style="color:var(--muted);font-size:14px">مرحبًا، ${escapeHtmlLite(profile.username)}</span>
       <a href="messages.html" class="ghost btn">${unreadBadge}رسائلي</a>
       ${profile.account_type === 'provider' ? '<a href="provider-requests.html" class="outline btn">طلبات الخدمة</a>' : ''}
       ${profile.is_admin ? '<a href="admin.html" class="outline btn">لوحة التحكم</a>' : ''}
