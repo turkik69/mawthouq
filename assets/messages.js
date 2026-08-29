@@ -84,15 +84,22 @@ async function openOrCreateConversation(otherId, requestId){
   const { data: fetchedName } = await supabaseClient.rpc('get_username', { p_user_id: otherId });
   if (fetchedName) otherName = fetchedName;
 
-  const payload = currentUserRole === 'provider'
-    ? { seeker_id: otherId, provider_id: currentUserId, request_id: requestId || null }
-    : { seeker_id: currentUserId, provider_id: otherId, request_id: requestId || null };
+  let newConvId, error;
 
-  const { data: newConv, error } = await supabaseClient
-    .from('conversations')
-    .insert(payload)
-    .select()
-    .single();
+  if (requestId) {
+    // الخادم نفسه يحدد الأطراف من الطلب — لا اعتماد على تخمين العميل لدوره
+    const res = await supabaseClient.rpc('create_conversation_for_request', { p_request_id: requestId });
+    newConvId = res.data;
+    error = res.error;
+  } else {
+    const res = await supabaseClient
+      .from('conversations')
+      .insert({ seeker_id: currentUserId, provider_id: otherId, request_id: null })
+      .select()
+      .single();
+    newConvId = res.data?.id;
+    error = res.error;
+  }
 
   if (error) {
     document.getElementById('chatEmpty').textContent = 'تعذر بدء المحادثة: ' + error.message;
@@ -100,7 +107,7 @@ async function openOrCreateConversation(otherId, requestId){
   }
 
   await loadConversations();
-  await openConversation(newConv.id, otherName);
+  await openConversation(newConvId, otherName);
 }
 
 async function openConversation(conversationId, otherName){
