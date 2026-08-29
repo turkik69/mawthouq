@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700;800&display=swap');
 :root{
   --navy:#1a2140; --navy-2:#242f5c;
-  --blue:#a9812f; --gold:#a9812f; --gold-deep:#8a6a26; --gold-bright:#d4af6a; --gold-tint:#f1e4bf;
+  --blue:#b28e3f; --gold:#b28e3f; --gold-deep:#8a6a26; --gold-bright:#d4af6a; --gold-tint:#f1e4bf;
   --light:#f1e4bf; --bg:#f6f2e7; --paper-2:#efe7d2; --white:#fff;
-  --text:#1e2337; --muted:#726d5c; --line:#e4dcc4;
+  --text:#1e2337; --muted:#5a5548; --line:#e4dcc4;
   --green:#2f6b4f; --red:#c23b3b;
 }
 *{box-sizing:border-box}html{scroll-behavior:smooth}
@@ -106,6 +106,7 @@ button.loading .spinner{display:inline-block;margin-right:8px}button.loading .bt
 .conv-item .unread-dot{width:9px;height:9px;background:var(--gold);border-radius:50%;flex-shrink:0}
 .chat-panel{display:flex;flex-direction:column;height:100%}
 .chat-header{padding:16px 20px;border-bottom:1px solid var(--line);font-weight:800;display:flex;align-items:center;gap:10px;background:#fff}
+.chat-header .ghost{color:var(--navy)}
 .chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px}
 .msg{max-width:70%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.5;word-wrap:break-word}
 .msg.mine{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-left-radius:4px}
@@ -120,6 +121,20 @@ button.loading .spinner{display:inline-block;margin-right:8px}button.loading .bt
 .status-pill.action{background:var(--gold);color:var(--navy)}
 .status-pill.done{background:#e8f3ec;color:var(--green);cursor:default}
 .rating-form-box{padding:16px 20px;border-bottom:1px solid var(--line);background:var(--gold-tint)}
+.payment-box{padding:14px 20px;border-bottom:1px solid var(--line);background:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.payment-box .amount-input{width:110px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit}
+.payment-status{font-size:13px;font-weight:700;padding:5px 12px;border-radius:20px}
+.payment-status.pending{background:#fdf3e0;color:#9a6b00}
+.payment-status.held{background:var(--gold-tint);color:var(--gold-deep)}
+.payment-status.released{background:#e8f3ec;color:var(--green)}
+.files-panel{padding:14px 20px;border-bottom:1px solid var(--line);background:var(--paper-2);max-height:220px;overflow-y:auto}
+.files-panel h4{margin:0 0 8px;font-size:13px;color:var(--muted);font-weight:700}
+.file-row{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:13px;border-bottom:1px solid var(--line)}
+.file-row:last-child{border-bottom:0}
+.file-row a{color:var(--gold-deep);font-weight:700;text-decoration:none;flex:1}
+.file-row small{color:var(--muted)}
+.file-upload-row{display:flex;gap:8px;margin-top:10px;align-items:center}
+.file-upload-row input[type=file]{flex:1;font-size:12px}
 .star-picker{display:flex;gap:4px;font-size:26px;margin:8px 0}
 .star-picker span{cursor:pointer;color:#d8cdaa}.star-picker span.filled{color:var(--gold-deep)}
 .rating-form-box textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;margin:8px 0;resize:vertical;min-height:60px;background:#fff}

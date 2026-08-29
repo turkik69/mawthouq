@@ -12,6 +12,7 @@ let adminProfile = null;
   await loadRegistrants();
   await loadServiceRequests();
   await loadConversationsAdmin();
+  await loadPaymentsAdmin();
 })();
 
 function switchAdminTab(name){
@@ -197,6 +198,70 @@ async function viewThread(conversationId, title){
 
 function closeThreadView(){
   document.getElementById('conversationThreadView').style.display = 'none';
+}
+
+/* ============ تبويب: المدفوعات ============ */
+async function loadPaymentsAdmin(){
+  const tbody = document.getElementById('paymentsBody');
+  const emptyState = document.getElementById('paymentsEmptyState');
+
+  const { data: payments, error } = await supabaseClient.rpc('get_all_payments_admin');
+
+  if (error) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--red)">تعذر تحميل المدفوعات: ${escapeHtml(error.message)}</td></tr>`;
+    return;
+  }
+
+  if (!payments || payments.length === 0) {
+    tbody.innerHTML = '';
+    emptyState.style.display = 'block';
+    setPaymentStats(0, 0, 0);
+    return;
+  }
+
+  const statusLabels = {
+    pending: 'بانتظار بوابة الدفع',
+    held: 'محجوز',
+    released: 'محرَّر — يحتاج تحويل',
+    refunded: 'مسترجَع',
+    failed: 'فشل'
+  };
+
+  tbody.innerHTML = payments.map(p => {
+    const paidOut = p.status === 'released';
+    const transferInfo = p.status === 'released'
+      ? `${escapeHtml(paymentMethodLabel(p.payment_method))}<br><span style="color:var(--muted);font-size:12px">${escapeHtml(p.bank_account_number || '—')}</span>`
+      : '—';
+    const action = p.status === 'released'
+      ? `<button class="link" onclick="markPaidOut('${p.id}')">تعليم كمدفوع ✓</button>`
+      : '—';
+    return `<tr>
+      <td>${escapeHtml(p.seeker_username)}</td>
+      <td>${escapeHtml(p.provider_username)}</td>
+      <td>${p.amount_omr} ر.ع</td>
+      <td><span class="payment-status ${p.status}">${escapeHtml(statusLabels[p.status] || p.status)}</span></td>
+      <td>${transferInfo}</td>
+      <td>${action}</td>
+    </tr>`;
+  }).join('');
+
+  const held = payments.filter(p => p.status === 'held').reduce((s, p) => s + Number(p.amount_omr), 0);
+  const owed = payments.filter(p => p.status === 'released').reduce((s, p) => s + Number(p.provider_payout_omr || 0), 0);
+  const fees = payments.filter(p => p.status === 'released').reduce((s, p) => s + Number(p.platform_fee_omr || 0), 0);
+  setPaymentStats(held, owed, fees);
+}
+
+function setPaymentStats(held, owed, fees){
+  document.getElementById('heldTotal').textContent = held.toFixed(3);
+  document.getElementById('owedTotal').textContent = owed.toFixed(3);
+  document.getElementById('feeTotal').textContent = fees.toFixed(3);
+}
+
+async function markPaidOut(paymentId){
+  if (!confirm('تأكيد إرسال التحويل البنكي لمقدم الخدمة؟ هذا للتسجيل فقط ولا يرسل تحويلًا فعليًا.')) return;
+  const { error } = await supabaseClient.rpc('mark_payment_paid_out', { p_payment_id: paymentId });
+  if (error) { alert('تعذر التحديث: ' + error.message); return; }
+  await loadPaymentsAdmin();
 }
 
 /* ============ أدوات مشتركة ============ */

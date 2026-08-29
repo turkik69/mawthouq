@@ -119,9 +119,11 @@ async function openConversation(conversationId, otherName){
 
   showThreadMobile();
   renderCompletionArea(conversationId);
+  document.getElementById('filesPanel').style.display = 'none';
 
   await loadMessages(conversationId);
   await markAsRead(conversationId);
+  await loadPaymentStatus(conversationId);
   subscribeToConversation(conversationId);
 }
 
@@ -151,7 +153,9 @@ function renderCompletionArea(conversationId){
 }
 
 async function markReceived(){
-  if (!confirm('تأكيد استلام الخدمة؟ لا يمكن التراجع عن هذا لاحقًا.')) return;
+  const { data: files } = await supabaseClient.from('conversation_files').select('id').eq('conversation_id', currentConversationId);
+  const fileNote = files && files.length ? `تم تسليم ${files.length} ملف/ملفات ضمن هذه المحادثة. ` : 'لم يُسلَّم أي ملف ضمن هذه المحادثة بعد. ';
+  if (!confirm(fileNote + 'هل تؤكد استلام العمل واكتماله؟ لا يمكن التراجع عن هذا لاحقًا.')) return;
   const { error } = await supabaseClient.rpc('mark_conversation_completed', { p_conversation_id: currentConversationId });
   if (error) { alert('تعذر التأكيد: ' + error.message); return; }
   await loadConversations();
@@ -198,6 +202,146 @@ async function submitReview(){
   if (error) { alert('تعذر إرسال التقييم: ' + error.message); return; }
   await loadConversations();
   renderCompletionArea(currentConversationId);
+}
+
+/* ============ الدفع ============ */
+async function loadPaymentStatus(conversationId){
+  const box = document.getElementById('paymentArea');
+  const conv = conversationsCache.find(c => c.id === conversationId);
+  if (!conv) { box.style.display = 'none'; return; }
+
+  const { data: payments, error } = await supabaseClient
+    .from('payments')
+    .select('*')
+    .eq('conversation_id', conversationId)
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  const payment = (!error && payments && payments.length) ? payments[0] : null;
+  box.style.display = 'flex';
+  box.className = 'payment-box';
+
+  if (!payment) {
+    if (currentUserRole === 'seeker') {
+      box.innerHTML = `
+        <input type="number" step="0.001" min="0.001" id="paymentAmount" class="amount-input" placeholder="المبلغ (ر.ع)">
+        <button class="status-pill action" onclick="startPayment()">بدء الدفع</button>`;
+    } else {
+      box.innerHTML = `<span style="color:var(--muted);font-size:13px">لم يبدأ الطالب الدفع بعد</span>`;
+    }
+    return;
+  }
+
+  const labels = {
+    pending: 'بانتظار تفعيل بوابة الدفع الإلكترونية',
+    held: 'تم الدفع — المبلغ محجوز لحين تأكيد استلام الخدمة',
+    released: `تم تحرير المبلغ لمقدم الخدمة (${payment.provider_payout_omr ?? '—'} ر.ع بعد عمولة المنصة)`,
+    refunded: 'تم استرجاع المبلغ',
+    failed: 'فشلت عملية الدفع'
+  };
+
+  box.innerHTML = `
+    <span class="payment-status ${payment.status}">${escapeHtml(labels[payment.status] || payment.status)}</span>
+    <span style="color:var(--muted);font-size:13px">المبلغ: ${payment.amount_omr} ر.ع</span>`;
+}
+
+async function startPayment(){
+  const input = document.getElementById('paymentAmount');
+  const amount = parseFloat(input.value);
+  if (!amount || amount <= 0) { alert('أدخل مبلغًا صحيحًا.'); return; }
+
+  const conv = conversationsCache.find(c => c.id === currentConversationId);
+  if (!conv) return;
+
+  const { error } = await supabaseClient.from('payments').insert({
+    conversation_id: currentConversationId,
+    seeker_id: currentUserId,
+    provider_id: conv.other_id,
+    amount_omr: amount,
+    status: 'pending'
+  });
+
+  if (error) { alert('تعذر بدء الدفع: ' + error.message); return; }
+  await loadPaymentStatus(currentConversationId);
+}
+
+/* ============ الملفات (استلام وتسليم) ============ */
+function toggleFilesPanel(){
+  const panel = document.getElementById('filesPanel');
+  const isHidden = panel.style.display === 'none';
+  panel.style.display = isHidden ? 'block' : 'none';
+  panel.className = 'files-panel';
+  if (isHidden) loadFilesPanel(currentConversationId);
+}
+
+async function loadFilesPanel(conversationId){
+  const panel = document.getElementById('filesPanel');
+  panel.innerHTML = '<div class="skeleton" style="width:100%"></div>';
+
+  const conv = conversationsCache.find(c => c.id === conversationId);
+
+  let originalHtml = '';
+  if (conv && conv.request_id) {
+    const { data: originalFiles } = await supabaseClient
+      .from('service_request_files')
+      .select('*')
+      .eq('request_id', conv.request_id);
+    if (originalFiles && originalFiles.length) {
+      const links = await Promise.all(originalFiles.map(renderFileLink));
+      originalHtml = `<h4>ملفات الطلب الأصلية</h4>${links.join('')}`;
+    }
+  }
+
+  const { data: deliveredFiles } = await supabaseClient
+    .from('conversation_files')
+    .select('*, profiles:uploaded_by(username)')
+    .eq('conversation_id', conversationId)
+    .order('created_at', { ascending: true });
+
+  let deliveredHtml = '<h4 style="margin-top:12px">الملفات المتبادلة</h4><p style="color:var(--muted);font-size:13px">لا يوجد ملفات مسلَّمة بعد.</p>';
+  if (deliveredFiles && deliveredFiles.length) {
+    const links = await Promise.all(deliveredFiles.map(f => renderFileLink(f, f.profiles?.username)));
+    deliveredHtml = `<h4 style="margin-top:12px">الملفات المتبادلة</h4>${links.join('')}`;
+  }
+
+  panel.innerHTML = `
+    ${originalHtml}
+    ${deliveredHtml}
+    <div class="file-upload-row">
+      <input type="file" id="deliveryFileInput" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.jpg,.jpeg,.png">
+      <button class="status-pill action" onclick="uploadDeliveryFile()">تسليم ملف</button>
+    </div>`;
+}
+
+async function renderFileLink(f, uploaderName){
+  const { data, error } = await supabaseClient.storage.from('request-files').createSignedUrl(f.file_path, 3600);
+  const link = (data && !error)
+    ? `<a href="${data.signedUrl}" target="_blank" rel="noopener">${escapeHtml(f.file_name)}</a>`
+    : `<span>${escapeHtml(f.file_name)} (تعذّر فتح الرابط)</span>`;
+  const who = uploaderName ? `<small>من ${escapeHtml(uploaderName)}</small>` : '';
+  return `<div class="file-row">${link}${who}</div>`;
+}
+
+async function uploadDeliveryFile(){
+  const input = document.getElementById('deliveryFileInput');
+  const file = input.files[0];
+  if (!file) { alert('اختر ملفًا أولاً.'); return; }
+  if (file.size > 20 * 1024 * 1024) { alert('الحجم الأقصى 20 ميغابايت.'); return; }
+
+  const path = `${currentUserId}/conv-${currentConversationId}/${file.name}`;
+  const { error: uploadError } = await supabaseClient.storage.from('request-files').upload(path, file, { upsert: true });
+  if (uploadError) { alert('تعذر رفع الملف: ' + uploadError.message); return; }
+
+  const { error: insertError } = await supabaseClient.from('conversation_files').insert({
+    conversation_id: currentConversationId,
+    uploaded_by: currentUserId,
+    file_path: path,
+    file_name: file.name
+  });
+  if (insertError) { alert('تعذر تسجيل الملف: ' + insertError.message); return; }
+
+  input.value = '';
+  await loadFilesPanel(currentConversationId);
 }
 
 async function loadMessages(conversationId){
