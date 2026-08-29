@@ -123,7 +123,8 @@ show(`<h2>إنشاء طلب خدمة</h2>
 <div class="field"><label>المرحلة العلمية</label><select id="reqLevel"><option>بكالوريوس</option><option>ماجستير</option><option>دكتوراه</option></select></div>
 <div class="field"><label>التخصص</label><select id="reqSpecialization"><option>الإدارة</option><option>التربية</option><option>القانون</option><option>الاقتصاد</option><option>الهندسة</option><option>تقنية المعلومات</option><option>العلوم الاجتماعية</option><option>العلوم الإنسانية</option></select></div>
 <div class="field full"><label>الخدمة المطلوبة</label><select id="reqServiceType">
-<option>${service||'اختر الخدمة'}</option><option>الاستشارات البحثية</option><option>الدراسات السابقة</option><option>الإطار النظري</option><option>منهجية البحث</option><option>التحليل الإحصائي</option><option>تقارير</option><option>التدقيق الأكاديمي</option><option>الترجمة الأكاديمية</option><option>التنسيق والمراجع</option></select></div>
+<option>${service||'اختر الخدمة'}</option>
+</select></div>
 <div class="field full"><label>عنوان البحث</label><input id="reqTitle" placeholder="عنوان البحث"></div>
 <div class="field full"><label>تفاصيل الطلب</label><textarea id="reqDetails" placeholder="ما الذي تحتاجه تحديدًا؟"></textarea></div>
 <div class="field full"><label>إرفاق الملفات</label><input id="reqFiles" type="file" multiple accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.jpg,.jpeg,.png"><small style="color:var(--muted);font-size:12px">حتى 20 ميغابايت لكل ملف</small></div>
@@ -132,6 +133,14 @@ show(`<h2>إنشاء طلب خدمة</h2>
 </form>`);
 
 document.getElementById('reqForm').addEventListener('submit', submitRequest);
+populateServiceDropdown(service);
+}
+
+async function populateServiceDropdown(preselect){
+  const { data } = await supabaseClient.from('service_types').select('name').order('name');
+  const select = document.getElementById('reqServiceType');
+  if (!data) return;
+  select.innerHTML = data.map(s => `<option ${s.name === preselect ? 'selected' : ''}>${escapeHtmlLite(s.name)}</option>`).join('');
 }
 
 async function submitRequest(e){
@@ -196,13 +205,13 @@ async function loadProviders(){
   }
 
   grid.innerHTML = providers.map(p => `
-    <article class="expert">
+    <article class="expert" style="cursor:pointer" onclick="openProviderProfile('${p.id}')">
       <div class="avatar">${escapeHtmlLite((p.username||'؟').charAt(0))}</div>
       <h3>${escapeHtmlLite(p.username)}</h3>
       <p>${escapeHtmlLite(p.provider_service_type || 'خبير أكاديمي')}</p>
       <b style="font-size:13px">${ratingLine(p)}</b>
       <label class="verified">✓ خبير موثق</label>
-      <div style="margin-top:12px"><button class="outline" onclick="messageProvider('${p.id}')">راسل</button></div>
+      <div style="margin-top:12px"><button class="outline" onclick="event.stopPropagation();messageProvider('${p.id}')">راسل</button></div>
     </article>
   `).join('');
 
@@ -217,6 +226,27 @@ async function loadProviders(){
 function ratingLine(p){
   if (!p.review_count) return `${p.completed_count} خدمة مكتملة`;
   return `⭐ ${p.avg_rating} (${p.review_count}) · ${p.completed_count} خدمة`;
+}
+
+async function openProviderProfile(providerId){
+  const { data: services } = await supabaseClient.rpc('get_provider_services', { p_provider_id: providerId });
+  const { data: reviews } = await supabaseClient.rpc('get_provider_reviews', { p_provider_id: providerId });
+
+  const servicesHtml = (services && services.length)
+    ? services.map(s => `<div class="file-row"><span style="flex:1">${escapeHtmlLite(s.service_name)}</span><b>${s.price_omr} ر.ع</b></div>`).join('')
+    : '<p style="color:var(--muted)">لم يحدّد هذا الخبير أسعار خدماته بعد.</p>';
+
+  const reviewsHtml = (reviews && reviews.length)
+    ? reviews.slice(0, 5).map(r => `<div class="file-row" style="align-items:flex-start"><div><b>${'⭐'.repeat(r.rating)}</b> ${escapeHtmlLite(r.comment || '')}<br><small style="color:var(--muted)">${escapeHtmlLite(r.seeker_username)}</small></div></div>`).join('')
+    : '<p style="color:var(--muted)">لا توجد تقييمات بعد.</p>';
+
+  show(`
+    <h2>الخدمات والأسعار</h2>
+    <div class="table-wrap" style="margin-bottom:20px;padding:6px 16px">${servicesHtml}</div>
+    <h2 style="font-size:20px">التقييمات</h2>
+    <div class="table-wrap" style="padding:6px 16px">${reviewsHtml}</div>
+    <div class="form-actions"><button onclick="closeModal();messageProvider('${providerId}')">راسل هذا الخبير</button></div>
+  `);
 }
 
 async function messageProvider(providerId){
@@ -246,7 +276,7 @@ function escapeHtmlLite(str){
     actions.innerHTML = `
       <span class="hero-greet" style="color:var(--muted);font-size:14px">مرحبًا، ${escapeHtmlLite(profile.username)}</span>
       <a href="messages.html" class="ghost btn">${unreadBadge}رسائلي</a>
-      ${profile.account_type === 'provider' ? '<a href="provider-requests.html" class="outline btn">طلبات الخدمة</a>' : ''}
+      ${profile.account_type === 'provider' ? '<a href="provider-requests.html" class="outline btn">طلبات الخدمة</a><a href="provider-services.html" class="ghost btn">خدماتي</a>' : ''}
       ${profile.is_admin ? '<a href="admin.html" class="outline btn">لوحة التحكم</a>' : ''}
       <button class="ghost" onclick="logoutUser()">خروج</button>
       <button onclick="openRequest()">اطلب خدمة</button>

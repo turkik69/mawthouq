@@ -31,6 +31,7 @@
     <button class="tab-btn" id="tabBtnRequests" onclick="switchAdminTab('requests')">طلبات الخدمة</button>
     <button class="tab-btn" id="tabBtnConversations" onclick="switchAdminTab('conversations')">المحادثات</button>
     <button class="tab-btn" id="tabBtnPayments" onclick="switchAdminTab('payments')">المدفوعات</button>
+    <button class="tab-btn" id="tabBtnServices" onclick="switchAdminTab('services')">الخدمات</button>
   </div>
 
   <div id="tab-users" class="admin-tab active">
@@ -44,10 +45,10 @@
     <div class="table-wrap">
       <table>
         <thead>
-          <tr><th>اسم المستخدم</th><th>نوع الحساب</th><th>الخدمة المقدَّمة</th><th>البريد الإلكتروني</th><th>رقم الهاتف</th><th>بيانات الدفع</th><th>تاريخ التسجيل</th><th>الصلاحية</th></tr>
+          <tr><th>اسم المستخدم</th><th>نوع الحساب</th><th>الخدمة المقدَّمة</th><th>البريد الإلكتروني</th><th>رقم الهاتف</th><th>بيانات الدفع</th><th>تاريخ التسجيل</th><th>الصلاحية</th><th>إجراء</th></tr>
         </thead>
         <tbody id="usersBody">
-          <tr><td colspan="8"><div class="skeleton" style="width:100%"></div></td></tr>
+          <tr><td colspan="9"><div class="skeleton" style="width:100%"></div></td></tr>
         </tbody>
       </table>
       <div id="emptyState" class="empty-state" style="display:none">لا يوجد مستخدمون مسجّلون بعد.</div>
@@ -107,6 +108,24 @@
         </tbody>
       </table>
       <div id="paymentsEmptyState" class="empty-state" style="display:none">لا يوجد مدفوعات بعد.</div>
+    </div>
+  </div>
+
+  <div id="tab-services" class="admin-tab">
+    <div class="form" style="margin-bottom:20px">
+      <div class="field full">
+        <label>إضافة خدمة جديدة للمنصة</label>
+        <input type="text" id="newServiceName" placeholder="مثال: مراجعة الرسائل العلمية">
+      </div>
+      <div class="field"><button onclick="addServiceType()">إضافة</button></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>اسم الخدمة</th><th></th></tr></thead>
+        <tbody id="serviceTypesBody">
+          <tr><td colspan="2"><div class="skeleton" style="width:100%"></div></td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </main>
