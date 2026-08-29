@@ -52,7 +52,8 @@ async function loadConversations(){
   }
 
   container.innerHTML = conversationsCache.map(c => {
-    const title = c.service_type ? `${c.other_username} · ${c.service_type}` : c.other_username;
+    const subject = c.request_title || c.service_type;
+    const title = subject ? `${c.other_username} · ${subject}` : c.other_username;
     return `
     <div class="conv-item ${c.id === currentConversationId ? 'active' : ''}" data-id="${escapeHtml(c.id)}" data-name="${escapeHtml(c.other_username)}">
       <div class="ci-text">
@@ -110,7 +111,8 @@ async function openConversation(conversationId, otherName){
   document.getElementById('chatThread').style.flexDirection = 'column';
   document.getElementById('chatThread').style.height = '100%';
   const convForTitle = conversationsCache.find(c => c.id === conversationId);
-  const headerTitle = convForTitle && convForTitle.service_type ? `${otherName} · ${convForTitle.service_type}` : otherName;
+  const titleSubject = convForTitle && (convForTitle.request_title || convForTitle.service_type);
+  const headerTitle = titleSubject ? `${otherName} · ${titleSubject}` : otherName;
   document.getElementById('chatOtherName').textContent = headerTitle;
 
   document.querySelectorAll('.conv-item').forEach(el => {
@@ -289,35 +291,65 @@ async function loadFilesPanel(conversationId){
 
   let originalHtml = '';
   if (conv && conv.request_id) {
-    const { data: originalFiles } = await supabaseClient
+    const { data: originalFiles, error: originalError } = await supabaseClient
       .from('service_request_files')
       .select('*')
       .eq('request_id', conv.request_id);
-    if (originalFiles && originalFiles.length) {
+    if (originalError) {
+      originalHtml = `<h4>ملفات الطلب الأصلية</h4><p style="color:var(--red);font-size:13px">تعذر التحميل: ${escapeHtml(originalError.message)}</p>`;
+    } else if (originalFiles && originalFiles.length) {
       const links = await Promise.all(originalFiles.map(renderFileLink));
       originalHtml = `<h4>ملفات الطلب الأصلية</h4>${links.join('')}`;
     }
   }
 
-  const { data: deliveredFiles } = await supabaseClient
+  const { data: deliveredFiles, error: deliveredError } = await supabaseClient
     .from('conversation_files')
-    .select('*, profiles:uploaded_by(username)')
+    .select('*')
     .eq('conversation_id', conversationId)
     .order('created_at', { ascending: true });
 
   let deliveredHtml = '<h4 style="margin-top:12px">الملفات المتبادلة</h4><p style="color:var(--muted);font-size:13px">لا يوجد ملفات مسلَّمة بعد.</p>';
-  if (deliveredFiles && deliveredFiles.length) {
-    const links = await Promise.all(deliveredFiles.map(f => renderFileLink(f, f.profiles?.username)));
+  if (deliveredError) {
+    deliveredHtml = `<h4 style="margin-top:12px">الملفات المتبادلة</h4><p style="color:var(--red);font-size:13px">تعذر التحميل: ${escapeHtml(deliveredError.message)}</p>`;
+  } else if (deliveredFiles && deliveredFiles.length) {
+    const names = await Promise.all(deliveredFiles.map(f => supabaseClient.rpc('get_username', { p_user_id: f.uploaded_by })));
+    const links = await Promise.all(deliveredFiles.map((f, i) => renderFileLink(f, names[i].data)));
     deliveredHtml = `<h4 style="margin-top:12px">الملفات المتبادلة</h4>${links.join('')}`;
   }
 
   panel.innerHTML = `
     ${originalHtml}
     ${deliveredHtml}
-    <div class="file-upload-row">
-      <input type="file" id="deliveryFileInput" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.jpg,.jpeg,.png">
+    <div style="margin-top:12px;font-size:12px;font-weight:700;color:var(--muted)">طريقة التسليم</div>
+    <div style="display:flex;gap:14px;margin:6px 0 4px;font-size:13px">
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="deliveryMethod" value="platform" checked onchange="onDeliveryMethodChange()"> رفع عبر المنصة</label>
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="deliveryMethod" value="email" onchange="onDeliveryMethodChange()"> بريد إلكتروني</label>
+    </div>
+    <div id="emailDeliveryBox" style="display:none;font-size:13px;background:var(--gold-tint);border-radius:8px;padding:8px 12px;margin-bottom:8px"></div>
+    <div class="file-upload-row" id="platformUploadRow">
+      <input type="file" id="deliveryFileInput" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.jpg,.jpeg,.png" onchange="checkFileSizeImmediately(this)">
       <button class="status-pill action" onclick="uploadDeliveryFile()">تسليم ملف</button>
     </div>`;
+}
+
+async function onDeliveryMethodChange(){
+  const method = document.querySelector('input[name="deliveryMethod"]:checked').value;
+  const emailBox = document.getElementById('emailDeliveryBox');
+  const uploadRow = document.getElementById('platformUploadRow');
+
+  if (method === 'email') {
+    uploadRow.style.display = 'none';
+    emailBox.style.display = 'block';
+    emailBox.textContent = 'جارٍ التحميل...';
+    const { data: email, error } = await supabaseClient.rpc('get_conversation_partner_email', { p_conversation_id: currentConversationId });
+    emailBox.textContent = (email && !error)
+      ? `أرسل الملف مباشرة إلى: ${email}`
+      : 'تعذر جلب البريد الإلكتروني.';
+  } else {
+    uploadRow.style.display = 'flex';
+    emailBox.style.display = 'none';
+  }
 }
 
 async function renderFileLink(f, uploaderName){
@@ -340,6 +372,15 @@ async function renderFileLink(f, uploaderName){
 
   const link = `<a href="${data.signedUrl}" target="_blank" rel="noopener">${escapeHtml(f.file_name)}</a>`;
   return `<div class="file-row">${link}${who}</div>`;
+}
+
+function checkFileSizeImmediately(input){
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 20 * 1024 * 1024) {
+    showToast(`الملف "${file.name}" حجمه ${(file.size/1024/1024).toFixed(1)} ميغا — الحد الأقصى 20 ميغابايت. اختر ملفًا أصغر.`, 'error');
+    input.value = '';
+  }
 }
 
 async function uploadDeliveryFile(){

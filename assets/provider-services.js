@@ -47,7 +47,7 @@ async function loadMyServices(providerId){
   tbody.innerHTML = myServices.map(s => `
     <tr>
       <td>${escapeHtml(s.service_name)}</td>
-      <td>${s.price_omr}</td>
+      <td>يبدأ من ${s.price_omr}</td>
       <td><button class="link" onclick="removeProviderService('${s.id}')">حذف</button></td>
     </tr>
   `).join('');

@@ -133,9 +133,10 @@ async function initMessageNotifications() {
 
 function showNotificationPrompt(userId) {
   if (document.getElementById('notifyPrompt')) return;
+  const bottomOffset = document.getElementById('installBanner') ? 78 : 16;
   const banner = document.createElement('div');
   banner.id = 'notifyPrompt';
-  banner.style.cssText = 'position:fixed;bottom:16px;left:16px;right:16px;max-width:420px;margin:0 auto;background:var(--navy,#14213d);color:#fff;padding:14px 18px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:200;box-shadow:0 10px 30px #0004;font-family:Cairo,Arial,sans-serif';
+  banner.style.cssText = `position:fixed;bottom:${bottomOffset}px;left:16px;right:16px;max-width:420px;margin:0 auto;background:var(--navy,#14213d);color:#fff;padding:14px 18px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:200;box-shadow:0 10px 30px #0004;font-family:Cairo,Arial,sans-serif`;
   banner.innerHTML = `
     <span style="font-size:13px">فعّل الإشعارات عشان توصلك الرسائل الجديدة</span>
     <div style="display:flex;gap:6px;flex-shrink:0">
@@ -213,6 +214,88 @@ function bumpUnreadBadge(){
 }
 
 // إشعار خفيف غير معيق — بديل عن alert() القياسي لتجربة أكثر سلاسة
+// بانر تثبيت المنصة كتطبيق — يعمل تلقائيًا لأي زائر (حتى قبل تسجيل الدخول)
+let __deferredInstallPrompt = null;
+
+function isIosDevice(){
+  return /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+}
+function isStandaloneMode(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function initInstallPrompt(){
+  if (isStandaloneMode()) return; // مثبّتة أصلاً، ما فيه داعي للبانر
+  if (localStorage.getItem('installPromptDismissed')) return;
+
+  if (isIosDevice()) {
+    showInstallBanner('ios');
+    return;
+  }
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    __deferredInstallPrompt = e;
+    showInstallBanner('android');
+  });
+}
+
+function showInstallBanner(platform){
+  if (document.getElementById('installBanner')) return;
+  const bottomOffset = document.getElementById('notifyPrompt') ? 78 : 16;
+
+  const banner = document.createElement('div');
+  banner.id = 'installBanner';
+  banner.style.cssText = `position:fixed;bottom:${bottomOffset}px;left:16px;right:16px;max-width:420px;margin:0 auto;background:var(--navy,#1a2140);color:#fff;padding:14px 18px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:210;box-shadow:0 10px 30px #0004;font-family:Cairo,Arial,sans-serif`;
+
+  const message = platform === 'ios'
+    ? 'ثبّت منصة موثوق: اضغط زر المشاركة ⬆️ بأسفل الشاشة، ثم "إضافة إلى الشاشة الرئيسية"'
+    : 'ثبّت منصة موثوق كتطبيق على جهازك لدخول أسرع وإشعارات فورية';
+
+  const actionBtn = platform === 'ios'
+    ? '<button id="installDismissBtn" style="background:#fff;color:#1a2140;border:0;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">فهمت</button>'
+    : '<button id="installNowBtn" style="background:#fff;color:#1a2140;border:0;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">تثبيت</button>';
+
+  banner.innerHTML = `
+    <span style="font-size:13px">${message}</span>
+    <div style="display:flex;gap:6px;flex-shrink:0">
+      ${actionBtn}
+      <button id="installCloseBtn" style="background:transparent;color:#fff;border:0;padding:6px;cursor:pointer;font-size:14px">✕</button>
+    </div>`;
+  document.body.appendChild(banner);
+
+  if (platform === 'android') {
+    document.getElementById('installNowBtn').addEventListener('click', async () => {
+      if (__deferredInstallPrompt) {
+        __deferredInstallPrompt.prompt();
+        await __deferredInstallPrompt.userChoice;
+        __deferredInstallPrompt = null;
+      }
+      localStorage.setItem('installPromptDismissed', '1');
+      banner.remove();
+    });
+  } else {
+    document.getElementById('installDismissBtn').addEventListener('click', () => {
+      localStorage.setItem('installPromptDismissed', '1');
+      banner.remove();
+    });
+  }
+  document.getElementById('installCloseBtn').addEventListener('click', () => {
+    localStorage.setItem('installPromptDismissed', '1');
+    banner.remove();
+  });
+}
+
+// رجوع للصفحة السابقة فعليًا (يهم بشكل خاص عند التشغيل كتطبيق مثبّت، حيث
+// شريط المتصفح وزر الرجوع الافتراضي مختفيان تمامًا)
+function goBack(fallback){
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.href = fallback || 'index.html';
+  }
+}
+
 function showToast(message, type){
   let host = document.getElementById('toastHost');
   if (!host) {
