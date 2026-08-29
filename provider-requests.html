@@ -60,6 +60,10 @@
   <div id="emptyState" style="display:none;color:var(--muted);text-align:center;padding:40px 0">لا توجد طلبات تطابق البحث.</div>
 </main>
 
+<div id="modal" class="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box"><button class="close" onclick="closeModal()">×</button><div id="modalBody"></div></div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js?v=2"></script>
 <script src="assets/auth.js?v=2"></script>
