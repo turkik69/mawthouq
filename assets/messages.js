@@ -51,15 +51,17 @@ async function loadConversations(){
     return;
   }
 
-  container.innerHTML = conversationsCache.map(c => `
+  container.innerHTML = conversationsCache.map(c => {
+    const title = c.service_type ? `${c.other_username} · ${c.service_type}` : c.other_username;
+    return `
     <div class="conv-item ${c.id === currentConversationId ? 'active' : ''}" data-id="${escapeHtml(c.id)}" data-name="${escapeHtml(c.other_username)}">
       <div class="ci-text">
-        <b>${escapeHtml(c.other_username)}</b>
+        <b>${escapeHtml(title)}${c.completed_at ? ' <span style="color:var(--muted);font-weight:400;font-size:11px">(مؤرشفة)</span>' : ''}</b>
         <span>${escapeHtml(c.last_message || 'ابدأ المحادثة')}</span>
       </div>
       ${c.unread ? '<span class="unread-dot"></span>' : ''}
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   container.querySelectorAll('.conv-item').forEach(el => {
     el.addEventListener('click', () => openConversation(el.dataset.id, el.dataset.name));
@@ -67,7 +69,7 @@ async function loadConversations(){
 }
 
 async function openOrCreateConversation(otherId, requestId){
-  const existing = conversationsCache.find(c => c.other_id === otherId);
+  const existing = conversationsCache.find(c => c.other_id === otherId && !c.completed_at);
   if (existing) {
     await openConversation(existing.id, existing.other_username);
     return;
@@ -111,7 +113,9 @@ async function openConversation(conversationId, otherName){
   document.getElementById('chatThread').style.display = 'flex';
   document.getElementById('chatThread').style.flexDirection = 'column';
   document.getElementById('chatThread').style.height = '100%';
-  document.getElementById('chatOtherName').textContent = otherName;
+  const convForTitle = conversationsCache.find(c => c.id === conversationId);
+  const headerTitle = convForTitle && convForTitle.service_type ? `${otherName} · ${convForTitle.service_type}` : otherName;
+  document.getElementById('chatOtherName').textContent = headerTitle;
 
   document.querySelectorAll('.conv-item').forEach(el => {
     el.classList.toggle('active', el.dataset.id === conversationId);
@@ -119,6 +123,10 @@ async function openConversation(conversationId, otherName){
 
   showThreadMobile();
   renderCompletionArea(conversationId);
+  const conv = conversationsCache.find(c => c.id === conversationId);
+  const msgInput = document.getElementById('messageInput');
+  msgInput.disabled = !!(conv && conv.completed_at);
+  msgInput.placeholder = (conv && conv.completed_at) ? 'محادثة مؤرشفة — لا يمكن الإرسال' : 'اكتب رسالتك...';
   document.getElementById('filesPanel').style.display = 'none';
 
   await loadMessages(conversationId);
@@ -315,10 +323,23 @@ async function loadFilesPanel(conversationId){
 
 async function renderFileLink(f, uploaderName){
   const { data, error } = await supabaseClient.storage.from('request-files').createSignedUrl(f.file_path, 3600);
-  const link = (data && !error)
-    ? `<a href="${data.signedUrl}" target="_blank" rel="noopener">${escapeHtml(f.file_name)}</a>`
-    : `<span>${escapeHtml(f.file_name)} (تعذّر فتح الرابط)</span>`;
   const who = uploaderName ? `<small>من ${escapeHtml(uploaderName)}</small>` : '';
+
+  if (!data || error) {
+    return `<div class="file-row"><span>${escapeHtml(f.file_name)} (تعذّر فتح الرابط)</span>${who}</div>`;
+  }
+
+  const isImage = /\.(jpe?g|png|gif|webp)$/i.test(f.file_name);
+  if (isImage) {
+    return `<div class="file-row" style="flex-direction:column;align-items:flex-start;gap:6px">
+      <div style="display:flex;width:100%;justify-content:space-between;align-items:center">
+        <span style="font-weight:700">${escapeHtml(f.file_name)}</span>${who}
+      </div>
+      <img src="${data.signedUrl}" alt="${escapeHtml(f.file_name)}" style="max-width:100%;max-height:220px;border-radius:8px;border:1px solid var(--line)">
+    </div>`;
+  }
+
+  const link = `<a href="${data.signedUrl}" target="_blank" rel="noopener">${escapeHtml(f.file_name)}</a>`;
   return `<div class="file-row">${link}${who}</div>`;
 }
 
@@ -399,6 +420,8 @@ function subscribeToConversation(conversationId){
 async function sendMessage(e){
   e.preventDefault();
   if (!currentConversationId) return;
+  const conv = conversationsCache.find(c => c.id === currentConversationId);
+  if (conv && conv.completed_at) { alert('هذه المحادثة مؤرشفة (اكتملت الخدمة) ولا يمكن إرسال رسائل جديدة فيها.'); return; }
   const input = document.getElementById('messageInput');
   const content = input.value.trim();
   if (!content) return;

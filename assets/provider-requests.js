@@ -83,10 +83,36 @@ function renderRequests(requests){
       <p>${escapeHtml(r.details || 'بدون تفاصيل إضافية')}</p>
       <p style="color:var(--muted);font-size:12px;margin-top:8px">بواسطة ${escapeHtml(r.seeker_username)} · ${formatDate(r.created_at)}</p>
       <div style="margin-top:12px">
-        <button onclick="contactSeeker('${r.seeker_id}', '${r.id}')">تواصل مع الطالب</button>
+        <button onclick="viewRequestDetails('${r.id}')">عرض التفاصيل</button>
       </div>
     </article>
   `).join('');
+}
+
+function viewRequestDetails(requestId){
+  const r = allRequests.find(x => x.id === requestId);
+  if (!r) return;
+
+  const modal = document.getElementById('modal');
+  document.getElementById('modalBody').innerHTML = `
+    <h2>${escapeHtml(r.title || r.service_type)}</h2>
+    <div class="notice">راجع الطلب كاملاً. إذا وافقت على العمل عليه اضغط "قبول والتواصل" وتنتقل لمراسلة الطالب مباشرة. إذا تعذّر عليك، أغلق هذه النافذة والطلب يبقى ظاهرًا لبقية مقدمي الخدمة.</div>
+    <div class="form">
+      <div class="field"><label>الخدمة</label><span>${escapeHtml(r.service_type)}</span></div>
+      <div class="field"><label>المرحلة العلمية</label><span>${escapeHtml(r.academic_level || '—')}</span></div>
+      <div class="field"><label>التخصص</label><span>${escapeHtml(r.specialization || '—')}</span></div>
+      <div class="field"><label>الطالب</label><span>${escapeHtml(r.seeker_username)}</span></div>
+      <div class="field full"><label>تفاصيل الطلب</label><span>${escapeHtml(r.details || 'بدون تفاصيل إضافية')}</span></div>
+    </div>
+    <div class="form-actions">
+      <button onclick="contactSeeker('${r.seeker_id}', '${r.id}')">قبول والتواصل مع الطالب</button>
+      <button class="outline" onclick="closeModal()">رجوع</button>
+    </div>`;
+  modal.classList.add('show');
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
 }
 
 async function contactSeeker(seekerId, requestId){
