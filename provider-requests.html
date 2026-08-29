@@ -57,10 +57,29 @@
     </div>
   </div>
 
-  <div id="requestsList" class="service-grid" style="grid-template-columns:repeat(2,1fr)">
-    <p style="color:var(--muted)">جارٍ التحميل...</p>
+  <div class="admin-tabs">
+    <button class="tab-btn active" id="tabBtnAvailable" onclick="switchRequestsTab('available')">الطلبات المتاحة</button>
+    <button class="tab-btn" id="tabBtnArchive" onclick="switchRequestsTab('archive')">أرشيف طلباتي</button>
   </div>
-  <div id="emptyState" style="display:none;color:var(--muted);text-align:center;padding:40px 0">لا توجد طلبات تطابق البحث.</div>
+
+  <div id="tab-available" class="admin-tab active">
+    <div id="requestsList" class="service-grid" style="grid-template-columns:repeat(2,1fr)">
+      <p style="color:var(--muted)">جارٍ التحميل...</p>
+    </div>
+    <div id="emptyState" style="display:none;color:var(--muted);text-align:center;padding:40px 0">لا توجد طلبات تطابق البحث.</div>
+  </div>
+
+  <div id="tab-archive" class="admin-tab">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>العنوان</th><th>الخدمة</th><th>الطالب</th><th>الحالة</th><th>التاريخ</th></tr></thead>
+        <tbody id="archiveBody">
+          <tr><td colspan="5"><div class="skeleton" style="width:100%"></div></td></tr>
+        </tbody>
+      </table>
+      <div id="archiveEmpty" class="empty-state" style="display:none">لم تقبل أي طلب بعد.</div>
+    </div>
+  </div>
 </main>
 
 <div id="modal" class="modal" onclick="if(event.target===this)closeModal()">
