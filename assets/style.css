@@ -22,7 +22,8 @@ button,.btn{font:inherit;cursor:pointer;border:1.5px solid transparent;border-ra
 button:hover,.btn:hover{background:var(--gold-deep)}
 .ghost{background:transparent;color:#e7e2d0;border-color:transparent}
 .ghost:hover{background:#ffffff14}
-header .outline,.admin-bar .outline,.chat-header .outline{background:transparent;color:var(--gold-bright);border-color:#d4af6a55}
+header .outline,.admin-bar .outline,.chat-header .outline,.outline-invert{background:transparent;color:var(--gold-bright);border-color:#d4af6a55}
+.outline-invert:hover{border-color:var(--gold-bright);background:#ffffff0d}
 .outline{background:#fff;color:var(--navy);border-color:var(--line)}
 button:disabled{opacity:.6;cursor:not-allowed}
 .large{padding:14px 24px;margin-left:8px}
@@ -157,4 +158,4 @@ td{padding:13px 16px;border-bottom:1px solid var(--line)}tr:last-child td{border
 .seal-wrap svg{max-width:260px;width:100%;filter:drop-shadow(0 18px 40px #00000055)}
 
 @media(max-width:900px){nav{display:none}.hero{grid-template-columns:1fr;padding:52px 6%}.seal-wrap{order:-1;margin-bottom:6px}.seal-wrap svg{max-width:170px}.service-grid{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}.expert-grid{grid-template-columns:1fr}.cta{margin:0 6% 52px;flex-direction:column;align-items:flex-start}section{padding:52px 6%}.heading{display:block}.stat-row{grid-template-columns:1fr}.search-bar{max-width:100%}}
-@media(max-width:520px){header{padding:0 4%}.actions .ghost{display:none}.hero h1{font-size:33px}.hero p{font-size:15px}.hero-actions button{display:block;width:100%;margin:7px 0}.chips,.service-grid,.steps,.form{grid-template-columns:1fr}.full{grid-column:auto}.cta{padding:30px 22px}footer{flex-wrap:wrap;padding:30px 6%}footer p{width:100%;margin:0}.auth-card{padding:26px}.admin-bar{flex-direction:column;align-items:flex-start;gap:10px}.table-wrap{overflow-x:auto}table{min-width:520px}}
+@media(max-width:520px){header{padding:0 4%}.hero-greet{display:none}.actions{gap:6px}.actions .btn,.actions button{padding:8px 12px;font-size:13px}.hero h1{font-size:33px}.hero p{font-size:15px}.hero-actions button{display:block;width:100%;margin:7px 0}.chips,.service-grid,.steps,.form{grid-template-columns:1fr}.full{grid-column:auto}.cta{padding:30px 22px}footer{flex-wrap:wrap;padding:30px 6%}footer p{width:100%;margin:0}.auth-card{padding:26px}.admin-bar{flex-direction:column;align-items:flex-start;gap:10px}.table-wrap{overflow-x:auto}table{min-width:520px}}
