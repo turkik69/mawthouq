@@ -13,6 +13,7 @@ let adminProfile = null;
   await loadServiceRequests();
   await loadConversationsAdmin();
   await loadPaymentsAdmin();
+  await loadServiceTypesAdmin();
 })();
 
 function switchAdminTab(name){
@@ -30,7 +31,7 @@ async function loadRegistrants(){
   const emptyState = document.getElementById('emptyState');
 
   if (error) {
-    tbody.innerHTML = `<tr><td colspan="8" style="color:var(--red)">تعذر تحميل البيانات: ${escapeHtml(error.message)}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" style="color:var(--red)">تعذر تحميل البيانات: ${escapeHtml(error.message)}</td></tr>`;
     return;
   }
 
@@ -43,7 +44,7 @@ async function loadRegistrants(){
 
   tbody.innerHTML = rows.map(u => `
     <tr>
-      <td>${escapeHtml(u.username)}</td>
+      <td>${escapeHtml(u.username)}${u.suspended ? ' <span class="badge-admin" style="background:#fdecec;color:var(--red)">موقوف</span>' : ''}</td>
       <td>${u.account_type === 'provider' ? '<span class="badge-provider">مقدم خدمة</span>' : '<span class="badge-seeker">طالب خدمة</span>'}</td>
       <td>${escapeHtml(u.provider_service_type || '—')}</td>
       <td>${escapeHtml(u.email || '—')}</td>
@@ -51,6 +52,7 @@ async function loadRegistrants(){
       <td>${paymentInfo(u)}</td>
       <td>${formatDate(u.created_at)}</td>
       <td>${u.is_admin ? '<span class="badge-admin">مشرف</span>' : 'مستخدم'}</td>
+      <td>${u.account_type === 'provider' ? suspendButton(u) : '—'}</td>
     </tr>
   `).join('');
 
@@ -61,6 +63,22 @@ async function loadRegistrants(){
   const providers = rows.filter(u => u.account_type === 'provider').length;
 
   setStats(rows.length, providers, today, week);
+}
+
+function suspendButton(u){
+  return u.suspended
+    ? `<button class="link" onclick="toggleSuspend('${u.id}', false)">إلغاء الإيقاف</button>`
+    : `<button class="link" style="color:var(--red)" onclick="toggleSuspend('${u.id}', true)">إيقاف الحساب</button>`;
+}
+
+async function toggleSuspend(providerId, suspend){
+  const msg = suspend
+    ? 'إيقاف هذا الحساب يمنعه من الدخول والظهور للطلاب. يبقى سجل معاملاته السابقة كما هو. متابعة؟'
+    : 'إلغاء إيقاف هذا الحساب وإعادته للعمل؟';
+  if (!confirm(msg)) return;
+  const { error } = await supabaseClient.rpc('admin_set_provider_suspended', { p_provider_id: providerId, p_suspended: suspend });
+  if (error) { alert('تعذر التنفيذ: ' + error.message); return; }
+  await loadRegistrants();
 }
 
 function paymentInfo(u) {
@@ -262,6 +280,52 @@ async function markPaidOut(paymentId){
   const { error } = await supabaseClient.rpc('mark_payment_paid_out', { p_payment_id: paymentId });
   if (error) { alert('تعذر التحديث: ' + error.message); return; }
   await loadPaymentsAdmin();
+}
+
+/* ============ تبويب: الخدمات ============ */
+async function loadServiceTypesAdmin(){
+  const tbody = document.getElementById('serviceTypesBody');
+  const { data, error } = await supabaseClient.from('service_types').select('*').order('name');
+
+  if (error) {
+    tbody.innerHTML = `<tr><td colspan="2" style="color:var(--red)">تعذر التحميل: ${escapeHtml(error.message)}</td></tr>`;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="2" style="color:var(--muted)">لا يوجد خدمات بعد.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = data.map(s => `
+    <tr>
+      <td>${escapeHtml(s.name)}</td>
+      <td><button class="link" style="color:var(--red)" data-service-id="${escapeHtml(s.id)}" data-service-name="${escapeHtml(s.name)}">حذف</button></td>
+    </tr>
+  `).join('');
+
+  tbody.querySelectorAll('button[data-service-id]').forEach(btn => {
+    btn.addEventListener('click', () => removeServiceType(btn.dataset.serviceId, btn.dataset.serviceName));
+  });
+}
+
+async function addServiceType(){
+  const input = document.getElementById('newServiceName');
+  const name = input.value.trim();
+  if (!name) { alert('اكتب اسم الخدمة.'); return; }
+
+  const { error } = await supabaseClient.rpc('admin_add_service_type', { p_name: name });
+  if (error) { alert('تعذرت الإضافة: ' + error.message); return; }
+
+  input.value = '';
+  await loadServiceTypesAdmin();
+}
+
+async function removeServiceType(id, name){
+  if (!confirm(`حذف "${name}" من قائمة الخدمات؟ لن يؤثر على الطلبات السابقة، لكن لن يعود يظهر كخيار جديد.`)) return;
+  const { error } = await supabaseClient.rpc('admin_remove_service_type', { p_id: id });
+  if (error) { alert('تعذر الحذف: ' + error.message); return; }
+  await loadServiceTypesAdmin();
 }
 
 /* ============ أدوات مشتركة ============ */

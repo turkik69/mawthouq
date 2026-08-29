@@ -17,6 +17,8 @@ let allRequests = [];
   document.getElementById('myServiceType').textContent = profile.provider_service_type
     ? `تخصصك: ${profile.provider_service_type}`
     : '';
+
+  await populateServiceFilter();
   if (profile.provider_service_type) {
     document.getElementById('serviceFilter').value = profile.provider_service_type;
   }
@@ -25,6 +27,13 @@ let allRequests = [];
   applyFilters();
   initMessageNotifications();
 })();
+
+async function populateServiceFilter(){
+  const { data } = await supabaseClient.from('service_types').select('name').order('name');
+  if (!data) return;
+  const select = document.getElementById('serviceFilter');
+  select.innerHTML = '<option value="">كل الخدمات</option>' + data.map(s => `<option>${escapeHtml(s.name)}</option>`).join('');
+}
 
 async function loadRequests(){
   const { data, error } = await supabaseClient.rpc('get_open_requests_for_providers');
