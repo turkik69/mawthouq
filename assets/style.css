@@ -351,6 +351,24 @@ tr:last-child td{border-bottom:0}
   table{min-width:520px}
 }
 
+/* 22b. SERVICE CARDS — بطاقات بشارات، مستوحاة من نمط بطاقات الدورات لكن
+   بهوية موثوق الذهبية الخاصة، لا الهوية البرتقالية للمرجع */
+.service-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;position:relative;z-index:1}
+.service-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;cursor:pointer;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+.service-card:hover{transform:translateY(-3px);box-shadow:0 14px 32px #10172f14;border-color:#e6d6a0}
+.service-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.service-card .service-num{font-size:12px;font-weight:800;color:#C7CCDC;letter-spacing:.5px}
+.sc-badge{background:var(--gold-tint);color:var(--gold-deep);font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:20px}
+.service-ico-wrap{width:44px;height:44px;border-radius:12px;background:var(--gold-tint);color:var(--gold-deep);display:flex;align-items:center;justify-content:center;margin:14px 0 14px}
+.service-card h3{font-size:16.5px;font-weight:700;margin:0 0 8px}
+.service-card p{color:var(--muted);font-size:13px;line-height:1.7;margin:0 0 18px;flex-grow:1}
+.service-card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:14px;border-top:1px solid var(--line)}
+.sc-price{font-size:12.5px;font-weight:700;color:var(--gold-deep)}
+.service-card-foot .link{background:none;border:0;color:var(--gold-deep);font-size:13px;font-weight:700;padding:0;min-height:auto}
+.service-card:hover .link{color:var(--gold)}
+@media(max-width:900px){.service-cards-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.service-cards-grid{grid-template-columns:1fr}}
+
 /* 23. ACCESSIBILITY */
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent-blue);outline-offset:2px}
 
