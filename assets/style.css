@@ -346,3 +346,60 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 }
+
+/* ============================================================
+   PHASE 2 ADDITIONS — عناصر جديدة لإعادة تصميم index.html فقط.
+   لا شي محذوف أو معدَّل من القسم أعلاه؛ إضافة صرفة.
+   ============================================================ */
+.hero{overflow:hidden}
+.research-net{position:absolute;left:-60px;top:50%;transform:translateY(-50%);width:420px;height:420px;opacity:.5;pointer-events:none;z-index:0}
+@media(max-width:900px){.research-net{width:220px;height:220px;left:50%;top:-40px;transform:translateX(-50%)}}
+
+.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;max-width:920px;margin:0 auto}
+.trust-item{text-align:center;color:var(--navy)}
+.trust-item svg{color:var(--gold-deep);margin-bottom:10px}
+.trust-item b{display:block;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;margin-bottom:2px}
+.trust-item h3{font-size:14px;font-weight:600;margin:0}
+@media(max-width:700px){.trust-grid{grid-template-columns:1fr 1fr;gap:24px}}
+
+.journey-track{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;position:relative;padding-top:6px}
+.journey-track::before{content:'';position:absolute;top:24px;right:0;left:0;height:1px;background:var(--line)}
+.journey-stage{background:none;border:0;padding:20px 8px 0;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;color:var(--text);position:relative;border-radius:0}
+.journey-stage b{width:34px;height:34px;border-radius:50%;background:#fff;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);position:relative;z-index:1;transition:border-color .25s ease,color .25s ease,background .25s ease}
+.journey-stage span{font-size:12.5px;text-align:center;line-height:1.4;font-weight:500}
+.journey-stage:hover b,.journey-stage:focus-visible b{border-color:var(--gold);color:var(--gold-deep);background:var(--gold-tint)}
+@media(max-width:900px){
+  .journey-track{display:flex;flex-direction:column;grid-auto-flow:unset;gap:0}
+  .journey-track::before{top:0;bottom:0;right:23px;left:auto;width:1px;height:auto}
+  .journey-stage{flex-direction:row;padding:14px 0;text-align:right}
+  .journey-stage span{text-align:right}
+}
+
+.service-list{display:flex;flex-direction:column}
+.service-row{display:flex;align-items:center;gap:20px;padding:26px 4px;border-top:1px solid var(--line);transition:background .25s ease}
+.service-list .service-row:last-child{border-bottom:1px solid var(--line)}
+.service-row:hover{background:#ffffff80}
+.service-num{font-family:'Noto Naskh Arabic',serif;font-size:20px;font-weight:600;color:var(--line);flex-shrink:0;width:34px;transition:color .3s ease}
+.service-row:hover .service-num{color:var(--gold)}
+.service-ico{color:var(--navy);flex-shrink:0;transition:color .3s ease}
+.service-row:hover .service-ico{color:var(--gold-deep)}
+.service-txt{flex:1;min-width:0}
+.service-txt h3{font-size:16px;font-weight:700;margin:0 0 4px}
+.service-txt p{color:var(--muted);font-size:13.5px;margin:0;line-height:1.7}
+.service-row .link{flex-shrink:0;transition:transform .25s ease}
+.service-row:hover .link{transform:translateX(-4px)}
+@media(max-width:700px){
+  .service-row{flex-wrap:wrap;gap:10px 16px;padding:22px 2px}
+  .service-txt{flex:1 1 100%;order:3}
+  .service-row .link{order:4;flex:1 1 100%;text-align:right;margin-top:4px}
+}
+
+.featured-service{background:var(--navy);color:#F0EBE0;padding:76px 8%;text-align:center}
+.featured-service .eyebrow{color:var(--gold-light)}
+.featured-service h2{font-size:38px;margin:14px 0 16px;font-family:'Noto Naskh Arabic',serif;font-weight:600}
+.featured-service p{color:#C9CDDA;max-width:600px;margin:0 auto 30px;font-size:16px;line-height:1.8}
+
+.final-cta{background:var(--navy-deep);color:#F0EBE0;padding:80px 8%;text-align:center}
+.final-cta .eyebrow{color:var(--gold-light)}
+.final-cta h2{font-size:36px;margin:14px 0 14px;font-family:'Noto Naskh Arabic',serif;font-weight:600}
+.final-cta p{color:#C9CDDA;max-width:560px;margin:0 auto 30px;font-size:15px}
