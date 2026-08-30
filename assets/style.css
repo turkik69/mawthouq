@@ -1,193 +1,209 @@
 /* ============================================================
-   منصة موثوق — Premium Academic / Editorial / Minimal
-   هذا الملف الوحيد المعدَّل في هذه المرحلة. لا HTML، لا JS، لا Supabase.
-   كل أسماء الكلاسات والمتغيّرات محفوظة حرفيًا كما كانت.
+   منصة موثوق — Modern Academic Technology Platform
+   هوية بصرية جديدة بالكامل: كحلي عميق + أزرق كهربائي (بدل الذهبي).
+   كل أسماء الكلاسات والمتغيّرات محفوظة حرفيًا (تُستخدم من ملفات أخرى
+   لم تُعدَّل هذه المرحلة: admin.js, messages.js, provider-*.js).
    ============================================================ */
 
-/* ============================================================
-   1. FONTS
-   ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
+/* 1. FONTS */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap');
 
-/* ============================================================
-   2. ROOT VARIABLES
-   كل اسم متغيّر موجود سابقًا محفوظ بنفس الاسم (بعضها يُستخدم inline
-   داخل HTML/JS مباشرة: --navy, --muted, --line, --red, --gold-tint —
-   حذفها أو تغيير اسمها كان سيكسر تلك المواضع بصمت).
-   القيم الجديدة من الموجز؛ القيم غير المحدَّدة صراحة (gold-deep,
-   gold-tint, paper-2) اشتُقّت من نفس العائلة اللونية وتحقّقت من
-   نسبة التباين (WCAG) قبل اعتمادها.
-   ============================================================ */
+/* 2. ROOT VARIABLES — القيم الجديدة بالكامل؛ الأسماء محفوظة كما هي */
 :root{
-  --navy:#11182F; --navy-2:#0A1024; --navy-deep:#0A1024;
-  --blue:#C9A45C; --gold:#C9A45C; --gold-deep:#7A5D28; --gold-bright:#E5CB91; --gold-light:#E5CB91; --gold-tint:#F3E9D3;
-  --light:#F3E9D3; --bg:#F7F4EC; --paper-2:#F0EBDD; --white:#fff; --surface:#FFFFFF;
-  --text:#20263A; --muted:#707586; --line:#E6DFCE;
-  --green:#2f6b4f; --red:#c23b3b;
+  --navy:#10172F; --navy-2:#080D21; --navy-deep:#080D21;
+  --blue:#4F6BFF; --gold:#C9A45C; --gold-deep:#7A5D28; --gold-bright:#E5CB91; --gold-light:#E5CB91; --gold-tint:#F3E9D3;
+  --light:#F3E9D3; --bg:#F8F9FC; --paper-2:#F1F3F9; --white:#fff; --surface:#FFFFFF;
+  --text:#14182A; --muted:#697086; --line:#E5E8F0;
+  --green:#159A72; --red:#D94A5F;
+  --violet:#7C5CFF; --accent-blue:#4F6BFF; --accent-blue-light:#8EA0FF; --accent-blue-deep:#3049CC;
 }
 
-/* ============================================================
-   3. RESET
-   ============================================================ */
+/* 3. RESET */
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;overflow-x:hidden}
-body{overflow-x:hidden;max-width:100vw;margin:0;background:var(--bg);color:var(--text);line-height:1.75;animation:pageFadeIn .35s ease}
+body{overflow-x:hidden;max-width:100vw;margin:0;background:var(--bg);color:var(--text);line-height:1.7;animation:pageFadeIn .35s ease}
 @keyframes pageFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .pane-fade{animation:pageFadeIn .25s ease}
 
-/* ============================================================
-   4. TYPOGRAPHY
-   نص عام: IBM Plex Sans Arabic. عناوين كبيرة: Noto Naskh Arabic
-   (طابع أكاديمي كلاسيكي، هرمية وضوح واضحة بالأحجام والأوزان).
-   ============================================================ */
+/* 4. TYPOGRAPHY — قوية وواضحة، وزن 400–800، بدون 300 */
 body{font-family:'IBM Plex Sans Arabic',Cairo,Arial,sans-serif}
-h1,h2,h3{font-family:'Noto Naskh Arabic',Amiri,serif;font-weight:600;letter-spacing:.2px}
-h1{line-height:1.25}
-h2{line-height:1.3}
-h3{font-family:'IBM Plex Sans Arabic',Cairo,sans-serif;font-weight:700}
+h1,h2,h3{font-family:'IBM Plex Sans Arabic',Cairo,sans-serif;font-weight:800;letter-spacing:-.2px;color:var(--navy)}
+h1{line-height:1.1}
+h2{line-height:1.15;font-weight:700}
+h3{font-weight:700}
 
-/* ============================================================
-   5. LAYOUT
-   ============================================================ */
+/* 5. LAYOUT */
 section{padding:88px 8%}
-.heading{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:40px}
-.heading h2,.center h2{font-size:34px;margin:8px 0;font-weight:600}
-.heading p{color:var(--muted);font-size:14px}
-.center{text-align:center;margin-bottom:40px}
+.heading{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:44px}
+.heading h2,.center h2{font-size:clamp(30px,4vw,44px);margin:10px 0;font-weight:700}
+.heading p{color:var(--muted);font-size:15px}
+.center{text-align:center;margin-bottom:44px}
 .alt{background:var(--paper-2)}
-.eyebrow{color:var(--gold-deep);font-weight:700;font-size:12px;letter-spacing:.6px;text-transform:uppercase}
+.eyebrow{color:var(--gold);font-weight:700;font-size:13px;letter-spacing:.6px;text-transform:uppercase}
 
-/* ============================================================
-   6. HEADER
-   ============================================================ */
-header{min-height:76px;background:var(--navy);border-bottom:1px solid #ffffff12;display:flex;align-items:center;justify-content:space-between;padding:12px 7%;position:sticky;top:0;z-index:20;flex-wrap:wrap;gap:10px 18px}
-.brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:600;font-family:'Noto Naskh Arabic',Amiri,serif;text-decoration:none;color:#F7F4EC;cursor:pointer}
-.back-btn{background:transparent;border:1px solid #ffffff26;color:#E6DFCE;border-radius:10px;width:36px;height:36px;font-size:16px;padding:0;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s ease,border-color .2s ease}
-.back-btn:hover{background:#ffffff12;border-color:#ffffff40}
-.brand-mark{width:36px;height:36px;border-radius:50%;background:var(--gold);color:var(--navy);display:grid;place-items:center;flex-shrink:0;font-family:'IBM Plex Sans Arabic',sans-serif;font-weight:700;font-size:15px}
+/* 6. HEADER */
+header{min-height:76px;background:var(--navy);border-bottom:1px solid #ffffff14;display:flex;align-items:center;justify-content:space-between;padding:12px 7%;position:sticky;top:0;z-index:20;flex-wrap:wrap;gap:10px 18px}
+.brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;font-family:'IBM Plex Sans Arabic',sans-serif;text-decoration:none;color:#fff;cursor:pointer}
+.back-btn{background:transparent;border:1px solid #ffffff28;color:#E5E8F0;border-radius:10px;width:36px;height:36px;font-size:16px;padding:0;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s ease,border-color .2s ease}
+.back-btn:hover{background:#ffffff14;border-color:#ffffff44}
+.brand-mark{width:36px;height:36px;border-radius:9px;background:var(--gold);color:var(--navy);display:grid;place-items:center;flex-shrink:0;font-family:'IBM Plex Sans Arabic',sans-serif;font-weight:800;font-size:15px}
 nav{display:flex;gap:30px}
-nav a{text-decoration:none;color:#C9CDDA;font-weight:500;font-size:14px;transition:color .2s ease}
-nav a:hover{color:var(--gold-light)}
+nav a{text-decoration:none;color:#B7BDD6;font-weight:600;font-size:14.5px;transition:color .2s ease}
+nav a:hover{color:#fff}
 .actions{display:flex;gap:8px;align-items:center}
 
-/* ============================================================
-   7. BUTTONS
-   Primary = كحلي معبّى. Secondary/outline = شفاف بحد رفيع.
-   الذهبي محجوز للّمسات المميزة فقط، وليس كل الأزرار.
-   ============================================================ */
-button,.btn{font:inherit;cursor:pointer;border:1.5px solid transparent;border-radius:10px;padding:11px 20px;font-weight:600;background:var(--navy);color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:transform .12s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease}
-button:hover,.btn:hover{background:var(--navy-deep);box-shadow:0 4px 14px #11182f2e}
-button:active,.btn:active{transform:scale(.97)}
-button:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
-.ghost{background:transparent;color:#E6DFCE;border-color:transparent}
-.ghost:hover{background:#ffffff12;box-shadow:none}
-header .outline,.admin-bar .outline,.chat-header .outline,.outline-invert{background:transparent;color:var(--gold-light);border-color:#E5CB9155}
-.outline-invert:hover{border-color:var(--gold-light);background:#ffffff0d;box-shadow:none}
+/* 7. BUTTONS — Primary = أزرق كهربائي / أبيض. Secondary = شفاف بحد */
+button,.btn{font:inherit;cursor:pointer;border:1.5px solid transparent;border-radius:11px;padding:13px 22px;min-height:48px;font-weight:700;background:var(--gold);color:var(--navy);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:transform .15s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease,filter .2s ease}
+button:hover,.btn:hover{filter:brightness(1.08);box-shadow:0 6px 18px #4f6bff33;transform:translateY(-1px)}
+button:active,.btn:active{transform:scale(.97) translateY(0)}
+button:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;transform:none}
+.ghost{background:transparent;color:#E5E8F0;border-color:transparent}
+.ghost:hover{background:#ffffff14;box-shadow:none;transform:none;filter:none}
+header .outline,.admin-bar .outline,.chat-header .outline,.outline-invert{background:transparent;color:#fff;border-color:#ffffff40}
+.outline-invert:hover{border-color:#fff;background:#ffffff12;box-shadow:none;transform:none;filter:none}
 .outline{background:#fff;color:var(--navy);border-color:var(--line)}
-.outline:hover{background:var(--bg);box-shadow:none}
-.large{padding:15px 26px;margin-left:8px}
-/* CTA ذهبي — يُستخدم فقط عند الحاجة صراحة عبر عنصر بخلفية مميزة كـ .cta .white، وليس افتراضيًا لكل الأزرار */
+.outline:hover{background:var(--bg);box-shadow:none;filter:none}
+.large{padding:15px 28px;margin-left:8px;min-height:52px}
 
-/* ============================================================
-   8. FORMS
-   ============================================================ */
+/* 8. FORMS / INPUTS */
 .form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .field{display:flex;flex-direction:column;gap:6px}
 .field label{font-size:13px;font-weight:600;color:var(--text)}
 .full{grid-column:1/-1}
-.field input,.field select,.field textarea{font:inherit;border:1px solid var(--line);border-radius:9px;padding:11px;outline:none;background:#fff;color:var(--text);transition:border-color .2s ease}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold)}
+.field input,.field select,.field textarea{font:inherit;border:1px solid #DDE1EA;border-radius:10px;padding:13px;min-height:48px;outline:none;background:#fff;color:var(--text);transition:border-color .2s ease,box-shadow .2s ease}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px #4f6bff1f}
 .field textarea{min-height:105px;resize:vertical}
 .form-actions{margin-top:20px;display:flex;gap:8px}
-.search{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;padding:9px 14px;gap:8px}
-.search input{border:0;outline:0;width:100%;font:inherit;background:transparent}
-.search-bar{display:flex;align-items:center;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 15px;gap:8px;max-width:420px;margin:0 0 24px}
-.search-bar input{border:0;outline:0;width:100%;font:inherit;background:transparent}
+.search{display:flex;align-items:center;border:1px solid #DDE1EA;border-radius:12px;padding:10px 14px;gap:8px}
+.search input{border:0;outline:0;width:100%;font:inherit;background:transparent;min-height:auto}
+.search-bar{display:flex;align-items:center;border:1px solid #DDE1EA;background:#fff;border-radius:12px;padding:12px 15px;gap:8px;max-width:420px;margin:0 0 24px}
+.search-bar input{border:0;outline:0;width:100%;font:inherit;background:transparent;min-height:auto}
 .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
-.chips button{background:#fff;color:var(--navy);border:1px solid var(--line);text-align:right;font-size:13px;font-weight:500}
-.chips button:hover{border-color:var(--gold);background:var(--bg)}
+.chips button{background:#fff;color:var(--navy);border:1px solid var(--line);text-align:right;font-size:13px;font-weight:600;min-height:auto;padding:10px 14px}
+.chips button:hover{border-color:var(--gold);background:var(--bg);transform:none;box-shadow:none;filter:none}
 .type-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .type-option{position:relative;border:1.5px solid var(--line);border-radius:11px;padding:14px;text-align:center;cursor:pointer;display:flex;flex-direction:column;gap:2px;transition:border-color .2s ease,background .2s ease}
 .type-option input{position:absolute;opacity:0;pointer-events:none}
-.type-option-title{font-weight:600;font-size:14px}
+.type-option-title{font-weight:700;font-size:14px}
 .type-option-sub{font-size:12px;color:var(--muted)}
 .type-option.selected{border-color:var(--gold);background:var(--gold-tint)}
 .provider-fields{border-top:1px dashed var(--line);margin-top:4px;padding-top:16px;flex-direction:column;gap:15px}
 .provider-fields:not([hidden]){display:flex}
 
-/* ============================================================
-   9. CARDS
-   حدود رفيعة + ظلال خفيفة جدًا + مساحات داخلية أفضل — لا Heavy shadows،
-   لا Glassmorphism. لغة بصرية موحّدة تُستخدم لاحقًا بالخدمات والخبراء
-   ولوحات التحكم.
-   ============================================================ */
-.hero-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:0 12px 32px #11182f14}
-.stat-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;transition:box-shadow .25s ease}
-.stat-card:hover{box-shadow:0 6px 18px #11182f0f}
-.stat-card b{font-size:28px;display:block;color:var(--navy);font-family:'Noto Naskh Arabic',serif;font-weight:600}
+/* 9. CARDS — أقل قدر ممكن، حدود رفيعة، ظل خفيف جدًا */
+.hero-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px;box-shadow:0 8px 24px #10172f0f}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;transition:box-shadow .25s ease,border-color .25s ease}
+.stat-card:hover{box-shadow:0 6px 18px #10172f0d;border-color:#d5daea}
+.stat-card b{font-size:30px;display:block;color:var(--navy);font-weight:800}
 .stat-card span{color:var(--muted);font-size:13px}
-.auth-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:40px;width:min(440px,100%);box-shadow:0 16px 40px #11182f12;position:relative;overflow:hidden}
-.auth-card::before{content:'';position:absolute;top:-40px;left:-40px;width:150px;height:150px;background:var(--gold-tint);border-radius:50%;opacity:.6;z-index:0}
+.auth-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:40px;width:min(440px,100%);box-shadow:0 16px 40px #10172f14;position:relative;overflow:hidden}
+.auth-card::before{content:'';position:absolute;top:-40px;left:-40px;width:150px;height:150px;background:var(--gold-tint);border-radius:50%;opacity:.7;z-index:0}
 .auth-card>*{position:relative;z-index:1}
-.auth-card h1{font-size:25px;margin:0 0 6px;font-weight:600;font-family:'Noto Naskh Arabic',serif}
+.auth-card h1{font-size:26px;margin:0 0 6px;font-weight:800}
 .auth-card>p{color:var(--muted);font-size:14px;margin:0 0 28px}
 .auth-card .field{margin-bottom:15px}
 .auth-card label{font-size:13px;font-weight:600;color:var(--text)}
-.auth-card button[type=submit]{width:100%;padding:13px;font-size:15px;margin-top:6px}
+.auth-card button[type=submit]{width:100%;padding:14px;font-size:15px;margin-top:6px}
 .auth-foot{text-align:center;margin-top:22px;font-size:14px;color:var(--muted)}
-.auth-foot a{color:var(--gold-deep);font-weight:600;text-decoration:none}
-.auth-wrap{min-height:calc(100vh - 76px);display:flex;align-items:center;justify-content:center;padding:40px 6%;background:radial-gradient(circle at 30% 20%,#f0e6cc55,var(--bg) 60%)}
+.auth-foot a{color:var(--gold-deep);font-weight:700;text-decoration:none}
+.auth-wrap{min-height:calc(100vh - 76px);display:flex;align-items:center;justify-content:center;padding:40px 6%;background:radial-gradient(circle at 30% 20%,#eef1ff,var(--bg) 60%)}
 .alert{border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:18px;display:none}
 .alert.show{display:block}
-.alert-error{background:#fdecec;color:var(--red)}
-.alert-success{background:#e8f3ec;color:var(--green)}
-.spinner{width:16px;height:16px;border:2px solid #11182f40;border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;display:none;vertical-align:middle}
+.alert-error{background:#fdeef0;color:var(--red)}
+.alert-success{background:#e9f7f1;color:var(--green)}
+.spinner{width:16px;height:16px;border:2px solid #10172f33;border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;display:none;vertical-align:middle}
 button.loading .spinner{display:inline-block;margin-right:8px}
 button.loading .btn-text{opacity:.85}
 @keyframes spin{to{transform:rotate(360deg)}}
-.notice{background:var(--gold-tint);color:#5c4a1f;border-radius:10px;padding:13px 15px;margin-bottom:18px;font-size:13px;border:1px solid #e6d6a0}
+.notice{background:var(--gold-tint);color:#233a99;border-radius:10px;padding:13px 15px;margin-bottom:18px;font-size:13px;border:1px solid #d3dcff}
 
-/* ============================================================
-   10. SERVICES
-   ============================================================ */
-.hero{min-height:580px;padding:80px 8%;display:grid;grid-template-columns:1.15fr .85fr;gap:64px;align-items:center;background:linear-gradient(165deg,var(--navy),var(--navy-deep));color:#F0EBE0;position:relative}
-.hero::after{content:'';position:absolute;bottom:0;right:8%;left:8%;height:1px;background:linear-gradient(90deg,transparent,#E5CB9140,transparent);pointer-events:none}
-.hero h1{font-size:50px;line-height:1.28;margin:14px 0 20px;font-weight:600;font-family:'Noto Naskh Arabic',serif}
-.hero h1 span{color:var(--gold-light)}
-.hero p{color:#C9CDDA;font-size:17px;max-width:640px;line-height:1.8}
-.hero-actions{margin:30px 0}
-.trust{font-size:13px;color:#9a9fb8;font-weight:500}
-.service-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-.service{background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
-.service:hover{transform:translateY(-2px);box-shadow:0 10px 26px #11182f10;border-color:#E5CB9166}
-.service .icon{font-size:21px;width:42px;height:42px;border-radius:50%;background:var(--gold-tint);display:grid;place-items:center;margin-bottom:12px}
-.service h3{margin:10px 0 4px;font-size:16px;font-weight:700}
-.service p{color:var(--muted);font-size:13px;line-height:1.7}
-.link{background:none;border:0;color:var(--gold-deep);padding:0;font-weight:600}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
-.step{border-top:2px solid var(--gold);padding-top:16px}
-.step b{color:var(--gold-deep);font-family:'Noto Naskh Arabic',serif;font-size:22px;font-weight:600}
-.step h3{font-size:16px;margin:8px 0}
+/* 10. HERO */
+.hero{min-height:600px;padding:84px 8%;display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center;background:linear-gradient(165deg,var(--navy),var(--navy-deep));color:#F1F3F9;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(38px,6vw,68px);line-height:1.1;margin:16px 0 20px;font-weight:800;color:#fff}
+.hero h1 span{color:var(--accent-blue-light)}
+.hero p{color:#B7BDD6;font-size:17px;max-width:600px;line-height:1.8;font-weight:400}
+.hero-actions{margin:32px 0}
+.trust{font-size:13px;color:#8890AC;font-weight:600}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding:60px 6%}}
+
+/* 11. RESEARCH NETWORK — العنصر البصري الجديد بالغلاف */
+.research-net{position:absolute;left:-40px;top:50%;transform:translateY(-50%);width:460px;height:460px;pointer-events:none;z-index:0}
+@media(max-width:900px){.research-net{width:230px;height:230px;left:50%;top:-30px;transform:translateX(-50%);opacity:.6}}
+.rn-pulse{animation:rnPulse 3.5s ease-in-out infinite}
+@keyframes rnPulse{0%,100%{opacity:.55}50%{opacity:1}}
+
+/* 12. SERVICES — قائمة Editorial تفاعلية بدل Grid */
+.service-list{display:flex;flex-direction:column;position:relative;z-index:1}
+.service-row{display:flex;align-items:center;gap:22px;padding:28px 22px;border:1px solid transparent;border-top-color:var(--line);border-radius:12px;transition:background .3s ease,border-color .3s ease}
+.service-list .service-row:last-child{border-bottom:1px solid var(--line)}
+.service-row:hover{background:var(--navy);border-top-color:var(--navy)}
+.service-num{font-size:20px;font-weight:800;color:#C7CCDC;flex-shrink:0;width:34px;transition:color .3s ease}
+.service-row:hover .service-num{color:var(--gold-bright)}
+.service-ico{color:var(--navy);flex-shrink:0;transition:color .3s ease;width:36px;height:36px}
+.service-row:hover .service-ico{color:var(--gold-bright)}
+.service-txt{flex:1;min-width:0}
+.service-txt h3{font-size:18px;font-weight:700;margin:0 0 5px;transition:color .3s ease}
+.service-row:hover .service-txt h3{color:#fff}
+.service-txt p{color:var(--muted);font-size:13.5px;margin:0;line-height:1.7;transition:color .3s ease}
+.service-row:hover .service-txt p{color:#B7BDD6}
+.service-row .link{flex-shrink:0;transition:transform .3s ease,color .3s ease;background:none;color:var(--gold-deep)}
+.service-row:hover .link{transform:translateX(-6px);color:var(--gold-bright)}
+@media(max-width:700px){
+  .service-row{flex-wrap:wrap;gap:10px 16px;padding:24px 14px}
+  .service-txt{flex:1 1 100%;order:3}
+  .service-row .link{order:4;flex:1 1 100%;text-align:right;margin-top:4px}
+}
+
+/* 13. STEPS / HOW IT WORKS */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;position:relative}
+.step{border-top:2px solid var(--gold);padding-top:18px}
+.step b{color:var(--gold);font-size:24px;font-weight:800}
+.step h3{font-size:17px;margin:8px 0;font-weight:700}
 .step p{color:var(--muted);font-size:14px;line-height:1.7}
-.cta{margin:0 8% 72px;border-radius:18px;background:var(--gold-tint);color:var(--navy);padding:46px 50px;display:flex;align-items:center;justify-content:space-between;gap:25px;border:1px solid #e6d6a0}
-.cta .eyebrow{color:var(--gold-deep)}
-.cta p{color:#6b5d3a}
-.cta .white{background:var(--navy);color:#fff}
-footer{background:var(--navy);color:#dfe1ee;padding:36px 8%;display:flex;align-items:center;gap:25px}
-footer .brand{color:#F7F4EC;cursor:default}
-footer p{color:#9a9fb8;margin-right:auto}
-footer small{color:#6e7290}
 
-/* ============================================================
-   11. EXPERTS
-   ============================================================ */
+/* 14. TRUST + JOURNEY (تُبنى بواسطة index.html بنفس الكلاسات من قبل) */
+.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;max-width:960px;margin:0 auto}
+.trust-item{text-align:center;color:var(--navy)}
+.trust-item svg{color:var(--gold);margin-bottom:12px;width:30px;height:30px}
+.trust-item b{display:block;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:3px}
+.trust-item h3{font-size:15px;font-weight:700;margin:0}
+@media(max-width:700px){.trust-grid{grid-template-columns:1fr 1fr;gap:26px}}
+
+.journey-track{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;position:relative;padding-top:6px}
+.journey-track::before{content:'';position:absolute;top:25px;right:0;left:0;height:1px;background:var(--line)}
+.journey-stage{background:none;border:0;padding:20px 8px 0;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:pointer;color:var(--text);position:relative;border-radius:0}
+.journey-stage b{width:36px;height:36px;border-radius:50%;background:#fff;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;color:var(--muted);position:relative;z-index:1;transition:border-color .25s ease,color .25s ease,background .25s ease}
+.journey-stage span{font-size:12.5px;text-align:center;line-height:1.4;font-weight:600}
+.journey-stage:hover b,.journey-stage:focus-visible b{border-color:var(--accent-blue-deep);color:#fff;background:var(--accent-blue-deep)}
+@media(max-width:900px){
+  .journey-track{display:flex;flex-direction:column;grid-auto-flow:unset;gap:0}
+  .journey-track::before{top:0;bottom:0;right:24px;left:auto;width:1px;height:auto}
+  .journey-stage{flex-direction:row;padding:14px 0;text-align:right}
+  .journey-stage span{text-align:right}
+}
+
+/* 15. FEATURED SERVICE / FINAL CTA */
+.featured-service{background:var(--navy);color:#F1F3F9;padding:80px 8%;text-align:center}
+.featured-service .eyebrow{color:var(--gold-bright)}
+.featured-service h2{font-size:clamp(28px,4vw,40px);margin:14px 0 16px;color:#fff;font-weight:800}
+.featured-service p{color:#B7BDD6;max-width:600px;margin:0 auto 30px;font-size:16px;line-height:1.8}
+.final-cta{background:var(--navy-deep);color:#F1F3F9;padding:84px 8%;text-align:center}
+.final-cta .eyebrow{color:var(--gold-bright)}
+.final-cta h2{font-size:clamp(28px,4vw,38px);margin:14px 0 14px;color:#fff;font-weight:800}
+.final-cta p{color:#B7BDD6;max-width:560px;margin:0 auto 30px;font-size:15px}
+.cta{margin:0 8% 72px;border-radius:16px;background:var(--gold-tint);color:var(--navy);padding:46px 50px;display:flex;align-items:center;justify-content:space-between;gap:25px;border:1px solid #d3dcff}
+.cta .eyebrow{color:var(--gold-deep)}
+.cta p{color:#3a4a99}
+.cta .white{background:var(--navy);color:#fff}
+
+/* 16. EXPERTS */
 .expert-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.expert{text-align:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
-.expert:hover{transform:translateY(-2px);box-shadow:0 10px 26px #11182f10;border-color:#E5CB9166}
-.expert .avatar{width:64px;height:64px;font-size:21px;margin:0 auto 12px;border-radius:50%;background:var(--gold-tint);color:var(--gold-deep);display:grid;place-items:center;font-weight:700}
+.expert{text-align:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+.expert:hover{transform:translateY(-3px);box-shadow:0 12px 28px #10172f10;border-color:#c8d1ff}
+.expert .avatar{width:64px;height:64px;font-size:21px;margin:0 auto 12px;border-radius:50%;background:var(--gold-tint);color:var(--gold-deep);display:grid;place-items:center;font-weight:800}
 .expert h3{font-size:17px;margin:0 0 3px;font-weight:700}
 .expert p{color:var(--muted);font-size:13px}
-.verified{display:inline-block;margin-top:13px;background:var(--gold-tint);color:var(--gold-deep);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.verified{display:inline-flex;align-items:center;gap:4px;margin-top:13px;background:var(--gold-tint);color:var(--gold-deep);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
 .match{background:var(--gold-tint);padding:16px;border-radius:14px}
 .match-head{display:flex;justify-content:space-between;font-size:13px}
 .match-head strong{color:var(--gold-deep)}
@@ -196,64 +212,74 @@ footer small{color:#6e7290}
 .person .info{flex:1}
 .person small{display:block;color:var(--muted)}
 .seal-wrap{display:flex;align-items:center;justify-content:center}
-.seal-wrap svg{max-width:260px;width:100%;filter:drop-shadow(0 14px 32px #11182f30)}
+.seal-wrap svg{max-width:260px;width:100%;filter:drop-shadow(0 14px 32px #10172f30)}
 
-/* ============================================================
-   12. TABLES
-   admin.html / my-requests.html / provider-requests.html — بدون أي
-   تغيير على HTML أو JS، فقط وضوح أكبر للترويسة والصفوف والحالات.
-   ============================================================ */
-.admin-bar{background:var(--navy);color:#fff;padding:18px 7%;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.admin-bar .who{font-size:13px;color:#C9CDDA}
-.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
-.admin-tabs{display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid var(--line)}
-.tab-btn{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:11px 4px;margin-left:24px;font-weight:600;font-size:14px;cursor:pointer;border-radius:0;transition:color .2s ease,border-color .2s ease}
-.tab-btn.active{color:var(--navy);border-bottom-color:var(--gold)}
-.admin-tab{display:none}
-.admin-tab.active{display:block;animation:pageFadeIn .25s ease}
-.table-wrap{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th{background:var(--paper-2);text-align:right;padding:14px 16px;color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.3px;border-bottom:1px solid var(--line)}
-td{padding:14px 16px;border-bottom:1px solid var(--line);color:var(--text)}
-tr:last-child td{border-bottom:0}
-tr{transition:background .15s ease}
-.table-wrap tbody tr:hover{background:var(--bg)}
-.empty-state{text-align:center;padding:64px 20px;color:var(--muted)}
-.skeleton{background:linear-gradient(90deg,#eee9da 25%,#e6dfc9 37%,#eee9da 63%);background-size:400% 100%;animation:shimmer 1.4s ease infinite;border-radius:6px;height:14px}
-@keyframes shimmer{0%{background-position:100% 0}100%{background-position:0 0}}
-.badge-seeker{background:#e9ecf5;color:#3d4568;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700}
-.badge-provider{background:var(--gold-tint);color:var(--gold-deep);padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700}
-.badge-admin{background:var(--gold-tint);color:var(--gold-deep);padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700}
+/* 17. FOOTER */
+footer{background:var(--navy);color:#B7BDD6;padding:36px 8%;display:flex;align-items:center;gap:25px}
+footer .brand{color:#fff;cursor:default}
+footer p{color:#8890AC;margin-right:auto}
+footer small{color:#5C6488}
 
-/* ============================================================
-   13. MODALS
-   ============================================================ */
-.modal{display:flex;opacity:0;pointer-events:none;position:fixed;inset:0;background:#0a102499;z-index:50;align-items:center;justify-content:center;padding:18px;transition:opacity .25s ease}
+/* 18. MODALS */
+.modal{display:flex;opacity:0;pointer-events:none;position:fixed;inset:0;background:#080d2199;z-index:50;align-items:center;justify-content:center;padding:18px;transition:opacity .25s ease}
 .modal.show{opacity:1;pointer-events:auto}
 .modal .modal-box{transform:scale(.96) translateY(8px);transition:transform .25s ease}
 .modal.show .modal-box{transform:scale(1) translateY(0)}
-.modal-box{background:#fff;width:min(720px,100%);max-height:90vh;overflow:auto;border-radius:18px;padding:32px;position:relative;border:1px solid var(--line);box-shadow:0 24px 60px #11182f22}
-.close{position:absolute;left:16px;top:10px;background:none;border:0;color:var(--muted);font-size:26px;padding:0}
+.modal-box{background:#fff;width:min(720px,100%);max-height:90vh;overflow:auto;border-radius:16px;padding:32px;position:relative;border:1px solid var(--line);box-shadow:0 24px 60px #10172f22}
+.close{position:absolute;left:16px;top:10px;background:none;border:0;color:var(--muted);font-size:26px;padding:0;min-height:auto}
 
-/* ============================================================
-   14. TOASTS
-   ============================================================ */
-.toast{background:var(--navy);color:#fff;padding:12px 18px;border-radius:11px;font-size:13px;font-weight:600;box-shadow:0 10px 26px #11182f30;opacity:0;transform:translateY(-12px);transition:opacity .25s ease,transform .25s ease;pointer-events:auto}
+/* 19. TOASTS */
+.toast{background:var(--navy);color:#fff;padding:13px 18px;border-radius:11px;font-size:13px;font-weight:600;box-shadow:0 10px 26px #10172f30;opacity:0;transform:translateY(-12px);transition:opacity .25s ease,transform .25s ease;pointer-events:auto}
 .toast-in{opacity:1;transform:translateY(0)}
 .toast-out{opacity:0;transform:translateY(-8px)}
 .toast-success{background:var(--green)}
 .toast-error{background:var(--red)}
 
-/* ============================================================
-   15. DASHBOARD
-   المحادثات والملفات والدفع والتقييم — نفس اللغة البصرية للمنصة.
-   ============================================================ */
+/* 20. DASHBOARD / TABLES / STATUS — تُطبَّق تلقائيًا على admin/provider/my-requests
+   بمجرد رفع هذا الملف، بدون لمس تلك الصفحات هذه المرحلة */
+.admin-bar{background:var(--navy);color:#fff;padding:18px 7%;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.admin-bar .who{font-size:13px;color:#B7BDD6}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.admin-tabs{display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.tab-btn{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:11px 4px;margin-left:24px;font-weight:700;font-size:14px;cursor:pointer;border-radius:0;min-height:auto;transition:color .2s ease,border-color .2s ease}
+.tab-btn:hover{transform:none;box-shadow:none;filter:none}
+.tab-btn.active{color:var(--navy);border-bottom-color:var(--gold)}
+.admin-tab{display:none}
+.admin-tab.active{display:block;animation:pageFadeIn .25s ease}
+.table-wrap{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:var(--paper-2);text-align:right;padding:14px 16px;color:var(--muted);font-weight:700;font-size:12px;letter-spacing:.3px;border-bottom:1px solid var(--line)}
+td{padding:14px 16px;border-bottom:1px solid var(--line);color:var(--text)}
+tr:last-child td{border-bottom:0}
+.table-wrap tbody tr{transition:background .15s ease}
+.table-wrap tbody tr:hover{background:var(--bg)}
+.empty-state{text-align:center;padding:64px 20px;color:var(--muted)}
+.skeleton{background:linear-gradient(90deg,#eef0f6 25%,#e3e7f2 37%,#eef0f6 63%);background-size:400% 100%;animation:shimmer 1.4s ease infinite;border-radius:6px;height:14px}
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:0 0}}
+
+/* شارات حالة — نقطة مؤشر + خلفية ناعمة + نص داكن مقروء */
+.badge-seeker,.badge-provider,.badge-admin,.payment-status{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11.5px;font-weight:700}
+.badge-seeker::before,.badge-provider::before,.badge-admin::before,.payment-status::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.badge-seeker{background:#EEF1FF;color:#3a4a99}
+.badge-seeker::before{background:#5B6BC9}
+.badge-provider{background:var(--gold-tint);color:var(--gold-deep)}
+.badge-provider::before{background:var(--gold)}
+.badge-admin{background:var(--gold-tint);color:var(--gold-deep)}
+.badge-admin::before{background:var(--gold)}
+.payment-status.pending{background:#FDF3E4;color:#93650A}
+.payment-status.pending::before{background:#D9930A}
+.payment-status.held{background:var(--gold-tint);color:var(--gold-deep)}
+.payment-status.held::before{background:var(--gold)}
+.payment-status.released{background:#E9F7F1;color:var(--green)}
+.payment-status.released::before{background:var(--green)}
+
+/* 21. رسائل / محادثات / ملفات / دفع — نفس اللغة البصرية */
 .messages-layout{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 76px)}
 .conv-list{border-left:1px solid var(--line);overflow-y:auto;padding:16px 12px;background:#fff}
 .conv-item{padding:12px 10px;border-radius:10px;cursor:pointer;margin-bottom:4px;display:flex;align-items:center;gap:8px;transition:background .2s ease}
 .conv-item:hover,.conv-item.active{background:var(--gold-tint)}
 .conv-item .ci-text{flex:1;min-width:0}
-.conv-item b{display:block;font-size:14px;font-weight:600}
+.conv-item b{display:block;font-size:14px;font-weight:700}
 .conv-item span{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .conv-item .unread-dot{width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0}
 .chat-panel{display:flex;flex-direction:column;height:100%}
@@ -261,47 +287,39 @@ tr{transition:background .15s ease}
 .chat-header .ghost{color:var(--navy)}
 .chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px}
 .msg{max-width:70%;padding:11px 15px;border-radius:14px;font-size:14px;line-height:1.6;word-wrap:break-word}
-.msg.mine{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-left-radius:4px}
+.msg.mine{align-self:flex-end;background:var(--gold);color:var(--navy);border-bottom-left-radius:4px}
 .msg.theirs{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-right-radius:4px}
 .msg small{display:block;opacity:.65;font-size:11px;margin-top:5px}
 .chat-input-row{display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--line);background:#fff}
-.chat-input-row input{flex:1;border:1px solid var(--line);border-radius:22px;padding:10px 16px;font:inherit;outline:none;transition:border-color .2s ease}
+.chat-input-row input{flex:1;border:1px solid var(--line);border-radius:22px;padding:10px 16px;font:inherit;outline:none;min-height:auto;transition:border-color .2s ease}
 .chat-input-row input:focus{border-color:var(--gold)}
-.back-to-list{display:none;font-size:18px;padding:4px 10px}
+.back-to-list{display:none;font-size:18px;padding:4px 10px;min-height:auto}
 .unread-badge{background:var(--gold);color:var(--navy);border-radius:20px;font-size:11px;font-weight:700;padding:1px 7px;margin-right:4px}
-.status-pill{font-size:12px;font-weight:700;padding:6px 13px;border-radius:20px;border:0;cursor:pointer;transition:opacity .2s ease}
+.status-pill{font-size:12px;font-weight:700;padding:6px 13px;border-radius:20px;border:0;cursor:pointer;min-height:auto;transition:opacity .2s ease}
 .status-pill.action{background:var(--gold);color:var(--navy)}
-.status-pill.action:hover{opacity:.88}
-.status-pill.done{background:#e8f3ec;color:var(--green);cursor:default}
+.status-pill.action:hover{opacity:.9;transform:none;box-shadow:none;filter:none}
+.status-pill.done{background:#E9F7F1;color:var(--green);cursor:default}
 .rating-form-box{padding:16px 20px;border-bottom:1px solid var(--line);background:var(--gold-tint);animation:pageFadeIn .2s ease}
 .rating-form-box textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font:inherit;margin:8px 0;resize:vertical;min-height:60px;background:#fff}
 .star-picker{display:flex;gap:4px;font-size:25px;margin:8px 0}
-.star-picker span{cursor:pointer;color:#dcd0b0;transition:color .15s ease}
-.star-picker span.filled{color:var(--gold-deep)}
+.star-picker span{cursor:pointer;color:#D5D9E8;transition:color .15s ease}
+.star-picker span.filled{color:var(--gold)}
 .payment-box{padding:15px 20px;border-bottom:1px solid var(--line);background:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap;animation:pageFadeIn .2s ease}
-.payment-box .amount-input{width:110px;border:1px solid var(--line);border-radius:8px;padding:9px 10px;font:inherit}
-.payment-status{font-size:13px;font-weight:600;padding:5px 13px;border-radius:20px}
-.payment-status.pending{background:#fdf3e0;color:#9a6b00}
-.payment-status.held{background:var(--gold-tint);color:var(--gold-deep)}
-.payment-status.released{background:#e8f3ec;color:var(--green)}
+.payment-box .amount-input{width:110px;border:1px solid var(--line);border-radius:8px;padding:9px 10px;font:inherit;min-height:auto}
 .files-panel{padding:15px 20px;border-bottom:1px solid var(--line);background:var(--paper-2);max-height:220px;overflow-y:auto;animation:pageFadeIn .2s ease}
-.files-panel h4{margin:0 0 9px;font-size:13px;color:var(--muted);font-weight:600}
+.files-panel h4{margin:0 0 9px;font-size:13px;color:var(--muted);font-weight:700}
 .file-row{display:flex;align-items:center;gap:8px;padding:8px 0;font-size:13px;border-bottom:1px solid var(--line)}
 .file-row:last-child{border-bottom:0}
-.file-row a{color:var(--gold-deep);font-weight:600;text-decoration:none;flex:1}
+.file-row a{color:var(--gold-deep);font-weight:700;text-decoration:none;flex:1}
 .file-row small{color:var(--muted)}
 .file-upload-row{display:flex;gap:8px;margin-top:11px;align-items:center}
-.file-upload-row input[type=file]{flex:1;font-size:12px}
+.file-upload-row input[type=file]{flex:1;font-size:12px;min-height:auto}
 
-/* ============================================================
-   16. RESPONSIVE
-   ============================================================ */
+/* 22. RESPONSIVE */
 @media(max-width:900px){
   nav{display:none}
-  .hero{grid-template-columns:1fr;padding:56px 6%}
   .seal-wrap{order:-1;margin-bottom:8px}
   .seal-wrap svg{max-width:170px}
-  .service-grid{grid-template-columns:1fr 1fr}
   .steps{grid-template-columns:1fr 1fr}
   .expert-grid{grid-template-columns:1fr}
   .cta{margin:0 6% 56px;flex-direction:column;align-items:flex-start}
@@ -320,11 +338,9 @@ tr{transition:background .15s ease}
 @media(max-width:520px){
   header{padding:9px 4%}
   .actions{gap:6px}
-  .actions .btn,.actions button{padding:9px 13px;font-size:13px}
-  .hero h1{font-size:32px}
-  .hero p{font-size:15px}
+  .actions .btn,.actions button{padding:10px 14px;font-size:13px;min-height:42px}
   .hero-actions button{display:block;width:100%;margin:8px 0}
-  .chips,.service-grid,.steps,.form{grid-template-columns:1fr}
+  .chips,.form{grid-template-columns:1fr}
   .full{grid-column:auto}
   .cta{padding:32px 24px}
   footer{flex-wrap:wrap;padding:32px 6%}
@@ -335,71 +351,11 @@ tr{transition:background .15s ease}
   table{min-width:520px}
 }
 
-/* ============================================================
-   17. ACCESSIBILITY
-   ============================================================ */
-a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+/* 23. ACCESSIBILITY */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent-blue);outline-offset:2px}
 
-/* ============================================================
-   18. REDUCED MOTION
-   ============================================================ */
+/* 24. REDUCED MOTION */
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .rn-pulse{animation:none!important}
 }
-
-/* ============================================================
-   PHASE 2 ADDITIONS — عناصر جديدة لإعادة تصميم index.html فقط.
-   لا شي محذوف أو معدَّل من القسم أعلاه؛ إضافة صرفة.
-   ============================================================ */
-.hero{overflow:hidden}
-.research-net{position:absolute;left:-60px;top:50%;transform:translateY(-50%);width:420px;height:420px;opacity:.5;pointer-events:none;z-index:0}
-@media(max-width:900px){.research-net{width:220px;height:220px;left:50%;top:-40px;transform:translateX(-50%)}}
-
-.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;max-width:920px;margin:0 auto}
-.trust-item{text-align:center;color:var(--navy)}
-.trust-item svg{color:var(--gold-deep);margin-bottom:10px}
-.trust-item b{display:block;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;margin-bottom:2px}
-.trust-item h3{font-size:14px;font-weight:600;margin:0}
-@media(max-width:700px){.trust-grid{grid-template-columns:1fr 1fr;gap:24px}}
-
-.journey-track{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;position:relative;padding-top:6px}
-.journey-track::before{content:'';position:absolute;top:24px;right:0;left:0;height:1px;background:var(--line)}
-.journey-stage{background:none;border:0;padding:20px 8px 0;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;color:var(--text);position:relative;border-radius:0}
-.journey-stage b{width:34px;height:34px;border-radius:50%;background:#fff;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);position:relative;z-index:1;transition:border-color .25s ease,color .25s ease,background .25s ease}
-.journey-stage span{font-size:12.5px;text-align:center;line-height:1.4;font-weight:500}
-.journey-stage:hover b,.journey-stage:focus-visible b{border-color:var(--gold);color:var(--gold-deep);background:var(--gold-tint)}
-@media(max-width:900px){
-  .journey-track{display:flex;flex-direction:column;grid-auto-flow:unset;gap:0}
-  .journey-track::before{top:0;bottom:0;right:23px;left:auto;width:1px;height:auto}
-  .journey-stage{flex-direction:row;padding:14px 0;text-align:right}
-  .journey-stage span{text-align:right}
-}
-
-.service-list{display:flex;flex-direction:column}
-.service-row{display:flex;align-items:center;gap:20px;padding:26px 4px;border-top:1px solid var(--line);transition:background .25s ease}
-.service-list .service-row:last-child{border-bottom:1px solid var(--line)}
-.service-row:hover{background:#ffffff80}
-.service-num{font-family:'Noto Naskh Arabic',serif;font-size:20px;font-weight:600;color:var(--line);flex-shrink:0;width:34px;transition:color .3s ease}
-.service-row:hover .service-num{color:var(--gold)}
-.service-ico{color:var(--navy);flex-shrink:0;transition:color .3s ease}
-.service-row:hover .service-ico{color:var(--gold-deep)}
-.service-txt{flex:1;min-width:0}
-.service-txt h3{font-size:16px;font-weight:700;margin:0 0 4px}
-.service-txt p{color:var(--muted);font-size:13.5px;margin:0;line-height:1.7}
-.service-row .link{flex-shrink:0;transition:transform .25s ease}
-.service-row:hover .link{transform:translateX(-4px)}
-@media(max-width:700px){
-  .service-row{flex-wrap:wrap;gap:10px 16px;padding:22px 2px}
-  .service-txt{flex:1 1 100%;order:3}
-  .service-row .link{order:4;flex:1 1 100%;text-align:right;margin-top:4px}
-}
-
-.featured-service{background:var(--navy);color:#F0EBE0;padding:76px 8%;text-align:center}
-.featured-service .eyebrow{color:var(--gold-light)}
-.featured-service h2{font-size:38px;margin:14px 0 16px;font-family:'Noto Naskh Arabic',serif;font-weight:600}
-.featured-service p{color:#C9CDDA;max-width:600px;margin:0 auto 30px;font-size:16px;line-height:1.8}
-
-.final-cta{background:var(--navy-deep);color:#F0EBE0;padding:80px 8%;text-align:center}
-.final-cta .eyebrow{color:var(--gold-light)}
-.final-cta h2{font-size:36px;margin:14px 0 14px;font-family:'Noto Naskh Arabic',serif;font-weight:600}
-.final-cta p{color:#C9CDDA;max-width:560px;margin:0 auto 30px;font-size:15px}
