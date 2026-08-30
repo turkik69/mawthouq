@@ -15,6 +15,10 @@ let conversationsCache = [];
 
     const profile = await getCurrentProfile();
     if (profile && profile.account_type === 'provider') currentUserRole = 'provider';
+    const roleBadge = currentUserRole === 'provider'
+      ? '<span class="badge-provider">مقدم خدمة</span>'
+      : '<span class="badge-seeker">طالب خدمة</span>';
+    document.getElementById('headerActions').insertAdjacentHTML('afterbegin', roleBadge);
 
     await loadConversations();
 
@@ -237,12 +241,12 @@ async function loadPaymentStatus(conversationId){
   box.className = 'payment-box';
 
   if (!payment) {
-    if (currentUserRole === 'seeker') {
+    if (currentUserRole === 'provider') {
       box.innerHTML = `
         <input type="number" step="0.001" min="0.001" id="paymentAmount" class="amount-input" placeholder="المبلغ (ر.ع)">
-        <button class="status-pill action" onclick="startPayment()">بدء الدفع</button>`;
+        <button class="status-pill action" onclick="requestPayment()">تسليم العمل وطلب الدفع</button>`;
     } else {
-      box.innerHTML = `<span style="color:var(--muted);font-size:13px">لم يبدأ الطالب الدفع بعد</span>`;
+      box.innerHTML = `<span style="color:var(--muted);font-size:13px">لم يطلب مقدم الخدمة الدفع بعد — يظهر هنا عند اكتمال العمل</span>`;
     }
     return;
   }
@@ -260,7 +264,7 @@ async function loadPaymentStatus(conversationId){
     <span style="color:var(--muted);font-size:13px">المبلغ: ${payment.amount_omr} ر.ع</span>`;
 }
 
-async function startPayment(){
+async function requestPayment(){
   const input = document.getElementById('paymentAmount');
   const amount = parseFloat(input.value);
   if (!amount || amount <= 0) { showToast('أدخل مبلغًا صحيحًا.', 'error'); return; }
@@ -270,15 +274,15 @@ async function startPayment(){
 
   const { error } = await supabaseClient.from('payments').insert({
     conversation_id: currentConversationId,
-    seeker_id: currentUserId,
-    provider_id: conv.other_id,
+    seeker_id: conv.other_id,
+    provider_id: currentUserId,
     amount_omr: amount,
     status: 'pending'
   });
 
-  if (error) { showToast('تعذر بدء الدفع: ' + error.message, 'error'); return; }
+  if (error) { showToast('تعذر إرسال طلب الدفع: ' + error.message, 'error'); return; }
   await loadPaymentStatus(currentConversationId);
-  showToast('تم تسجيل الدفعة', 'success');
+  showToast('تم إرسال طلب الدفع للطالب', 'success');
 }
 
 /* ============ الملفات (استلام وتسليم) ============ */
