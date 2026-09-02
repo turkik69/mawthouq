@@ -296,6 +296,39 @@ function goBack(fallback){
   }
 }
 
+// حالة تحقق مباشرة لأي حقل — تعمل مع بنية .field الموجودة أصلاً بكل النماذج
+// بدون الحاجة لتعديل HTML كل نموذج يدويًا
+function setFieldState(fieldId, state, message){
+  const input = document.getElementById(fieldId);
+  if (!input) return;
+  const field = input.closest('.field');
+  if (!field) return;
+
+  field.classList.remove('error', 'success');
+  const existingErr = field.querySelector('.field-msg-error');
+  const existingOk = field.querySelector('.field-msg-success');
+
+  if (!state) {
+    if (existingErr) existingErr.remove();
+    if (existingOk) existingOk.remove();
+    return;
+  }
+
+  field.classList.add(state);
+  const className = state === 'error' ? 'field-msg-error' : 'field-msg-success';
+  const otherClass = state === 'error' ? 'field-msg-success' : 'field-msg-error';
+  const other = field.querySelector('.' + otherClass);
+  if (other) other.remove();
+
+  let msg = field.querySelector('.' + className);
+  if (!msg) {
+    msg = document.createElement('span');
+    msg.className = 'field-msg ' + className;
+    field.appendChild(msg);
+  }
+  msg.textContent = message || '';
+}
+
 function showToast(message, type){
   let host = document.getElementById('toastHost');
   if (!host) {
