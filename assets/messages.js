@@ -55,16 +55,40 @@ async function loadConversations(){
     return;
   }
 
-  container.innerHTML = conversationsCache.map(c => {
+  // تجميع المحادثات حسب الطرف الآخر — بطاقة واحدة لكل شخص بدل بطاقة لكل طلب،
+  // حتى لو تعدّدت الطلبات معه بمرور الوقت (كل طلب يبقى محادثة منفصلة في
+  // قاعدة البيانات، لكن تُعرض هنا كخيط واحد مستمر)
+  const groups = new Map();
+  conversationsCache.forEach(c => {
+    if (!groups.has(c.other_id)) groups.set(c.other_id, []);
+    groups.get(c.other_id).push(c);
+  });
+
+  const groupList = [...groups.values()].map(list => {
+    list.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    const primary = list[list.length - 1]; // الأحدث — يمثّل العنوان والحالة الحالية
+    const anyUnread = list.some(c => c.unread);
+    const lastWithMessage = [...list].reverse().find(c => c.last_message);
+    const lastActivity = list.reduce((max, c) => {
+      const t = new Date(c.last_message_at || c.created_at).getTime();
+      return t > max ? t : max;
+    }, 0);
+    return { primary, all: list, unread: anyUnread, lastMessage: lastWithMessage ? lastWithMessage.last_message : null, lastActivity };
+  });
+
+  groupList.sort((a, b) => b.lastActivity - a.lastActivity);
+
+  container.innerHTML = groupList.map(g => {
+    const c = g.primary;
     const subject = c.request_title || c.service_type;
     const title = subject ? `${c.other_username} · ${subject}` : c.other_username;
     return `
     <div class="conv-item ${c.id === currentConversationId ? 'active' : ''}" data-id="${escapeHtml(c.id)}" data-name="${escapeHtml(c.other_username)}">
       <div class="ci-text">
         <b>${escapeHtml(title)}${c.completed_at ? ' <span style="color:var(--muted);font-weight:400;font-size:11px">(مؤرشفة)</span>' : ''}</b>
-        <span>${escapeHtml(c.last_message || 'ابدأ المحادثة')}</span>
+        <span>${escapeHtml(g.lastMessage || 'ابدأ المحادثة')}</span>
       </div>
-      ${c.unread ? '<span class="unread-dot"></span>' : ''}
+      ${g.unread ? '<span class="unread-dot"></span>' : ''}
     </div>`;
   }).join('');
 
@@ -138,7 +162,12 @@ async function openConversation(conversationId, otherName){
   msgInput.placeholder = (conv && conv.completed_at) ? 'محادثة مؤرشفة — لا يمكن الإرسال' : 'اكتب رسالتك...';
   document.getElementById('filesPanel').style.display = 'none';
 
-  await loadMessages(conversationId);
+  // كل الطلبات السابقة مع نفس الشخص تُعرض كخيط واحد مستمر؛ نجمعها هنا
+  const group = conv
+    ? conversationsCache.filter(c => c.other_id === conv.other_id).sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+    : [conv].filter(Boolean);
+
+  await loadMessages(group);
   await markAsRead(conversationId);
   await loadPaymentStatus(conversationId);
   subscribeToConversation(conversationId);
@@ -417,11 +446,12 @@ async function uploadDeliveryFile(){
   await loadFilesPanel(currentConversationId);
 }
 
-async function loadMessages(conversationId){
+async function loadMessages(group){
+  const convIds = group.map(c => c.id);
   const { data: messages, error } = await supabaseClient
     .from('messages')
     .select('*')
-    .eq('conversation_id', conversationId)
+    .in('conversation_id', convIds)
     .order('created_at', { ascending: true });
 
   const box = document.getElementById('chatMessages');
@@ -430,7 +460,19 @@ async function loadMessages(conversationId){
     return;
   }
 
-  box.innerHTML = (messages || []).map(renderMessage).join('');
+  let html = '';
+  let lastConvId = null;
+  (messages || []).forEach(m => {
+    if (m.conversation_id !== lastConvId) {
+      const segment = group.find(c => c.id === m.conversation_id);
+      const segTitle = segment && (segment.request_title || segment.service_type);
+      if (segTitle) html += `<div class="msg-divider">${escapeHtml(segTitle)}</div>`;
+      lastConvId = m.conversation_id;
+    }
+    html += renderMessage(m);
+  });
+
+  box.innerHTML = html;
   box.scrollTop = box.scrollHeight;
   box.classList.remove('pane-fade');
   void box.offsetWidth; // إعادة تشغيل الأنيميشن حتى لو نفس العنصر

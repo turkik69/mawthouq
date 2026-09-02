@@ -417,3 +417,6 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   .heading,.center{opacity:1;transform:none;transition:none}
   .heading h2::after,.center h2::after{transform:scaleX(1);transition:none}
 }
+
+/* 27. MSG DIVIDER — عنوان مضمّن يفصل بين طلبات مختلفة داخل نفس المحادثة المستمرة */
+.msg-divider{align-self:center;background:var(--gold-tint);color:var(--gold-deep);font-size:11.5px;font-weight:700;padding:5px 16px;border-radius:20px;margin:10px 0}
