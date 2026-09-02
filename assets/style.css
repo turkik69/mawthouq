@@ -215,8 +215,12 @@ button.loading .btn-text{opacity:.85}
 
 /* 16. EXPERTS */
 .expert-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.expert{text-align:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+.expert{text-align:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px;position:relative;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
 .expert:hover{transform:translateY(-3px);box-shadow:0 12px 28px #10172f10;border-color:#c8d1ff}
+.expert-active{position:absolute;top:16px;left:16px;display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:var(--green)}
+.expert-active::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green)}
+.expert-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin:10px 0}
+.expert-tags span{background:#EBEFFF;color:var(--accent-blue-deep);font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px}
 .expert .avatar{width:64px;height:64px;font-size:21px;margin:0 auto 12px;border-radius:50%;background:var(--gold-tint);color:var(--gold-deep);display:grid;place-items:center;font-weight:800}
 .expert h3{font-size:17px;margin:0 0 3px;font-weight:700}
 .expert p{color:var(--muted);font-size:13px}
