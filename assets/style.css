@@ -370,21 +370,32 @@ tr:last-child td{border-bottom:0}
 
 /* 22b. SERVICE CARDS — بطاقات بشارات، مستوحاة من نمط بطاقات الدورات لكن
    بهوية موثوق الذهبية الخاصة، لا الهوية البرتقالية للمرجع */
-.service-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;position:relative;z-index:1}
-.service-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;cursor:pointer;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
-.service-card:hover{transform:translateY(-3px);box-shadow:0 14px 32px #10172f14;border-color:#e6d6a0}
+.service-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:16px;position:relative;z-index:1}
+.service-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;cursor:pointer;transition:transform .25s ease,box-shadow .3s ease,border-color .3s ease}
+.service-card:hover{transform:translateY(-3px);box-shadow:0 14px 32px #10172f14;border-color:#c8d1ff}
+.service-card:active{transform:translateY(-1px) scale(.99)}
 .service-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
 .service-card .service-num{font-size:12px;font-weight:800;color:#C7CCDC;letter-spacing:.5px}
 .sc-badge{background:var(--gold-tint);color:var(--gold-deep);font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:20px}
-.service-ico-wrap{width:44px;height:44px;border-radius:12px;background:#EBEFFF;color:var(--accent-blue-deep);display:flex;align-items:center;justify-content:center;margin:14px 0 14px}
+.service-ico-wrap{width:44px;height:44px;border-radius:12px;background:#EBEFFF;color:var(--accent-blue-deep);display:flex;align-items:center;justify-content:center;margin:14px 0 14px;transition:transform .3s ease}
+.service-card:hover .service-ico-wrap{transform:scale(1.08)}
 .service-card h3{font-size:16.5px;font-weight:700;margin:0 0 8px}
 .service-card p{color:var(--muted);font-size:13px;line-height:1.7;margin:0 0 18px;flex-grow:1}
 .service-card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:14px;border-top:1px solid var(--line)}
 .sc-price{font-size:12.5px;font-weight:700;color:var(--gold-deep)}
-.service-card-foot .link{background:none;border:0;color:var(--gold-deep);font-size:13px;font-weight:700;padding:0;min-height:auto}
+.service-card-foot .link{background:none;border:0;color:var(--gold-deep);font-size:13px;font-weight:700;padding:0;min-height:auto;display:inline-flex;align-items:center;gap:4px}
+.service-card-foot .link .arrow{transition:transform .25s ease}
 .service-card:hover .link{color:var(--accent-blue)}
-@media(max-width:900px){.service-cards-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:600px){.service-cards-grid{grid-template-columns:1fr}}
+.service-card:hover .link .arrow{transform:translateX(-4px)}
+/* البطاقة المميزة — تتحدد ديناميكيًا حسب أكثر خدمة طلبًا فعليًا (بيانات حقيقية،
+   لا اختيار عشوائي)، تكسر تكرار البطاقات المتطابقة بحجم ومحتوى أوسع */
+.service-card.featured{grid-column:span 2;grid-row:span 2;padding:30px;background:linear-gradient(160deg,#fff,#F7F9FF);border-color:#c8d1ff}
+.service-card.featured .service-ico-wrap{width:56px;height:56px;border-radius:14px}
+.service-card.featured .service-ico-wrap svg{width:28px;height:28px}
+.service-card.featured h3{font-size:21px}
+.service-card.featured p{font-size:14.5px}
+@media(max-width:900px){.service-cards-grid{grid-template-columns:1fr 1fr}.service-card.featured{grid-column:span 2;grid-row:span 1}}
+@media(max-width:600px){.service-cards-grid{grid-template-columns:1fr}.service-card.featured{grid-column:span 1}}
 
 /* 23. ACCESSIBILITY */
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent-blue);outline-offset:2px}
