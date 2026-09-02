@@ -10,7 +10,7 @@ let allRequests = [];
   const profile = await getCurrentProfile();
   if (!profile || profile.account_type !== 'provider') {
     // هذه الصفحة مخصصة لمقدمي الخدمة فقط
-    window.location.href = 'index.html';
+    window.location.href = 'dashboard.html';
     return;
   }
 

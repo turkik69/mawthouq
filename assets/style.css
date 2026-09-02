@@ -486,3 +486,21 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 @media(prefers-reduced-motion:reduce){
   .j2-line-fill,.j2-dot,.j2-label{transition:none}
 }
+
+/* 29. DASHBOARD — لوحة "أهلًا بك" لطالب الخدمة */
+.dash-welcome{background:linear-gradient(160deg,var(--navy),var(--navy-deep));color:#fff;border-radius:20px;padding:36px 32px;margin-bottom:32px}
+.dash-welcome h1{color:#fff;font-size:26px;margin:0 0 6px}
+.dash-welcome h1 span{color:#B7BDD6;font-weight:600}
+.dash-welcome p{color:#B7BDD6;font-size:14px;margin:0 0 20px}
+.dash-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:28px;align-items:start}
+.dash-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.dash-section-head h2{font-size:18px;margin:0}
+.dash-section-head .link{background:none;border:0;color:var(--gold-deep);font-size:13px;font-weight:700;padding:0;min-height:auto}
+.dash-activity{background:#fff;border:1px solid var(--line);border-radius:16px;padding:8px 20px}
+.dash-activity-row{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid var(--line)}
+.dash-activity-row:last-child{border-bottom:0}
+.dash-activity-ico{width:30px;height:30px;border-radius:50%;background:#EBEFFF;color:var(--accent-blue-deep);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dash-activity-text{flex:1;font-size:13px;color:var(--text)}
+.dash-activity-time{font-size:11px;color:var(--muted);flex-shrink:0}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.dash-welcome{padding:26px 22px}.dash-welcome h1{font-size:21px}}

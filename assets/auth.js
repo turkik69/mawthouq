@@ -97,7 +97,7 @@ async function redirectAfterAuth() {
   if (profile && profile.account_type === 'provider') {
     window.location.href = 'provider-requests.html';
   } else {
-    window.location.href = 'index.html';
+    window.location.href = 'dashboard.html';
   }
 }
 

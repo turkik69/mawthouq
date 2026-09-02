@@ -10,7 +10,7 @@ let myServices = [];
 
   const profile = await getCurrentProfile();
   if (!profile || profile.account_type !== 'provider') {
-    window.location.href = 'index.html';
+    window.location.href = 'dashboard.html';
     return;
   }
 
