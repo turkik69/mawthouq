@@ -25,7 +25,11 @@ let conversationsCache = [];
     const params = new URLSearchParams(window.location.search);
     const otherId = params.get('with');
     const requestId = params.get('request');
-    if (otherId) {
+    const directConvId = params.get('conversation');
+    if (directConvId) {
+      const conv = conversationsCache.find(c => c.id === directConvId);
+      if (conv) await openConversation(conv.id, conv.other_username);
+    } else if (otherId) {
       await openOrCreateConversation(otherId, requestId);
     }
 

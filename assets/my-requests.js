@@ -98,16 +98,21 @@ async function loadMyRequests(){
     completed: '<span class="payment-status released">مكتمل</span>'
   };
 
-  body.innerHTML = data.map(r => `
+  body.innerHTML = data.map(r => {
+    const openAction = r.conversation_id
+      ? `<button class="rt-open-btn" onclick="window.location.href='messages.html?conversation=${r.conversation_id}'">فتح المشروع ←</button>`
+      : `<span class="rt-waiting">بانتظار قبول مقدم خدمة</span>`;
+    return `
     <article class="request-tile">
       ${renderRing(r.status)}
       <div class="request-tile-body">
         <h3>${escapeHtml(r.title || r.service_type)}</h3>
         <div class="rt-meta">${renderServiceIcon(r.service_type)} ${escapeHtml(r.service_type)} · ${escapeHtml(r.academic_level || '—')}</div>
         <div class="rt-foot">${statusLabels[r.status] || escapeHtml(r.status)}<span class="rt-date">${formatDate(r.created_at)}</span></div>
+        <div class="rt-action">${openAction}</div>
       </div>
-    </article>
-  `).join('');
+    </article>`;
+  }).join('');
 }
 
 function escapeHtml(str){
