@@ -32,7 +32,7 @@ const SERVICE_ICONS = {
 
 const STATUS_META = {
   open: { label: 'مفتوح', progress: 0.12, ring: 'var(--muted)' },
-  in_progress: { label: 'قيد المعالجة', progress: 0.6, ring: 'var(--gold)' },
+  in_progress: { label: 'قيد المعالجة', progress: 0.6, ring: 'var(--accent-blue)' },
   completed: { label: 'مكتمل', progress: 1, ring: 'var(--green)' }
 };
 
@@ -84,7 +84,7 @@ async function loadMyRequests(){
 
   summary.innerHTML = `
     <div class="rt-stat active">
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="var(--gold-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="var(--accent-blue-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
       <div><div class="rt-stat-num">${activeCount}</div><div class="rt-stat-label">طلبات نشطة</div></div>
     </div>
     <div class="rt-stat done">
