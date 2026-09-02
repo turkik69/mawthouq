@@ -35,7 +35,7 @@ h3{font-weight:700}
 /* 5. LAYOUT */
 section{padding:88px 8%}
 .heading{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:44px}
-.heading h2,.center h2{font-size:clamp(30px,4vw,44px);margin:10px 0;font-weight:700}
+.heading h1,.heading h2,.center h1,.center h2{font-size:clamp(30px,4vw,44px);margin:10px 0;font-weight:700}
 .heading p{color:var(--muted);font-size:15px}
 .center{text-align:center;margin-bottom:44px}
 .alt{background:var(--paper-2)}
@@ -451,9 +451,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
    ============================================================ */
 .heading,.center{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
 .heading.reveal-in,.center.reveal-in{opacity:1;transform:translateY(0)}
-.heading h2::after,.center h2::after{content:'';display:block;width:52px;height:3px;border-radius:3px;margin-top:12px;background:linear-gradient(90deg,var(--gold),var(--violet));transform:scaleX(0);transform-origin:right;transition:transform .5s ease .15s}
+.heading h1::after,.heading h2::after,.center h1::after,.center h2::after{content:'';display:block;width:52px;height:3px;border-radius:3px;margin-top:12px;background:linear-gradient(90deg,var(--gold),var(--violet));transform:scaleX(0);transform-origin:right;transition:transform .5s ease .15s}
 .center h2::after{margin-inline:auto}
-.reveal-in h2::after{transform:scaleX(1)}
+.reveal-in h1::after,.reveal-in h2::after{transform:scaleX(1)}
 .trust-item:nth-child(2n) svg{color:var(--violet)}
 @media(prefers-reduced-motion:reduce){
   .heading,.center{opacity:1;transform:none;transition:none}
