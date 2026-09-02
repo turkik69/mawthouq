@@ -377,3 +377,27 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
   .rn-pulse{animation:none!important}
 }
+
+/* ============================================================
+   25. MY REQUESTS — لوحة "طلباتي" بطابع أكثر حيوية: دوائر تقدّم
+   ملوّنة، بطاقات، شريط ملخّص — بدل الجدول الجاف السابق.
+   ============================================================ */
+.rt-summary{display:flex;gap:14px;margin-bottom:28px;flex-wrap:wrap}
+.rt-stat{flex:1;min-width:140px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;display:flex;align-items:center;gap:14px}
+.rt-stat-num{font-size:28px;font-weight:800;line-height:1}
+.rt-stat-label{font-size:12.5px;color:var(--muted);font-weight:600}
+.rt-stat.active .rt-stat-num{color:var(--gold-deep)}
+.rt-stat.done .rt-stat-num{color:var(--green)}
+.rt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.request-tile{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;gap:16px;align-items:center;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.request-tile:hover{transform:translateY(-2px);box-shadow:0 10px 26px #10172f12;border-color:#e6d6a0}
+.request-ring{position:relative;flex-shrink:0;width:56px;height:56px}
+.request-ring svg{transform:rotate(-90deg)}
+.request-ring .rt-ico{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gold-deep)}
+.request-ring.is-done .rt-ico{color:var(--green)}
+.request-tile-body{flex:1;min-width:0}
+.request-tile-body h3{font-size:15.5px;font-weight:700;margin:0 0 3px}
+.request-tile-body .rt-meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+.request-tile-body .rt-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rt-date{font-size:11.5px;color:var(--muted)}
+@media(max-width:700px){.rt-grid{grid-template-columns:1fr}.rt-summary{flex-wrap:nowrap}}
