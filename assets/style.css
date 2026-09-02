@@ -401,3 +401,19 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .request-tile-body .rt-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .rt-date{font-size:11.5px;color:var(--muted)}
 @media(max-width:700px){.rt-grid{grid-template-columns:1fr}.rt-summary{flex-wrap:nowrap}}
+
+/* ============================================================
+   26. HOMEPAGE LIVELINESS — كشف تدريجي عند التمرير + تأكيد لوني
+   تحتها العناوين + استخدام فعلي للبنفسجي (--violet) كلون ثانٍ حقيقي
+   بدل بقائه معرَّفًا وغير مستخدم.
+   ============================================================ */
+.heading,.center{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.heading.reveal-in,.center.reveal-in{opacity:1;transform:translateY(0)}
+.heading h2::after,.center h2::after{content:'';display:block;width:52px;height:3px;border-radius:3px;margin-top:12px;background:linear-gradient(90deg,var(--gold),var(--violet));transform:scaleX(0);transform-origin:right;transition:transform .5s ease .15s}
+.center h2::after{margin-inline:auto}
+.reveal-in h2::after{transform:scaleX(1)}
+.trust-item:nth-child(2n) svg{color:var(--violet)}
+@media(prefers-reduced-motion:reduce){
+  .heading,.center{opacity:1;transform:none;transition:none}
+  .heading h2::after,.center h2::after{transform:scaleX(1);transition:none}
+}
