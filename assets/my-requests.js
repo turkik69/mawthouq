@@ -6,6 +6,10 @@
   if (!session) return;
 
   const profile = await getCurrentProfile();
+  if (profile && profile.is_admin) {
+    window.location.href = 'admin.html';
+    return;
+  }
   if (profile && profile.account_type === 'provider') {
     window.location.href = 'provider-requests.html';
     return;

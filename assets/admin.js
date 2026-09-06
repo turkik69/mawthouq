@@ -7,7 +7,7 @@ let adminProfile = null;
   adminProfile = await requireAdmin();
   if (!adminProfile) return; // requireAdmin يتكفّل بإعادة التوجيه إن لم يكن مشرفًا
 
-  document.getElementById('whoAmI').textContent = 'مرحبًا، ' + adminProfile.username;
+  document.getElementById('whoAmI').textContent = 'المشرف العام — ' + adminProfile.username;
 
   await loadRegistrants();
   await loadServiceRequests();
@@ -290,36 +290,76 @@ async function loadServiceTypesAdmin(){
   const { data, error } = await supabaseClient.from('service_types').select('*').order('name');
 
   if (error) {
-    tbody.innerHTML = `<tr><td colspan="2" style="color:var(--red)">تعذر التحميل: ${escapeHtml(error.message)}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" style="color:var(--red)">تعذر التحميل: ${escapeHtml(error.message)}</td></tr>`;
     return;
   }
 
   if (!data || data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="2" style="color:var(--muted)">لا يوجد خدمات بعد.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--muted)">لا يوجد خدمات بعد.</td></tr>';
     return;
   }
 
   tbody.innerHTML = data.map(s => `
-    <tr>
-      <td>${escapeHtml(s.name)}</td>
-      <td><button class="link" style="color:var(--red)" data-service-id="${escapeHtml(s.id)}" data-service-name="${escapeHtml(s.name)}">حذف</button></td>
+    <tr data-row-id="${escapeHtml(s.id)}">
+      <td class="st-name-cell">${escapeHtml(s.name)}</td>
+      <td class="st-price-cell">${s.suggested_price_omr != null ? escapeHtml(String(s.suggested_price_omr)) + ' ر.ع' : '—'}</td>
+      <td>
+        <button class="link" data-edit-id="${escapeHtml(s.id)}">تعديل</button>
+        <button class="link" style="color:var(--red)" data-service-id="${escapeHtml(s.id)}" data-service-name="${escapeHtml(s.name)}">حذف</button>
+      </td>
     </tr>
   `).join('');
 
   tbody.querySelectorAll('button[data-service-id]').forEach(btn => {
     btn.addEventListener('click', () => removeServiceType(btn.dataset.serviceId, btn.dataset.serviceName));
   });
+  tbody.querySelectorAll('button[data-edit-id]').forEach(btn => {
+    btn.addEventListener('click', () => enterEditMode(btn.dataset.editId, data));
+  });
+}
+
+function enterEditMode(id, allServices){
+  const service = allServices.find(s => s.id === id);
+  if (!service) return;
+  const row = document.querySelector(`tr[data-row-id="${CSS.escape(id)}"]`);
+  if (!row) return;
+
+  row.querySelector('.st-name-cell').innerHTML = `<input type="text" id="editName-${id}" value="${escapeHtml(service.name)}" style="width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font:inherit">`;
+  row.querySelector('.st-price-cell').innerHTML = `<input type="number" step="0.001" min="0" id="editPrice-${id}" value="${service.suggested_price_omr ?? ''}" style="width:90px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font:inherit">`;
+  row.children[2].innerHTML = `
+    <button class="link" data-save-id="${id}">حفظ</button>
+    <button class="link" style="color:var(--muted)" data-cancel-id="${id}">إلغاء</button>`;
+
+  row.querySelector(`[data-save-id="${id}"]`).addEventListener('click', () => saveServiceEdit(id));
+  row.querySelector(`[data-cancel-id="${id}"]`).addEventListener('click', () => loadServiceTypesAdmin());
+}
+
+async function saveServiceEdit(id){
+  const name = document.getElementById(`editName-${id}`).value.trim();
+  const priceInput = document.getElementById(`editPrice-${id}`).value;
+  const price = priceInput === '' ? null : parseFloat(priceInput);
+
+  if (!name) { showToast('اسم الخدمة لا يمكن أن يكون فارغًا.', 'error'); return; }
+
+  const { error } = await supabaseClient.rpc('admin_update_service_type', { p_id: id, p_name: name, p_suggested_price: price });
+  if (error) { showToast('تعذر الحفظ: ' + error.message, 'error'); return; }
+
+  await loadServiceTypesAdmin();
+  showToast('تم تحديث الخدمة', 'success');
 }
 
 async function addServiceType(){
   const input = document.getElementById('newServiceName');
+  const priceInput = document.getElementById('newServicePrice');
   const name = input.value.trim();
+  const price = priceInput.value === '' ? null : parseFloat(priceInput.value);
   if (!name) { showToast('اكتب اسم الخدمة.', 'error'); return; }
 
-  const { error } = await supabaseClient.rpc('admin_add_service_type', { p_name: name });
+  const { error } = await supabaseClient.rpc('admin_add_service_type', { p_name: name, p_suggested_price: price });
   if (error) { showToast('تعذرت الإضافة: ' + error.message, 'error'); return; }
 
   input.value = '';
+  priceInput.value = '';
   await loadServiceTypesAdmin();
   showToast('تمت إضافة الخدمة للكتالوج', 'success');
 }

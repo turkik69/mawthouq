@@ -94,7 +94,9 @@ async function getCurrentProfile() {
 // طلبات الخدمة، وطالب الخدمة (أو أي حالة أخرى) إلى الصفحة الرئيسية.
 async function redirectAfterAuth() {
   const profile = await getCurrentProfile();
-  if (profile && profile.account_type === 'provider') {
+  if (profile && profile.is_admin) {
+    window.location.href = 'admin.html';
+  } else if (profile && profile.account_type === 'provider') {
     window.location.href = 'provider-requests.html';
   } else {
     window.location.href = 'dashboard.html';
