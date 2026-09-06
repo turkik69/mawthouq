@@ -535,3 +535,13 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   body.has-bottom-nav{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
   body.has-bottom-nav .messages-layout{height:calc(100vh - 76px - 64px - env(safe-area-inset-bottom))}
 }
+
+/* 32. EDITABLE CONTENT — نظام تعديل النصوص من المشرف مباشرة */
+.editable-content{position:relative;outline:1px dashed #4f6bff55;outline-offset:4px;border-radius:4px}
+.edit-content-icon{position:absolute;top:-11px;left:-11px;width:24px;height:24px;border-radius:50%;background:var(--accent-blue);color:#fff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 8px #4f6bff50;z-index:5;min-height:auto;padding:0}
+.edit-content-icon:hover{filter:brightness(1.1);transform:none;box-shadow:0 3px 8px #4f6bff50}
+.inline-edit-box{position:absolute;top:calc(100% + 8px);right:0;left:0;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:0 16px 40px #10172f30;z-index:10;text-align:right}
+.inline-edit-input{width:100%;min-height:70px;border:1px solid var(--line);border-radius:8px;padding:9px;font:inherit;font-size:14px;color:var(--text);resize:vertical;margin-bottom:8px}
+.inline-edit-actions{display:flex;gap:8px;justify-content:flex-end}
+.inline-edit-actions button{min-height:auto;padding:7px 16px;font-size:12.5px}
+.inline-edit-actions .inline-edit-cancel{background:transparent;color:var(--muted);border:1px solid var(--line)}

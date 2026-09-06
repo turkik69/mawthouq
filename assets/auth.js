@@ -331,6 +331,85 @@ function setFieldState(fieldId, state, message){
   msg.textContent = message || '';
 }
 
+// نظام محتوى قابل للتعديل من المشرف مباشرة — أي صفحة فيها عناصر [data-content-key]
+// تستدعي هذي الدالة: تجلب القيم المخزَّنة (إن وُجدت) وتطبّقها، وتفعّل أيقونة
+// التعديل فقط لو المستخدم مشرف فعليًا
+async function initEditableContent(){
+  const elements = document.querySelectorAll('[data-content-key]');
+  if (!elements.length) return;
+
+  const { data } = await supabaseClient.from('page_content').select('content_key, content_value');
+  const contentMap = new Map((data || []).map(row => [row.content_key, row.content_value]));
+
+  elements.forEach(el => {
+    const key = el.dataset.contentKey;
+    const text = contentMap.has(key) ? contentMap.get(key) : el.textContent.trim();
+    el.innerHTML = '';
+    const span = document.createElement('span');
+    span.className = 'ec-text';
+    span.textContent = text;
+    el.appendChild(span);
+  });
+
+  const profile = await getCurrentProfile();
+  if (!profile || !profile.is_admin) return;
+
+  elements.forEach(el => {
+    el.classList.add('editable-content');
+    const icon = document.createElement('button');
+    icon.type = 'button';
+    icon.className = 'edit-content-icon';
+    icon.setAttribute('aria-label', 'تعديل هذا النص');
+    icon.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5a2 2 0 0 1 3 3L8 18l-4 1 1-4z"/></svg>';
+    icon.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      startEditingContent(el);
+    });
+    el.appendChild(icon);
+  });
+}
+
+function startEditingContent(el){
+  if (el.querySelector('.inline-edit-box')) return; // مفتوح أصلاً
+  const key = el.dataset.contentKey;
+  const textSpan = el.querySelector('.ec-text');
+  const currentText = textSpan ? textSpan.textContent : '';
+
+  const box = document.createElement('div');
+  box.className = 'inline-edit-box';
+  box.innerHTML = `
+    <textarea class="inline-edit-input"></textarea>
+    <div class="inline-edit-actions">
+      <button type="button" class="inline-edit-save">حفظ</button>
+      <button type="button" class="inline-edit-cancel">إلغاء</button>
+    </div>`;
+  box.querySelector('.inline-edit-input').value = currentText;
+  if (textSpan) textSpan.style.display = 'none';
+  el.querySelector('.edit-content-icon').style.display = 'none';
+  el.appendChild(box);
+  box.querySelector('.inline-edit-input').focus();
+
+  box.querySelector('.inline-edit-save').addEventListener('click', async (e) => {
+    e.preventDefault(); e.stopPropagation();
+    const newValue = box.querySelector('.inline-edit-input').value.trim();
+    if (!newValue) { showToast('النص لا يمكن أن يكون فارغًا.', 'error'); return; }
+    const { error } = await supabaseClient.rpc('admin_set_page_content', { p_key: key, p_value: newValue });
+    if (error) { showToast('تعذر الحفظ: ' + error.message, 'error'); return; }
+    if (textSpan) { textSpan.textContent = newValue; textSpan.style.display = ''; }
+    el.querySelector('.edit-content-icon').style.display = '';
+    box.remove();
+    showToast('تم الحفظ', 'success');
+  });
+
+  box.querySelector('.inline-edit-cancel').addEventListener('click', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    if (textSpan) textSpan.style.display = '';
+    el.querySelector('.edit-content-icon').style.display = '';
+    box.remove();
+  });
+}
+
 function showToast(message, type){
   let host = document.getElementById('toastHost');
   if (!host) {
