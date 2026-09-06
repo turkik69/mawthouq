@@ -545,3 +545,5 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .inline-edit-actions{display:flex;gap:8px;justify-content:flex-end}
 .inline-edit-actions button{min-height:auto;padding:7px 16px;font-size:12.5px}
 .inline-edit-actions .inline-edit-cancel{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.remove-block-icon{position:absolute;top:-11px;right:-11px;width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 8px #d94a5f50;z-index:6;min-height:auto;padding:0}
+.remove-block-icon:hover{filter:brightness(1.1);transform:none;box-shadow:0 3px 8px #d94a5f50}

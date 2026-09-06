@@ -335,6 +335,41 @@ function setFieldState(fieldId, state, message){
 // تستدعي هذي الدالة: تجلب القيم المخزَّنة (إن وُجدت) وتطبّقها، وتفعّل أيقونة
 // التعديل فقط لو المستخدم مشرف فعليًا
 async function initEditableContent(){
+  // إخفاء أي عنصر سبق للمشرف إخفاءه — يخص كل زائر، مو المشرف فقط
+  const removableBlocks = document.querySelectorAll('[data-removable-block]');
+  if (removableBlocks.length) {
+    const { data: hidden } = await supabaseClient.from('hidden_blocks').select('block_key');
+    const hiddenKeys = new Set((hidden || []).map(h => h.block_key));
+    removableBlocks.forEach(block => {
+      if (hiddenKeys.has(block.dataset.removableBlock)) {
+        block.style.display = 'none';
+      }
+    });
+
+    const profile = await getCurrentProfile();
+    if (profile && profile.is_admin) {
+      removableBlocks.forEach(block => {
+        if (block.style.display === 'none') return;
+        block.style.position = block.style.position || 'relative';
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'remove-block-icon';
+        delBtn.setAttribute('aria-label', 'إزالة هذا العنصر');
+        delBtn.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+        delBtn.addEventListener('click', async (e) => {
+          e.preventDefault(); e.stopPropagation();
+          if (!confirm('إخفاء هذا العنصر من المنصة؟ يمكن استرجاعه لاحقًا من قاعدة البيانات.')) return;
+          const key = block.dataset.removableBlock;
+          const { error } = await supabaseClient.rpc('admin_hide_block', { p_key: key });
+          if (error) { showToast('تعذرت الإزالة: ' + error.message, 'error'); return; }
+          block.style.display = 'none';
+          showToast('تم إخفاء العنصر', 'success');
+        });
+        block.appendChild(delBtn);
+      });
+    }
+  }
+
   const elements = document.querySelectorAll('[data-content-key]');
   if (!elements.length) return;
 
