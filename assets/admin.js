@@ -87,7 +87,7 @@ async function toggleVerification(providerId, verified){
 
 async function toggleSuspend(providerId, suspend){
   const msg = suspend
-    ? 'إيقاف هذا الحساب يمنعه من الدخول والظهور للطلاب. يبقى سجل معاملاته السابقة كما هو. متابعة؟'
+    ? 'إيقاف مقدم الخدمة يمنعه من الظهور وبدء محادثات أو إرسال أعمال جديدة. تبقى سجلاته السابقة متاحة للمراجعة. متابعة؟'
     : 'إلغاء إيقاف هذا الحساب وإعادته للعمل؟';
   if (!confirm(msg)) return;
   const { error } = await supabaseClient.rpc('admin_set_provider_suspended', { p_provider_id: providerId, p_suspended: suspend });

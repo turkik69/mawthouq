@@ -1,8 +1,10 @@
 -- ============================================================
 -- منصة موثوق — قاعدة بيانات Supabase (PostgreSQL)
--- نفّذ هذا الملف بالكامل في: Supabase Dashboard → SQL Editor → New query → Run
--- آمن لإعادة التنفيذ فوق مشروع قائم (IF NOT EXISTS / OR REPLACE / DROP...IF EXISTS)
+-- سجل تاريخي للبنية الأولى. لا تشغّله على المشروع الحي؛ قد يعيد منح صلاحيات أُغلقت لاحقًا.
+-- راجع README.md والترحيلات الأحدث. الحاجز التالي يمنع التنفيذ العرضي.
 -- ============================================================
+
+do $$ begin raise exception 'Historical schema: do not run on the live Mawthouq project'; end $$;
 
 -- 1) جدول الملفات الشخصية (يمتد جدول auth.users المدمج في Supabase)
 create table if not exists public.profiles (
