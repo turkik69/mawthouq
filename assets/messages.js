@@ -267,9 +267,11 @@ async function loadPaymentStatus(conversationId){
     .select('*')
     .eq('conversation_id', conversationId)
     .order('created_at', { ascending: false })
-    .limit(1);
+    .limit(30);
 
-  const payment = (!error && payments && payments.length) ? payments[0] : null;
+  const payment = (!error && payments && payments.length)
+    ? payments.find(p => ['approved', 'held', 'released'].includes(p.status)) || payments[0]
+    : null;
   box.style.display = 'flex';
   box.className = 'payment-box';
 

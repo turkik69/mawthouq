@@ -15,6 +15,7 @@
 1. `supabase/production_readiness.sql`
 2. `supabase/production_readiness_files.sql`
 3. `supabase/payment_gateway_preparation.sql`
+4. `supabase/suspended_provider_guard.sql`
 
 أي تغيير لاحق في قاعدة البيانات يحتاج ترحيلًا مستقلًا ومراجعة سياسات RLS واختبار مستخدم زائر وطالب وخبير ومشرف. لا تنسخ القاعدة الحية إلى مستودع عام. راجع [خطة التشغيل](docs/operations.md) و[خطة الدفع](docs/payment-integration.md).
 
