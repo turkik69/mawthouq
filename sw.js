@@ -13,21 +13,23 @@ self.addEventListener('push', (event) => {
       dir: 'rtl',
       lang: 'ar',
       tag: 'mawthouq-message',
-      data: { url: data.url || '/messages.html' }
+      data: { url: data.url || 'messages.html' }
     })
   );
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const url = (event.notification.data && event.notification.data.url) || '/messages.html';
+  const relativeUrl = (event.notification.data && event.notification.data.url) || 'messages.html';
+  const destination = new URL(relativeUrl, self.registration.scope);
+  if (destination.origin !== self.location.origin || !destination.href.startsWith(self.registration.scope)) return;
 
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then((clientList) => {
       for (const client of clientList) {
         if (client.url.includes('messages.html') && 'focus' in client) return client.focus();
       }
-      if (clients.openWindow) return clients.openWindow(url);
+      if (clients.openWindow) return clients.openWindow(destination.href);
     })
   );
 });

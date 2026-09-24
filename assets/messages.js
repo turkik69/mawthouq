@@ -277,30 +277,42 @@ async function loadPaymentStatus(conversationId){
     if (currentUserRole === 'provider') {
       box.innerHTML = `
         <input type="number" step="0.001" min="0.001" id="paymentAmount" class="amount-input" placeholder="المبلغ (ر.ع)">
-        <button class="status-pill action" onclick="requestPayment()">تسليم العمل وطلب الدفع</button>`;
+        <button class="status-pill action" onclick="requestPayment()">إرسال عرض السعر للطالب</button>`;
     } else {
-      box.innerHTML = `<span style="color:var(--muted);font-size:13px">لم يطلب مقدم الخدمة الدفع بعد — يظهر هنا عند اكتمال العمل</span>`;
+      box.innerHTML = `<span style="color:var(--muted);font-size:13px">لم يرسل الخبير عرض سعر بعد. الدفع الإلكتروني غير متاح حاليًا.</span>`;
     }
     return;
   }
 
   const labels = {
-    pending: 'بانتظار تفعيل بوابة الدفع الإلكترونية',
-    held: 'تم الدفع — المبلغ محجوز لحين تأكيد استلام الخدمة',
-    released: `تم تحرير المبلغ لمقدم الخدمة (${payment.provider_payout_omr ?? '—'} ر.ع بعد عمولة المنصة)`,
+    pending: 'عرض سعر بانتظار موافقة الطالب — لم يتم الدفع',
+    approved: 'وافقت على السعر — الدفع الإلكتروني بانتظار تفعيل البوابة',
+    held: 'تم تأكيد التحصيل عبر بوابة الدفع',
+    released: 'أُقرّ استلام الخدمة — التحويل إلى الخبير مرحلة منفصلة',
     refunded: 'تم استرجاع المبلغ',
     failed: 'فشلت عملية الدفع'
   };
 
   box.innerHTML = `
     <span class="payment-status ${payment.status}">${escapeHtml(labels[payment.status] || payment.status)}</span>
-    <span style="color:var(--muted);font-size:13px">المبلغ: ${payment.amount_omr} ر.ع</span>`;
+    <span style="color:var(--muted);font-size:13px">السعر المتفق عليه: ${Number(payment.amount_omr).toFixed(3)} ر.ع</span>
+    ${payment.status === 'pending' && currentUserRole === 'seeker'
+      ? `<button class="status-pill action" onclick="acceptPaymentQuote('${payment.id}')">الموافقة على عرض السعر</button>` : ''}
+    <a class="payment-guide-link" href="payment-guide.html">كيف تعمل مراحل الاتفاق والدفع؟</a>`;
+}
+
+async function acceptPaymentQuote(paymentId){
+  if (!confirm('هل توافق على السعر المعروض؟ لا يُخصم أي مبلغ الآن؛ ستصلك وسيلة دفع رسمية بعد تفعيل البوابة.')) return;
+  const { error } = await supabaseClient.rpc('accept_payment_quote', { p_payment_id: paymentId });
+  if (error) { showToast('تعذرت الموافقة: ' + error.message, 'error'); return; }
+  await loadPaymentStatus(currentConversationId);
+  showToast('تم تسجيل موافقتك على السعر، ولم يتم تحصيل أي مبلغ.', 'success');
 }
 
 async function requestPayment(){
   const input = document.getElementById('paymentAmount');
   const amount = parseFloat(input.value);
-  if (!amount || amount <= 0) { showToast('أدخل مبلغًا صحيحًا.', 'error'); return; }
+  if (!Number.isFinite(amount) || amount <= 0 || amount > 100000 || Math.abs(Math.round(amount * 1000) - amount * 1000) > 1e-7) { showToast('أدخل مبلغًا صحيحًا بالريال العُماني حتى ثلاث خانات عشرية.', 'error'); return; }
 
   const conv = conversationsCache.find(c => c.id === currentConversationId);
   if (!conv) return;
@@ -313,9 +325,9 @@ async function requestPayment(){
     status: 'pending'
   });
 
-  if (error) { showToast('تعذر إرسال طلب الدفع: ' + error.message, 'error'); return; }
+  if (error) { showToast('تعذر إرسال عرض السعر: ' + error.message, 'error'); return; }
   await loadPaymentStatus(currentConversationId);
-  showToast('تم إرسال طلب الدفع للطالب', 'success');
+  showToast('تم إرسال عرض السعر للطالب. لم يتم تحصيل أي مبلغ.', 'success');
 }
 
 /* ============ الملفات (استلام وتسليم) ============ */
@@ -365,35 +377,11 @@ async function loadFilesPanel(conversationId){
   panel.innerHTML = `
     ${originalHtml}
     ${deliveredHtml}
-    <div style="margin-top:12px;font-size:12px;font-weight:700;color:var(--muted)">طريقة التسليم</div>
-    <div style="display:flex;gap:14px;margin:6px 0 4px;font-size:13px">
-      <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="deliveryMethod" value="platform" checked onchange="onDeliveryMethodChange()"> رفع عبر المنصة</label>
-      <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="deliveryMethod" value="email" onchange="onDeliveryMethodChange()"> بريد إلكتروني</label>
-    </div>
-    <div id="emailDeliveryBox" style="display:none;font-size:13px;background:var(--gold-tint);border-radius:8px;padding:8px 12px;margin-bottom:8px"></div>
+    <div style="margin-top:12px;font-size:12px;font-weight:700;color:var(--muted)">تبادل الملفات داخل المنصة</div>
     <div class="file-upload-row" id="platformUploadRow">
-      <input type="file" id="deliveryFileInput" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.jpg,.jpeg,.png" onchange="checkFileSizeImmediately(this)">
+      <input type="file" id="deliveryFileInput" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png" onchange="checkFileSizeImmediately(this)">
       <button class="status-pill action" onclick="uploadDeliveryFile()">تسليم ملف</button>
     </div>`;
-}
-
-async function onDeliveryMethodChange(){
-  const method = document.querySelector('input[name="deliveryMethod"]:checked').value;
-  const emailBox = document.getElementById('emailDeliveryBox');
-  const uploadRow = document.getElementById('platformUploadRow');
-
-  if (method === 'email') {
-    uploadRow.style.display = 'none';
-    emailBox.style.display = 'block';
-    emailBox.textContent = 'جارٍ التحميل...';
-    const { data: email, error } = await supabaseClient.rpc('get_conversation_partner_email', { p_conversation_id: currentConversationId });
-    emailBox.textContent = (email && !error)
-      ? `أرسل الملف مباشرة إلى: ${email}`
-      : 'تعذر جلب البريد الإلكتروني.';
-  } else {
-    uploadRow.style.display = 'flex';
-    emailBox.style.display = 'none';
-  }
 }
 
 async function renderFileLink(f, uploaderName){
@@ -433,8 +421,9 @@ async function uploadDeliveryFile(){
   if (!file) { showToast('اختر ملفًا أولاً.', 'error'); return; }
   if (file.size > 20 * 1024 * 1024) { showToast('الحجم الأقصى 20 ميغابايت.', 'error'); return; }
 
-  const path = `${currentUserId}/conv-${currentConversationId}/${file.name}`;
-  const { error: uploadError } = await supabaseClient.storage.from('request-files').upload(path, file, { upsert: true });
+  const safeName = file.name.replace(/[^\p{L}\p{N}._-]/gu, '_');
+  const path = `${currentUserId}/conv-${currentConversationId}/${crypto.randomUUID()}-${safeName}`;
+  const { error: uploadError } = await supabaseClient.storage.from('request-files').upload(path, file);
   if (uploadError) { showToast('تعذر رفع الملف: ' + uploadError.message, 'error'); return; }
 
   const { error: insertError } = await supabaseClient.from('conversation_files').insert({

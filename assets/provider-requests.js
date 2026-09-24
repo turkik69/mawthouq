@@ -14,6 +14,12 @@ let allRequests = [];
     return;
   }
 
+  if (!profile.provider_verified_at || profile.suspended) {
+    document.getElementById('requestsList').innerHTML = '<div class="review-state"><strong>طلبك قيد المراجعة</strong><p>سنراجع بيانات مقدم الخدمة قبل إتاحة طلبات الباحثين والتواصل معهم. يمكنك تجهيز وصف خدماتك وأسعارك في هذه الأثناء.</p><a class="btn" href="provider-services.html">إعداد خدماتي</a></div>';
+    document.getElementById('myServiceType').textContent = profile.suspended ? 'حساب مقدم الخدمة غير نشط. تواصل مع الإدارة.' : 'بانتظار اعتماد حساب مقدم الخدمة';
+    return;
+  }
+
   document.getElementById('myServiceType').textContent = profile.provider_service_type
     ? `تخصصك: ${profile.provider_service_type}`
     : '';

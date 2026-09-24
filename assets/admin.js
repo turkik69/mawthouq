@@ -26,12 +26,13 @@ function switchAdminTab(name){
 /* ============ تبويب: المسجّلون ============ */
 async function loadRegistrants(){
   const { data: rows, error } = await supabaseClient.rpc('get_all_registrants');
+  const { data: approvals, error: approvalError } = await supabaseClient.rpc('admin_get_provider_approvals');
 
   const tbody = document.getElementById('usersBody');
   const emptyState = document.getElementById('emptyState');
 
-  if (error) {
-    tbody.innerHTML = `<tr><td colspan="9" style="color:var(--red)">تعذر تحميل البيانات: ${escapeHtml(error.message)}</td></tr>`;
+  if (error || approvalError) {
+    tbody.innerHTML = `<tr><td colspan="9" style="color:var(--red)">تعذر تحميل البيانات: ${escapeHtml((error || approvalError).message)}</td></tr>`;
     return;
   }
 
@@ -42,6 +43,7 @@ async function loadRegistrants(){
     return;
   }
 
+  const verified = new Set((approvals || []).filter(a => a.verified_at).map(a => a.provider_id));
   tbody.innerHTML = rows.map(u => `
     <tr>
       <td>${escapeHtml(u.username)}${u.suspended ? ' <span class="badge-admin" style="background:#fdecec;color:var(--red)">موقوف</span>' : ''}</td>
@@ -52,7 +54,7 @@ async function loadRegistrants(){
       <td>${paymentInfo(u)}</td>
       <td>${formatDate(u.created_at)}</td>
       <td>${u.is_admin ? '<span class="badge-admin">مشرف</span>' : 'مستخدم'}</td>
-      <td>${u.account_type === 'provider' ? suspendButton(u) : '—'}</td>
+      <td>${u.account_type === 'provider' ? `${verified.has(u.id) ? '<span class="badge-admin">معتمد</span>' : '<span class="badge-seeker">بانتظار المراجعة</span>'}<br>${verifyButton(u, verified.has(u.id))}<br>${suspendButton(u)}` : '—'}</td>
     </tr>
   `).join('');
 
@@ -69,6 +71,18 @@ function suspendButton(u){
   return u.suspended
     ? `<button class="link" onclick="toggleSuspend('${u.id}', false)">إلغاء الإيقاف</button>`
     : `<button class="link" style="color:var(--red)" onclick="toggleSuspend('${u.id}', true)">إيقاف الحساب</button>`;
+}
+
+function verifyButton(u, isVerified){
+  return `<button class="link" onclick="toggleVerification('${u.id}', ${!isVerified})">${isVerified ? 'سحب الاعتماد' : 'اعتماد مقدم الخدمة'}</button>`;
+}
+
+async function toggleVerification(providerId, verified){
+  if (!confirm(verified ? 'هل راجعت هوية مقدم الخدمة ومؤهلاته وتوافق على ظهوره للباحثين؟' : 'سيُحجب مقدم الخدمة عن الطلبات الجديدة. متابعة؟')) return;
+  const { error } = await supabaseClient.rpc('admin_set_provider_verified', { p_provider_id: providerId, p_verified: verified });
+  if (error) { showToast('تعذر تحديث الاعتماد: ' + error.message, 'error'); return; }
+  await loadRegistrants();
+  showToast(verified ? 'تم اعتماد مقدم الخدمة' : 'تم سحب الاعتماد', 'success');
 }
 
 async function toggleSuspend(providerId, suspend){
@@ -239,7 +253,8 @@ async function loadPaymentsAdmin(){
   }
 
   const statusLabels = {
-    pending: 'بانتظار بوابة الدفع',
+    pending: 'عرض سعر ينتظر موافقة الطالب',
+    approved: 'تمت الموافقة — بانتظار تفعيل الدفع',
     held: 'محجوز',
     released: 'محرَّر — يحتاج تحويل',
     refunded: 'مسترجَع',
@@ -251,9 +266,7 @@ async function loadPaymentsAdmin(){
     const transferInfo = p.status === 'released'
       ? `${escapeHtml(paymentMethodLabel(p.payment_method))}<br><span style="color:var(--muted);font-size:12px">${escapeHtml(p.bank_account_number || '—')}</span>`
       : '—';
-    const action = p.status === 'released'
-      ? `<button class="link" onclick="markPaidOut('${p.id}')">تعليم كمدفوع ✓</button>`
-      : '—';
+    const action = '—';
     return `<tr>
       <td>${escapeHtml(p.seeker_username)}</td>
       <td>${escapeHtml(p.provider_username)}</td>
@@ -274,14 +287,6 @@ function setPaymentStats(held, owed, fees){
   document.getElementById('heldTotal').textContent = held.toFixed(3);
   document.getElementById('owedTotal').textContent = owed.toFixed(3);
   document.getElementById('feeTotal').textContent = fees.toFixed(3);
-}
-
-async function markPaidOut(paymentId){
-  if (!confirm('تأكيد إرسال التحويل البنكي لمقدم الخدمة؟ هذا للتسجيل فقط ولا يرسل تحويلًا فعليًا.')) return;
-  const { error } = await supabaseClient.rpc('mark_payment_paid_out', { p_payment_id: paymentId });
-  if (error) { showToast('تعذر التحديث: ' + error.message, 'error'); return; }
-  await loadPaymentsAdmin();
-  showToast('تم تسجيل الدفعة كمحوَّلة', 'success');
 }
 
 /* ============ تبويب: الخدمات ============ */
