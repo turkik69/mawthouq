@@ -28,20 +28,12 @@ async function registerUser({ username, password, email, phone, accountType, ban
   return data;
 }
 
-// تسجيل الدخول باسم المستخدم: نبحث أولاً عن البريد المرتبط به عبر دالة
-// get_email_by_username ثم نسجّل الدخول عبر Supabase Auth بالبريد وكلمة المرور.
-async function loginUser({ username, password }) {
-  const { data: email, error: lookupError } = await supabaseClient
-    .rpc('get_email_by_username', { input_username: username });
-
-  if (lookupError || !email) {
-    throw new Error('اسم المستخدم أو كلمة المرور غير صحيحة.');
-  }
-
+// البريد هو معرّف الدخول. لا نكشف بريد أي حساب عبر استعلام باسم المستخدم.
+async function loginUser({ email, password }) {
   const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
   if (error) {
-    throw new Error('اسم المستخدم أو كلمة المرور غير صحيحة.');
+    throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
   }
 }
 
@@ -84,7 +76,7 @@ async function getCurrentProfile() {
   if (!session) return null;
   const { data: profile } = await supabaseClient
     .from('profiles')
-    .select('username, is_admin, account_type')
+    .select('username, is_admin, account_type, provider_service_type, provider_verified_at, suspended')
     .eq('id', session.user.id)
     .single();
   return profile;

@@ -1,0 +1,79 @@
+/* Shared production visual layer. The existing logo and application components stay intact. */
+:root {
+  --navy:#142543; --navy-2:#12213d; --navy-deep:#0e1c35;
+  --blue:#315dc9; --accent-blue:#315dc9; --accent-blue-light:#afdbe3;
+  --accent-blue-deep:#244caa; --gold:#b77954;
+  --bg:#f5f8fc; --paper-2:#ecf3f7; --text:#182744;
+  --muted:#5f7089; --line:#dce6ef; --green:#187969;
+}
+html { scroll-padding-top:95px; }
+body { animation:none; }
+button,.btn,input,select,textarea { transition:background-color .2s,border-color .2s,box-shadow .2s,transform .2s; }
+:focus-visible { outline:3px solid #50afa9; outline-offset:3px; }
+header { min-height:82px; background:#142543; border-bottom:1px solid #ffffff21; box-shadow:0 7px 24px #0e1c351b; }
+header nav { flex-wrap:wrap; row-gap:5px; }
+header nav a { color:#e0eaf7; }
+header nav a:hover,header nav a:focus-visible { color:#b6e4dc; }
+.brand { letter-spacing:-.04em; }
+.brand-mark { background-color:#fff; border-radius:11px; }
+button,.btn { border-radius:12px; }
+.hero {
+  background:radial-gradient(circle at 78% 15%,#3f6b94 0,transparent 27%),linear-gradient(135deg,#122341 0%,#1d3c5b 58%,#235365 100%);
+  min-height:560px; isolation:isolate;
+}
+.hero h1 { max-width:680px; font-size:clamp(38px,5vw,70px);line-height:1.25; }
+.hero h1 span { color:#c7f2e8; }
+.hero p { color:#e1eaf0; max-width:620px; }
+.hero .eyebrow { color:#b8e4df; }
+.hero .trust { color:#e4f4f1; font-size:13px; line-height:2.1; }
+.hero-blob { opacity:.25; }
+.workspace-mock { border:1px solid #e3edf2; box-shadow:0 28px 60px #091c2a3d; transform:rotate(-2deg); }
+.wm-open-btn { background:#e6f3f0;color:#153b45; }
+.hero-actions { display:flex;flex-wrap:wrap;gap:12px; }
+.hero-actions button { min-width:156px; }
+.trust-grid { gap:18px; }
+.trust-item { border-radius:18px; }
+.service-card { border-radius:18px; box-shadow:0 10px 26px #173b5910; }
+.service-card:hover { box-shadow:0 18px 38px #173b5920; }
+.final-cta { background:linear-gradient(125deg,#163151,#235d65); }
+.review-state { grid-column:1/-1;max-width:650px;margin:22px auto;padding:34px;
+  border:1px solid #cbdedc;border-radius:20px;background:#f4fbf9;text-align:center;box-shadow:0 15px 35px #14254310; }
+.review-state strong { display:block;color:#173d49;font-size:24px; }
+.review-state p { color:#526a71;line-height:1.9; }
+.review-state .btn { margin-top:10px; }
+.consent-row { display:flex;align-items:flex-start;gap:12px;margin:15px 0;color:#455875;font-size:14px;line-height:1.9; }
+.consent-row input { width:19px;height:19px;flex:none;margin-top:6px;accent-color:#315dc9; }
+.consent-row a,.payment-guide-link { color:#285db7;text-decoration:underline;text-underline-offset:3px; }
+.payment-guide-link { font-size:13px;margin-inline-start:8px; }
+.payment-status.approved { color:#6a4a17;background:#fff0d4; }
+.footer-links { display:flex;flex-wrap:wrap;gap:10px 18px; }
+.footer-links a { color:#e7f4f3;text-decoration:none;font-size:13px; }
+.footer-links a:hover { text-decoration:underline; }
+.legal-wrap { max-width:890px;margin:0 auto;padding:42px 22px 90px; }
+.legal-hero { border-radius:24px;padding:38px 42px;background:linear-gradient(125deg,#142543,#23606b);color:white; }
+.legal-hero h1 { color:#fff;font-size:clamp(27px,4vw,44px);margin:8px 0 12px; }
+.legal-hero p { color:#dfecf3;margin:0; }
+.legal-card { background:white;border:1px solid var(--line);border-radius:18px;padding:26px 32px;margin-top:18px;box-shadow:0 10px 26px #173b590b; }
+.legal-card h2 { font-size:21px;line-height:1.5;margin-top:0; }
+.legal-card p,.legal-card li { color:#465974;line-height:1.95; }
+.legal-card ul,.legal-card ol { padding-inline-start:24px; }
+.legal-status { padding:12px 17px;border:1px solid #f1d3a2;border-radius:12px;background:#fff8e9;color:#684b1a; }
+@media(max-width:900px) {
+  header { padding-inline:5%; }
+  .hero { min-height:auto; }
+  .workspace-mock { transform:none; }
+  footer { flex-wrap:wrap; }
+}
+@media(max-width:650px) {
+  header { min-height:70px; }
+  header nav { width:100%;overflow-x:auto;flex-wrap:nowrap;white-space:nowrap;padding-bottom:3px;gap:18px; }
+  .hero { padding:54px 6%; }
+  .hero-actions button { flex:1 1 160px; }
+  .hero .trust { font-size:12px; }
+  .legal-wrap { padding:20px 14px 70px; }
+  .legal-hero,.legal-card { padding:24px 20px;border-radius:16px; }
+  .footer-links { width:100%; }
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after { animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important; }
+}
