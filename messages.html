@@ -8,28 +8,29 @@
 <link rel="icon" type="image/png" href="mawthouq-logo.png">
 <link rel="apple-touch-icon" href="mawthouq-logo.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#1a2140">
+<meta name="theme-color" content="#112842">
 <link rel="stylesheet" href="assets/style.css?v=31">
-<link rel="stylesheet" href="assets/refresh.css?v=2">
+<link rel="stylesheet" href="assets/refresh.css?v=3">
 </head>
 <body>
+<a class="skip-link" href="#main-content">انتقل إلى المحتوى</a>
 
 <header>
   <div style="display:flex;align-items:center;gap:12px">
   <button class="back-btn" onclick="goBack('index.html')" aria-label="رجوع">→</button>
   <a href="index.html" class="brand"><span class="brand-mark" aria-hidden="true">م</span><span>منصة موثوق</span></a>
   </div>
-  <nav><a href="index.html#services">الخدمات</a><a href="index.html#how">كيف تعمل؟</a><a href="index.html#experts">الخبراء</a></nav>
+  <nav id="messagesRoleNav"><a href="index.html">الرئيسية</a></nav>
   <div class="actions" id="headerActions"><button class="ghost" onclick="logoutUser()">خروج</button></div>
 </header>
 
-<main class="messages-layout">
+<main class="messages-layout" id="main-content">
   <aside class="conv-list" id="convList">
-    <h1 style="padding:0 4px 12px;font-size:20px;font-weight:700">المحادثات</h1>
+    <span class="eyebrow">مساحة العمل المشتركة</span><h1 style="padding:0 4px 12px;font-size:20px;font-weight:700">المحادثات</h1>
     <div id="convItems"><p style="color:var(--muted);padding:0 4px">جارٍ التحميل...</p></div>
   </aside>
   <section class="chat-panel" id="chatPanel">
-    <div id="chatEmpty" class="empty-state">اختر محادثة من القائمة، أو راسل خبيرًا من <a href="index.html#experts">صفحة الخبراء</a>.</div>
+    <div id="chatEmpty" class="empty-state"><strong>ابدأ من قائمة المحادثات</strong><p>ستجد الرسائل والملفات والاتفاق المرتبط بكل طلب هنا.</p><a href="index.html#experts">استعرض مقدمي الخدمة</a></div>
     <div id="chatThread" style="display:none">
       <div class="chat-header">
         <button class="ghost back-to-list" onclick="showListMobile()" aria-label="الرجوع لقائمة المحادثات">→</button>
@@ -52,7 +53,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js?v=31"></script>
 <script src="assets/auth.js?v=32"></script>
-<script src="assets/messages.js?v=32"></script>
+<script src="assets/messages.js?v=33"></script>
 
 </body>
 </html>

@@ -8,11 +8,12 @@
 <link rel="icon" type="image/png" href="mawthouq-logo.png">
 <link rel="apple-touch-icon" href="mawthouq-logo.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#1a2140">
+<meta name="theme-color" content="#112842">
 <link rel="stylesheet" href="assets/style.css?v=31">
-<link rel="stylesheet" href="assets/refresh.css?v=2">
+<link rel="stylesheet" href="assets/refresh.css?v=3">
 </head>
 <body>
+<a class="skip-link" href="#main-content">انتقل إلى المحتوى</a>
 
 <header>
   <div style="display:flex;align-items:center;gap:12px">
@@ -23,26 +24,37 @@
   <div class="actions"><a href="login.html" class="ghost btn">دخول</a></div>
 </header>
 
-<main class="auth-wrap">
-  <div class="auth-card">
-    <h1>إنشاء حساب جديد</h1>
-    <p>انضم إلى منصة موثوق للاستفادة من خدماتها.</p>
+<main class="auth-wrap auth-layout" id="main-content">
+  <aside class="auth-intro" aria-label="خطوات الانضمام">
+    <span class="auth-kicker">منصة موثوق الأكاديمية</span>
+    <h2>مساحة واحدة، مساران واضحان.</h2>
+    <p>أنشئ حسابك بحسب دورك. ستجد الطلبات والمحادثات والخدمات في مساحة مخصصة لك بعد الدخول.</p>
+    <div class="auth-intro-points"><span>01 <b>اختر نوع الحساب</b></span><span>02 <b>أدخل بياناتك الأساسية</b></span><span>03 <b>أكّد بريدك وابدأ</b></span></div>
+    <small id="roleIntro">طالب الخدمة ينشر طلبه ويتابع تقدمه. يمكنك البدء بعد تأكيد بريدك الإلكتروني.</small>
+  </aside>
+  <div class="auth-card auth-register-card">
+    <span class="auth-card-kicker">حساب جديد</span>
+    <h1>ابدأ رحلتك في موثوق</h1>
+    <p>اختر دورك، ثم أكمل بيانات الحساب الأساسية.</p>
 
     <div id="alert" class="alert alert-error"></div>
 
     <form id="registerForm" novalidate>
-      <div class="field full">
-        <label>نوع الحساب</label>
+      <div class="form-section-title"><span>01</span><div><strong>طريقة استخدام المنصة</strong><small>يمكنك التسجيل كطالب خدمة أو مقدم خدمة.</small></div></div>
+      <div class="field full" role="group" aria-labelledby="accountTypeLabel">
+        <label id="accountTypeLabel">نوع الحساب</label>
         <div class="type-choice" id="typeChoice">
           <label class="type-option selected">
             <input type="radio" name="accountType" value="seeker" checked>
-            <span class="type-option-title">أبحث عن خدمة</span>
-            <span class="type-option-sub">طالب خدمة</span>
+            <span class="type-option-icon" aria-hidden="true">⌕</span>
+            <span class="type-option-title">طالب خدمة</span>
+            <span class="type-option-sub">أنشر طلبًا، راجع العروض وتابع العمل.</span>
           </label>
           <label class="type-option">
             <input type="radio" name="accountType" value="provider">
-            <span class="type-option-title">أقدّم خدمة</span>
-            <span class="type-option-sub">مقدم خدمة</span>
+            <span class="type-option-icon" aria-hidden="true">✦</span>
+            <span class="type-option-title">مقدم خدمة</span>
+            <span class="type-option-sub">عرّف بخدماتك وقدّمها بعد مراجعة حسابك.</span>
           </label>
         </div>
       </div>
@@ -71,6 +83,7 @@
         </div>
       </div>
 
+      <div class="form-section-title"><span>02</span><div><strong>بيانات الحساب</strong><small>استخدم بريدًا يمكنك الوصول إليه لتأكيد الحساب.</small></div></div>
       <div class="field">
         <label for="username">اسم المستخدم</label>
         <input id="username" name="username" type="text" autocomplete="username" required>
@@ -83,7 +96,7 @@
         <label for="phone">رقم الهاتف</label>
         <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+968 9xxxxxxx" required>
       </div>
-      <label class="consent-row"><input id="termsConsent" type="checkbox" required><span>قرأت <a href="terms.html" target="_blank" rel="noopener">شروط الاستخدام</a> و<a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a> وأوافق على معالجة بيانات التسجيل اللازمة لتشغيل الحساب.</span></label>
+      <div class="form-section-title"><span>03</span><div><strong>الحماية والموافقة</strong><small>حافظ على كلمة مرور خاصة بهذا الحساب.</small></div></div>
       <div class="field">
         <label for="password">كلمة المرور</label>
         <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
@@ -92,6 +105,7 @@
         <label for="confirmPassword">تأكيد كلمة المرور</label>
         <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" required oninput="checkPasswordMatch()">
       </div>
+      <label class="consent-row"><input id="termsConsent" type="checkbox" required><span>قرأت <a href="terms.html" target="_blank" rel="noopener">شروط الاستخدام</a> و<a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a> وأوافق على معالجة بيانات التسجيل اللازمة لتشغيل الحساب.</span></label>
       <button type="submit" id="submitBtn"><span class="spinner"></span><span class="btn-text">إنشاء الحساب</span></button>
     </form>
 
@@ -126,6 +140,9 @@ document.querySelectorAll('input[name="accountType"]').forEach(radio => {
     radio.closest('.type-option').classList.add('selected');
     const isProvider = radio.value === 'provider';
     providerFields.hidden = !isProvider;
+    document.getElementById('roleIntro').textContent = isProvider
+      ? 'مقدم الخدمة يخضع لمراجعة أهلية تقديم الخدمة. إرفاق البطاقة المدنية اختياري، وتوثيق الهوية قرار مستقل من المشرف.'
+      : 'طالب الخدمة ينشر طلبه ويتابع تقدمه. يمكنك البدء بعد تأكيد بريدك الإلكتروني.';
   });
 });
 
@@ -152,6 +169,19 @@ form.addEventListener('submit', async (e) => {
   const accountType = document.querySelector('input[name="accountType"]:checked').value;
   const providerServiceType = document.getElementById('providerServiceType').value;
   const identityFile = accountType === 'provider' ? document.getElementById('civilIdFile').files[0] : null;
+
+  if (!email || !document.getElementById('email').checkValidity() || !phone || phone.replace(/\D/g, '').length < 8) {
+    showError('أدخل بريدًا إلكترونيًا صحيحًا ورقم هاتف من 8 أرقام على الأقل.');
+    submitBtn.disabled = false;
+    submitBtn.classList.remove('loading');
+    return;
+  }
+  if (password.length < 8) {
+    showError('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
+    submitBtn.disabled = false;
+    submitBtn.classList.remove('loading');
+    return;
+  }
 
   if (!document.getElementById('termsConsent').checked) {
     showError('يرجى قراءة الشروط وسياسة الخصوصية والموافقة عليهما.');

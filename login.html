@@ -8,11 +8,12 @@
 <link rel="icon" type="image/png" href="mawthouq-logo.png">
 <link rel="apple-touch-icon" href="mawthouq-logo.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#1a2140">
+<meta name="theme-color" content="#112842">
 <link rel="stylesheet" href="assets/style.css?v=31">
-<link rel="stylesheet" href="assets/refresh.css?v=2">
+<link rel="stylesheet" href="assets/refresh.css?v=3">
 </head>
 <body>
+<a class="skip-link" href="#main-content">انتقل إلى المحتوى</a>
 
 <header>
   <div style="display:flex;align-items:center;gap:12px">
@@ -23,11 +24,19 @@
   <div class="actions"><a href="register.html" class="outline btn">إنشاء حساب</a></div>
 </header>
 
-<main class="auth-wrap">
+<main class="auth-wrap auth-layout" id="main-content">
+  <aside class="auth-intro" aria-label="عن منصة موثوق">
+    <span class="auth-kicker">مساحتك الأكاديمية</span>
+    <h2>من الفكرة إلى إنجازٍ واضح.</h2>
+    <p>نظّم طلباتك، تواصل مع مقدم الخدمة، وتابع مراحل العمل من مكان واحد.</p>
+    <div class="auth-intro-points"><span>01 <b>خدمات متخصصة</b></span><span>02 <b>محادثات وملفات في مكان واحد</b></span><span>03 <b>اعتماد مقدمي الخدمة قبل ظهورهم</b></span></div>
+    <small>توثيق الهوية يعني مراجعة البطاقة، ولا يضمن جودة العمل الأكاديمي. راجع ملف مقدم الخدمة وتقييماته قبل الاتفاق.</small>
+  </aside>
   <div class="auth-card">
+    <span class="auth-card-kicker">مرحبًا بعودتك</span>
     <div id="loginView">
       <h1>تسجيل الدخول</h1>
-      <p>أدخل بيانات حسابك للمتابعة إلى منصة موثوق.</p>
+      <p>سجّل الدخول للمتابعة إلى مساحتك وفق نوع حسابك.</p>
 
       <div id="alert" class="alert alert-error"></div>
 
@@ -43,12 +52,12 @@
         <button type="submit" id="submitBtn"><span class="spinner"></span><span class="btn-text">دخول</span></button>
       </form>
 
-      <div class="auth-foot" style="margin-top:14px"><a href="#" onclick="showResetView(event)">نسيت رمز الدخول؟</a></div>
+      <div class="auth-foot" style="margin-top:14px"><a href="#" onclick="showResetView(event)">نسيت كلمة المرور؟</a></div>
       <div class="auth-foot">ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a></div>
     </div>
 
     <div id="resetView" style="display:none">
-      <h1>استعادة رمز الدخول</h1>
+      <h1>استعادة كلمة المرور</h1>
       <p>أدخل بريدك المسجّل، وسنرسل رابطًا لتعيين كلمة مرور جديدة.</p>
 
       <div id="resetAlert" class="alert alert-success"></div>
@@ -87,6 +96,12 @@ document.getElementById('resetForm').addEventListener('submit', async (e) => {
   const resetBtn = document.getElementById('resetSubmitBtn');
    const email = document.getElementById('resetUsername').value.trim();
 
+  if (!email || !document.getElementById('resetUsername').checkValidity()) {
+    resetAlert.textContent = 'أدخل بريدًا إلكترونيًا صحيحًا لاستعادة كلمة المرور.';
+    resetAlert.className = 'alert alert-error show';
+    return;
+  }
+
   resetBtn.disabled = true;
   resetBtn.classList.add('loading');
 
@@ -102,7 +117,7 @@ document.getElementById('resetForm').addEventListener('submit', async (e) => {
   }
 
   resetAlert.textContent = genericMessage;
-  resetAlert.classList.add('show');
+  resetAlert.className = 'alert alert-success show';
   resetBtn.disabled = false;
   resetBtn.classList.remove('loading');
   document.getElementById('resetForm').reset();
@@ -125,6 +140,13 @@ form.addEventListener('submit', async (e) => {
 
    const email = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
+
+  if (!email || !document.getElementById('username').checkValidity() || !password) {
+    showError('أدخل بريدك الإلكتروني وكلمة المرور للمتابعة.');
+    submitBtn.disabled = false;
+    submitBtn.classList.remove('loading');
+    return;
+  }
 
   try {
      await loginUser({ email, password });

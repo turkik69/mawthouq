@@ -8,9 +8,10 @@
 <link rel="icon" type="image/png" href="mawthouq-logo.png">
 <link rel="apple-touch-icon" href="mawthouq-logo.png">
 <link rel="stylesheet" href="assets/style.css?v=31">
-<link rel="stylesheet" href="assets/refresh.css?v=2">
+<link rel="stylesheet" href="assets/refresh.css?v=3">
 </head>
 <body>
+<a class="skip-link" href="#main-content">انتقل إلى المحتوى</a>
 
 <header>
   <div style="display:flex;align-items:center;gap:12px">
@@ -21,12 +22,16 @@
   <div class="actions" id="headerActions"><button class="ghost" onclick="logoutUser()">خروج</button></div>
 </header>
 
-<main style="padding:36px 7%;max-width:1100px;margin:0 auto">
+<nav class="workspace-nav" aria-label="تنقل طالب الخدمة"><a href="dashboard.html" aria-current="page">لوحتي</a><a href="my-requests.html">طلباتي</a><a href="messages.html">المحادثات</a><a href="index.html#services">الخدمات الأكاديمية</a></nav>
+<main class="workspace-main" id="main-content">
   <div id="dashWelcome" class="dash-welcome">
+    <span class="workspace-kicker">مساحة طالب الخدمة</span>
     <h1>أهلًا بك<span id="dashName"></span></h1>
-    <p>ماذا تريد أن تنجز اليوم؟</p>
-    <button class="large" onclick="window.location.href='index.html?action=request'">+ إنشاء مشروع جديد</button>
+    <p>ابدأ بطلب واضح، ثم تابع المشروع والمراسلات من لوحتك.</p>
+    <button class="large" onclick="window.location.href='index.html?action=request'">+ إنشاء طلب خدمة</button>
   </div>
+
+  <div class="workspace-guidance" aria-label="خطوات طالب الخدمة"><span><b>١</b> حدّد الخدمة والهدف</span><span><b>٢</b> تواصل مع مقدم الخدمة</span><span><b>٣</b> تابع العمل والملفات</span></div>
 
   <div class="dash-grid">
     <div>
