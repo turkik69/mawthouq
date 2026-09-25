@@ -10,7 +10,7 @@
 <link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#1a2140">
 <link rel="stylesheet" href="assets/style.css?v=31">
-<link rel="stylesheet" href="assets/refresh.css?v=1">
+<link rel="stylesheet" href="assets/refresh.css?v=2">
 </head>
 <body>
 
@@ -28,6 +28,15 @@
 </header>
 
 <main style="padding:34px 7%">
+  <section class="identity-panel" aria-labelledby="identityTitle">
+    <div><h2 id="identityTitle">توثيق هوية مقدم الخدمة</h2><p id="identityStatus" aria-live="polite">جارٍ التحقق من حالة الطلب...</p></div>
+    <form id="identityForm" hidden>
+      <label for="identityFile">البطاقة المدنية، اختياري (JPG أو PNG أو PDF حتى 5 ميجابايت)</label>
+      <input id="identityFile" type="file" accept="image/jpeg,image/png,application/pdf" required>
+      <label class="consent-row"><input id="identityConsent" type="checkbox" required><span>أوافق على فحص البطاقة للتحقق من هويتي وفق <a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a>. لا تُنشر البطاقة ولا تمنح الشارة قبل مراجعة المشرف.</span></label>
+      <button id="identitySubmit" type="submit">إرسال البطاقة للمراجعة</button>
+    </form>
+  </section>
   <div class="heading">
     <div><div class="eyebrow">مقدّم خدمة</div><h1 style="margin:5px 0">طلبات الخدمة المتاحة</h1></div>
     <p id="myServiceType"></p>
@@ -90,6 +99,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js?v=31"></script>
 <script src="assets/auth.js?v=31"></script>
-<script src="assets/provider-requests.js?v=31"></script>
+<script src="assets/provider-identity.js?v=1"></script>
+<script src="assets/provider-requests.js?v=32"></script>
 </body>
 </html>

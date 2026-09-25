@@ -10,7 +10,7 @@
 <link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#1a2140">
 <link rel="stylesheet" href="assets/style.css?v=31">
-<link rel="stylesheet" href="assets/refresh.css?v=1">
+<link rel="stylesheet" href="assets/refresh.css?v=2">
 </head>
 <body>
 
@@ -45,6 +45,13 @@
       <div class="stat-card"><b id="todayCount">—</b><span>تسجيلات اليوم</span></div>
       <div class="stat-card"><b id="weekCount">—</b><span>آخر 7 أيام</span></div>
     </div>
+
+    <section class="identity-panel" aria-labelledby="identityReviewTitle">
+      <h2 id="identityReviewTitle">مراجعة البطاقات المدنية</h2>
+      <p>الرفع لا يمنح شارة الثقة تلقائيًا. افتح الملف وافحصه قبل القبول. يحاول النظام حذف البطاقة بعد القرار فورًا؛ إذا تعذر ذلك سيظهر زر لإعادة الحذف.</p>
+      <div id="identityReviews" aria-live="polite">جارٍ تحميل الطلبات...</div>
+      <div id="identityPreview" class="identity-preview" hidden><button class="outline" type="button" onclick="closeIdentityPreview()">إغلاق العرض</button><div id="identityPreviewBody"></div></div>
+    </section>
 
     <div class="table-wrap">
       <table>
@@ -141,6 +148,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js?v=31"></script>
 <script src="assets/auth.js?v=31"></script>
-<script src="assets/admin.js?v=32"></script>
+<script src="assets/admin.js?v=33"></script>
 </body>
 </html>

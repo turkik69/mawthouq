@@ -10,7 +10,7 @@
 <link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#1a2140">
 <link rel="stylesheet" href="assets/style.css?v=31">
-<link rel="stylesheet" href="assets/refresh.css?v=1">
+<link rel="stylesheet" href="assets/refresh.css?v=2">
 </head>
 <body>
 
@@ -63,6 +63,12 @@
             <option>التنسيق والمراجع</option>
           </select>
         </div>
+        <div class="field full identity-field">
+          <label for="civilIdFile">البطاقة المدنية (اختياري)</label>
+          <input id="civilIdFile" type="file" accept="image/jpeg,image/png,application/pdf">
+          <small>صورة واضحة أو PDF حتى 5 ميجابايت. تُحفظ في مساحة خاصة ولا تظهر للعملاء. لا تحصل على شارة «مقدم خدمة موثوق» إلا بعد فحص المشرف للبطاقة وقبولها. إذا كان تأكيد البريد مطلوبًا، أرفقها بعد تسجيل الدخول.</small>
+          <label class="consent-row"><input id="identityConsent" type="checkbox"><span>أوافق على استخدام البطاقة للتحقق الاختياري من هويتي وفق <a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a>.</span></label>
+        </div>
       </div>
 
       <div class="field">
@@ -96,6 +102,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js?v=31"></script>
 <script src="assets/auth.js?v=31"></script>
+<script src="assets/provider-identity.js?v=1"></script>
 <script>
 function checkPasswordMatch(){
   const password = document.getElementById('password').value;
@@ -144,9 +151,22 @@ form.addEventListener('submit', async (e) => {
   const confirmPassword = document.getElementById('confirmPassword').value;
   const accountType = document.querySelector('input[name="accountType"]:checked').value;
   const providerServiceType = document.getElementById('providerServiceType').value;
+  const identityFile = accountType === 'provider' ? document.getElementById('civilIdFile').files[0] : null;
 
   if (!document.getElementById('termsConsent').checked) {
     showError('يرجى قراءة الشروط وسياسة الخصوصية والموافقة عليهما.');
+    submitBtn.disabled = false;
+    submitBtn.classList.remove('loading');
+    return;
+  }
+  if (identityFile && !document.getElementById('identityConsent').checked) {
+    showError('لإرفاق البطاقة المدنية، وافق على استخدامها للتحقق من الهوية.');
+    submitBtn.disabled = false;
+    submitBtn.classList.remove('loading');
+    return;
+  }
+  if (identityFile && (!ID_TYPES[identityFile.type] || !identityFile.size || identityFile.size > 5 * 1024 * 1024)) {
+    showError('اختر صورة JPG أو PNG أو ملف PDF بحجم لا يتجاوز 5 ميجابايت.');
     submitBtn.disabled = false;
     submitBtn.classList.remove('loading');
     return;
@@ -166,13 +186,30 @@ form.addEventListener('submit', async (e) => {
     return;
   }
   try {
-    await registerUser({
+    const registration = await registerUser({
       username, password, email, phone, accountType,
       bankAccountNumber: null,
       paymentMethod: null,
       providerServiceType: accountType === 'provider' ? providerServiceType : null
     });
-    showSuccess('تم إنشاء الحساب بنجاح. جارٍ تحويلك...');
+    if (!registration.session) {
+      showSuccess(identityFile
+        ? 'تم إنشاء الحساب. أكّد بريدك الإلكتروني ثم سجّل الدخول وارفع البطاقة من صفحة مقدم الخدمة؛ لم تُرفع الآن.'
+        : 'تم إنشاء الحساب. أكّد بريدك الإلكتروني ثم سجّل الدخول.');
+      submitBtn.classList.remove('loading');
+      document.getElementById('password').value = '';
+      document.getElementById('confirmPassword').value = '';
+      return;
+    }
+    if (identityFile) {
+      try { await submitProviderIdentity(identityFile); }
+      catch (uploadError) {
+        showSuccess('تم إنشاء الحساب، لكن لم تُرفع البطاقة. افتح صفحة مقدم الخدمة وأرفقها بعد الدخول.');
+        setTimeout(() => redirectAfterAuth(), 1600);
+        return;
+      }
+    }
+    showSuccess(identityFile ? 'تم إنشاء الحساب وإرسال البطاقة للمراجعة. جارٍ تحويلك...' : 'تم إنشاء الحساب بنجاح. جارٍ تحويلك...');
     setTimeout(() => redirectAfterAuth(), 1200);
   } catch (err) {
     showError(err.message);

@@ -10,7 +10,7 @@
 <link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#1a2140">
 <link rel="stylesheet" href="assets/style.css?v=31">
-<link rel="stylesheet" href="assets/refresh.css?v=1">
+<link rel="stylesheet" href="assets/refresh.css?v=2">
 </head>
 <body>
 <header>
@@ -364,7 +364,9 @@ async function loadServiceStats(){
 
 async function loadProviders(){
   const grid = document.getElementById('expertsGrid');
-  const { data: providers, error } = await supabaseClient.rpc('get_providers');
+  const [{ data: providers, error }, { data: trustedIds, error: trustError }] = await Promise.all([
+    supabaseClient.rpc('get_providers'), supabaseClient.rpc('get_trusted_provider_ids')
+  ]);
 
   if (error || !providers || providers.length === 0) {
      grid.innerHTML = '<p style="text-align:center;color:var(--muted);grid-column:1/-1">يُراجع فريق موثوق طلبات مقدمي الخدمة قبل ظهورهم هنا. يمكنك نشر طلبك الآن.</p>';
@@ -375,6 +377,7 @@ async function loadProviders(){
   const servicesLists = await Promise.all(
     providers.map(p => supabaseClient.rpc('get_provider_services', { p_provider_id: p.id }))
   );
+  const trustedProviders = new Set(trustError ? [] : (trustedIds || []).map(row => row.provider_id));
 
   grid.innerHTML = providers.map((p, i) => {
     const services = (servicesLists[i].data || []).slice(0, 3);
@@ -389,7 +392,7 @@ async function loadProviders(){
       <p>${escapeHtmlLite(p.provider_service_type || 'خبير أكاديمي')}</p>
       ${tagsHtml}
       <b style="font-size:13px">${ratingLine(p)}</b>
-      <label class="verified"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M4 12l5 5L20 6"/></svg> خبير موثق</label>
+      ${trustedProviders.has(p.id) ? '<span class="verified" title="تم فحص البطاقة المدنية من فريق المنصة">✓ مقدم خدمة موثوق</span>' : '<span class="provider-approved">معتمد لتقديم الخدمة</span>'}
       <div style="margin-top:12px"><button class="outline" onclick="event.stopPropagation();messageProvider('${p.id}')">احجز استشارة</button></div>
     </article>`;
   }).join('');
