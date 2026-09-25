@@ -116,21 +116,30 @@ async function reviewIdentity(checkId, approve){
   if (!confirm(approve ? 'هل فتحت البطاقة وفحصت بياناتها بالفعل؟ سيُمنح توثيق الهوية لهذا الحساب.' : 'رفض البطاقة مع السماح للمستخدم برفع نسخة أخرى؟')) return;
   const { error } = await supabaseClient.rpc('admin_review_provider_identity', { p_check_id: checkId, p_approve: approve });
   if (error) { showToast('تعذرت المراجعة: ' + error.message, 'error'); return; }
+  const deletionError = await removeReviewedIdentityFile(checkId);
   await loadIdentityReviews();
-  showToast(approve ? 'تم توثيق الهوية. احذف صورة البطاقة بعد المراجعة.' : 'رُفضت البطاقة. احذف نسختها بعد المراجعة.', 'success');
+  showToast(deletionError
+    ? 'حُفظ القرار لكن تعذر حذف البطاقة. أعد الحذف من قائمة المراجعة: ' + deletionError
+    : approve ? 'تم توثيق الهوية وحذف صورة البطاقة.' : 'رُفضت البطاقة وحُذفت صورتها.', deletionError ? 'error' : 'success');
+}
+
+async function removeReviewedIdentityFile(checkId){
+  const row = identityReviewRows.find(item => item.id === checkId);
+  if (!row?.file_path) return null;
+  closeIdentityPreview();
+  const { error: fileError } = await supabaseClient.storage.from('provider-identities').remove([row.file_path]);
+  if (fileError) return fileError.message;
+  const { error } = await supabaseClient.rpc('admin_clear_identity_file', { p_check_id: checkId });
+  return error?.message || null;
 }
 
 async function clearIdentityFile(checkId){
   const row = identityReviewRows.find(item => item.id === checkId);
   if (!row || row.status === 'pending' || !row.file_path) return;
   if (!confirm('حذف صورة البطاقة نهائيًا من التخزين مع إبقاء نتيجة المراجعة؟')) return;
-  closeIdentityPreview();
-  const { error: fileError } = await supabaseClient.storage.from('provider-identities').remove([row.file_path]);
-  if (fileError) { showToast('تعذر حذف البطاقة: ' + fileError.message, 'error'); return; }
-  const { error } = await supabaseClient.rpc('admin_clear_identity_file', { p_check_id: checkId });
-  if (error) { showToast('حُذف الملف، لكن تعذر تحديث السجل. أعد المحاولة: ' + error.message, 'error'); return; }
+  const error = await removeReviewedIdentityFile(checkId);
   await loadIdentityReviews();
-  showToast('حُذفت صورة البطاقة، وبقيت نتيجة المراجعة.', 'success');
+  showToast(error ? 'تعذر إكمال الحذف: ' + error : 'حُذفت صورة البطاقة، وبقيت نتيجة المراجعة.', error ? 'error' : 'success');
 }
 
 async function revokeIdentity(checkId){
