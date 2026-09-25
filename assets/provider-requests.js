@@ -13,7 +13,7 @@ let allRequests = [];
     window.location.href = 'dashboard.html';
     return;
   }
-  await loadIdentityStatus();
+  await loadIdentityStatus(session.user.id, profile.suspended);
 
   if (!profile.provider_verified_at || profile.suspended) {
     document.getElementById('requestsList').innerHTML = '<div class="review-state"><strong>طلبك قيد المراجعة</strong><p>سنراجع بيانات مقدم الخدمة قبل إتاحة طلبات الباحثين والتواصل معهم. يمكنك تجهيز وصف خدماتك وأسعارك في هذه الأثناء.</p><a class="btn" href="provider-services.html">إعداد خدماتي</a></div>';
@@ -35,11 +35,12 @@ let allRequests = [];
   initMessageNotifications();
 })();
 
-async function loadIdentityStatus() {
+async function loadIdentityStatus(providerId, suspended = false) {
   const status = document.getElementById('identityStatus');
   const form = document.getElementById('identityForm');
   const { data, error } = await supabaseClient.from('provider_identity_checks')
-    .select('status, submitted_at').order('submitted_at', { ascending: false }).limit(1);
+    .select('status, submitted_at').eq('provider_id', providerId)
+    .order('submitted_at', { ascending: false }).limit(1);
   if (error) { status.textContent = 'تعذر تحميل حالة توثيق الهوية. حاول تحديث الصفحة.'; return; }
   const latest = data?.[0];
   const messages = {
@@ -48,7 +49,7 @@ async function loadIdentityStatus() {
     rejected: 'لم تُقبل البطاقة السابقة. يمكنك تقديم صورة أوضح للمراجعة مجددًا.'
   };
   status.textContent = latest ? messages[latest.status] : 'يمكنك إرسال البطاقة المدنية اختياريًا للمراجعة. اعتماد حسابك للخدمة إجراء مستقل.';
-  form.hidden = latest?.status === 'pending' || latest?.status === 'approved';
+  form.hidden = suspended || latest?.status === 'pending' || latest?.status === 'approved';
 }
 
 document.getElementById('identityForm').addEventListener('submit', async event => {
@@ -59,7 +60,8 @@ document.getElementById('identityForm').addEventListener('submit', async event =
   try {
     await submitProviderIdentity(document.getElementById('identityFile').files[0]);
     document.getElementById('identityForm').reset();
-    await loadIdentityStatus();
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (user) await loadIdentityStatus(user.id);
   } catch (error) {
     status.textContent = error.message;
   } finally { button.disabled = false; }
