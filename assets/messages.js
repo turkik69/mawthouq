@@ -15,7 +15,18 @@ let conversationsCache = [];
 
     const profile = await getCurrentProfile();
     if (profile && profile.account_type === 'provider') currentUserRole = 'provider';
-    const roleBadge = currentUserRole === 'provider'
+    const roleNav = document.getElementById('messagesRoleNav');
+    if (roleNav) roleNav.innerHTML = profile?.is_admin
+      ? '<a href="admin.html">لوحة المشرف</a><a href="index.html">الرئيسية</a>'
+      : currentUserRole === 'provider'
+        ? '<a href="provider-requests.html">الطلبات المتاحة</a><a href="provider-services.html">خدماتي</a>'
+        : '<a href="dashboard.html">لوحتي</a><a href="my-requests.html">طلباتي</a>';
+    const emptyLink = document.querySelector('#chatEmpty a');
+    if (emptyLink && currentUserRole === 'provider') {
+      emptyLink.href = 'provider-requests.html';
+      emptyLink.textContent = 'تصفح الطلبات المتاحة';
+    }
+    const roleBadge = profile?.is_admin ? '<span class="badge-admin">مشرف</span>' : currentUserRole === 'provider'
       ? '<span class="badge-provider">مقدم خدمة</span>'
       : '<span class="badge-seeker">طالب خدمة</span>';
     document.getElementById('headerActions').insertAdjacentHTML('afterbegin', roleBadge);
@@ -55,7 +66,9 @@ async function loadConversations(){
   conversationsCache = data || [];
 
   if (conversationsCache.length === 0) {
-    container.innerHTML = '<p style="color:var(--muted);padding:0 4px">لا توجد محادثات بعد. راسل خبيرًا من صفحة الخبراء لتبدأ.</p>';
+    container.innerHTML = currentUserRole === 'provider'
+      ? '<p style="color:var(--muted);padding:0 4px">لا توجد محادثات بعد. تصفّح الطلبات المتاحة بعد اعتماد حسابك.</p>'
+      : '<p style="color:var(--muted);padding:0 4px">لا توجد محادثات بعد. يمكنك بدء التواصل من صفحة مقدمي الخدمة.</p>';
     return;
   }
 

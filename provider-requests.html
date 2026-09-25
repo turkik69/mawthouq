@@ -8,11 +8,12 @@
 <link rel="icon" type="image/png" href="mawthouq-logo.png">
 <link rel="apple-touch-icon" href="mawthouq-logo.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#1a2140">
+<meta name="theme-color" content="#112842">
 <link rel="stylesheet" href="assets/style.css?v=31">
-<link rel="stylesheet" href="assets/refresh.css?v=2">
+<link rel="stylesheet" href="assets/refresh.css?v=3">
 </head>
 <body>
+<a class="skip-link" href="#main-content">انتقل إلى المحتوى</a>
 
 <header>
   <div style="display:flex;align-items:center;gap:12px">
@@ -27,7 +28,9 @@
   </div>
 </header>
 
-<main style="padding:34px 7%">
+<nav class="workspace-nav" aria-label="تنقل مقدم الخدمة"><a href="provider-requests.html" aria-current="page">الطلبات المتاحة</a><a href="provider-services.html">خدماتي وأسعاري</a><a href="messages.html">المحادثات</a><a href="index.html">الرئيسية</a></nav>
+<main class="workspace-main" id="main-content">
+  <div class="workspace-hero provider-hero"><div><span class="workspace-kicker">مساحة مقدم الخدمة</span><h1>فرص أكاديمية تناسب خبرتك</h1><p>راجع تفاصيل الطلبات، وحدد نطاق العمل قبل التواصل مع طالب الخدمة.</p></div><a class="btn outline-invert" href="provider-services.html">إدارة خدماتي</a></div>
   <section class="identity-panel" aria-labelledby="identityTitle">
     <div><h2 id="identityTitle">توثيق هوية مقدم الخدمة</h2><p id="identityStatus" aria-live="polite">جارٍ التحقق من حالة الطلب...</p></div>
     <form id="identityForm" hidden>
@@ -38,11 +41,11 @@
     </form>
   </section>
   <div class="heading">
-    <div><div class="eyebrow">مقدّم خدمة</div><h1 style="margin:5px 0">طلبات الخدمة المتاحة</h1></div>
+    <div><div class="eyebrow">تصفح فرص العمل</div><h2 style="margin:5px 0">طلبات الخدمة المتاحة</h2></div>
     <p id="myServiceType"></p>
   </div>
 
-  <div class="search-bar" style="max-width:100%"><span>⌕</span><input id="searchInput" placeholder="ابحث بالعنوان أو التفاصيل أو التخصص..." oninput="applyFilters()"></div>
+  <div class="search-bar" style="max-width:100%"><span aria-hidden="true">⌕</span><input id="searchInput" aria-label="البحث في الطلبات" placeholder="ابحث بالعنوان أو التفاصيل أو التخصص..." oninput="applyFilters()"></div>
 
   <div class="form" style="margin-bottom:26px">
     <div class="field">
@@ -100,6 +103,6 @@
 <script src="assets/supabase-config.js?v=31"></script>
 <script src="assets/auth.js?v=32"></script>
 <script src="assets/provider-identity.js?v=1"></script>
-<script src="assets/provider-requests.js?v=32"></script>
+<script src="assets/provider-requests.js?v=33"></script>
 </body>
 </html>
