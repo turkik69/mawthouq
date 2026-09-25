@@ -16,10 +16,12 @@ let allRequests = [];
   await loadIdentityStatus(session.user.id, profile.suspended);
 
   if (!profile.provider_verified_at || profile.suspended) {
-    document.getElementById('requestsList').innerHTML = profile.suspended
+    document.getElementById('providerBrowse').hidden = true;
+    const accessState = document.getElementById('providerAccessState');
+    accessState.hidden = false;
+    accessState.innerHTML = profile.suspended
       ? '<div class="review-state"><strong>حساب مقدم الخدمة موقوف</strong><p>لا تتاح الطلبات الجديدة لهذا الحساب حاليًا. تواصل مع إدارة المنصة للاستفسار عن حالة الحساب.</p></div>'
       : '<div class="review-state"><strong>طلب الانضمام قيد المراجعة</strong><p>سنراجع أهلية تقديم الخدمة قبل إتاحة طلبات الباحثين. يمكنك إعداد وصف خدماتك وأسعارك في هذه الأثناء. توثيق البطاقة المدنية اختياري ومستقل عن اعتماد تقديم الخدمة.</p><a class="btn" href="provider-services.html">إعداد خدماتي</a></div>';
-    document.getElementById('myServiceType').textContent = profile.suspended ? 'حساب مقدم الخدمة غير نشط. تواصل مع الإدارة.' : 'بانتظار اعتماد حساب مقدم الخدمة';
     return;
   }
 

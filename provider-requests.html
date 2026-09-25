@@ -20,10 +20,7 @@
   <button class="back-btn" onclick="goBack('index.html')" aria-label="رجوع">→</button>
   <a href="index.html" class="brand"><span class="brand-mark" aria-hidden="true">م</span><span>منصة موثوق</span></a>
   </div>
-  <nav><a href="index.html">الرئيسية</a></nav>
   <div class="actions" id="headerActions">
-    <a href="provider-services.html" class="outline btn">خدماتي</a>
-    <a href="messages.html" class="ghost btn">رسائلي</a>
     <button class="ghost" onclick="logoutUser()">خروج</button>
   </div>
 </header>
@@ -40,6 +37,8 @@
       <button id="identitySubmit" type="submit">إرسال البطاقة للمراجعة</button>
     </form>
   </section>
+  <div id="providerAccessState" hidden></div>
+  <div id="providerBrowse">
   <div class="heading">
     <div><div class="eyebrow">تصفح فرص العمل</div><h2 style="margin:5px 0">طلبات الخدمة المتاحة</h2></div>
     <p id="myServiceType"></p>
@@ -93,6 +92,7 @@
       <div id="archiveEmpty" class="empty-state" style="display:none">لم تقبل أي طلب بعد.</div>
     </div>
   </div>
+  </div>
 </main>
 
 <div id="modal" class="modal" onclick="if(event.target===this)closeModal()">
@@ -103,6 +103,6 @@
 <script src="assets/supabase-config.js?v=31"></script>
 <script src="assets/auth.js?v=32"></script>
 <script src="assets/provider-identity.js?v=1"></script>
-<script src="assets/provider-requests.js?v=33"></script>
+<script src="assets/provider-requests.js?v=34"></script>
 </body>
 </html>
