@@ -1,4 +1,22 @@
 /* Shared production visual layer. The existing logo and application components stay intact. */
+.identity-field { display:grid; gap:8px; padding:16px; background:#f1f7f7; border:1px solid #b9d7d2; border-radius:14px; }
+.identity-field small { color:#50647b; line-height:1.7; }
+.identity-panel { background:#fff; border:1px solid #dce6ef; border-radius:16px; padding:20px; margin:0 0 25px; box-shadow:0 8px 28px #0e1c350d; }
+.identity-panel h2 { margin:0 0 6px; font-size:20px; }
+.identity-panel p { margin:0 0 12px; color:#50647b; line-height:1.7; }
+.identity-panel form { display:grid; gap:12px; max-width:650px; }
+.identity-panel form[hidden] { display:none; }
+.identity-panel input[type=file] { border:1px solid #c8d8df; border-radius:10px; padding:10px; width:100%; }
+.identity-panel .consent-row { display:flex; align-items:flex-start; gap:8px; }
+.identity-panel button { width:max-content; max-width:100%; }
+.identity-review-item { display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:12px 0; border-top:1px solid #dce6ef; }
+.identity-review-item > div { margin-inline-end:auto; }
+.identity-review-item small { display:block; color:#607083; margin-top:5px; }
+.provider-approved { display:inline-flex; margin-top:13px; padding:4px 12px; color:#27576a; background:#eaf3f6; border-radius:20px; font-size:12px; }
+.identity-preview { background:#f3f7f8; padding:12px; border:1px solid #cadce3; border-radius:12px; margin:12px 0; }
+.identity-preview[hidden] { display:none; }
+.identity-preview img,.identity-preview iframe { display:block; max-width:100%; width:100%; max-height:75vh; object-fit:contain; margin-top:12px; border:0; }
+.identity-preview iframe { height:70vh; }
 :root {
   --navy:#142543; --navy-2:#12213d; --navy-deep:#0e1c35;
   --blue:#315dc9; --accent-blue:#315dc9; --accent-blue-light:#afdbe3;

@@ -13,6 +13,7 @@ let allRequests = [];
     window.location.href = 'dashboard.html';
     return;
   }
+  await loadIdentityStatus();
 
   if (!profile.provider_verified_at || profile.suspended) {
     document.getElementById('requestsList').innerHTML = '<div class="review-state"><strong>طلبك قيد المراجعة</strong><p>سنراجع بيانات مقدم الخدمة قبل إتاحة طلبات الباحثين والتواصل معهم. يمكنك تجهيز وصف خدماتك وأسعارك في هذه الأثناء.</p><a class="btn" href="provider-services.html">إعداد خدماتي</a></div>';
@@ -33,6 +34,36 @@ let allRequests = [];
   applyFilters();
   initMessageNotifications();
 })();
+
+async function loadIdentityStatus() {
+  const status = document.getElementById('identityStatus');
+  const form = document.getElementById('identityForm');
+  const { data, error } = await supabaseClient.from('provider_identity_checks')
+    .select('status, submitted_at').order('submitted_at', { ascending: false }).limit(1);
+  if (error) { status.textContent = 'تعذر تحميل حالة توثيق الهوية. حاول تحديث الصفحة.'; return; }
+  const latest = data?.[0];
+  const messages = {
+    pending: 'استلمنا البطاقة، وهي بانتظار مراجعة المشرف. لا تظهر علامة الثقة الآن.',
+    approved: 'تمت مراجعة هويتك. تظهر شارة «مقدم خدمة موثوق» بعد اعتماد حساب مقدم الخدمة للظهور.',
+    rejected: 'لم تُقبل البطاقة السابقة. يمكنك تقديم صورة أوضح للمراجعة مجددًا.'
+  };
+  status.textContent = latest ? messages[latest.status] : 'يمكنك إرسال البطاقة المدنية اختياريًا للمراجعة. اعتماد حسابك للخدمة إجراء مستقل.';
+  form.hidden = latest?.status === 'pending' || latest?.status === 'approved';
+}
+
+document.getElementById('identityForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = document.getElementById('identitySubmit');
+  const status = document.getElementById('identityStatus');
+  button.disabled = true;
+  try {
+    await submitProviderIdentity(document.getElementById('identityFile').files[0]);
+    document.getElementById('identityForm').reset();
+    await loadIdentityStatus();
+  } catch (error) {
+    status.textContent = error.message;
+  } finally { button.disabled = false; }
+});
 
 async function populateServiceFilter(){
   const { data } = await supabaseClient.from('service_types').select('name').order('name');

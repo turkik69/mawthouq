@@ -10,6 +10,7 @@ let adminProfile = null;
   document.getElementById('whoAmI').textContent = 'المشرف العام — ' + adminProfile.username;
 
   await loadRegistrants();
+  await loadIdentityReviews();
   await loadServiceRequests();
   await loadConversationsAdmin();
   await loadPaymentsAdmin();
@@ -54,7 +55,7 @@ async function loadRegistrants(){
       <td>${paymentInfo(u)}</td>
       <td>${formatDate(u.created_at)}</td>
       <td>${u.is_admin ? '<span class="badge-admin">مشرف</span>' : 'مستخدم'}</td>
-      <td>${u.account_type === 'provider' ? `${verified.has(u.id) ? '<span class="badge-admin">معتمد</span>' : '<span class="badge-seeker">بانتظار المراجعة</span>'}<br>${verifyButton(u, verified.has(u.id))}<br>${suspendButton(u)}` : '—'}</td>
+      <td>${u.account_type === 'provider' ? `${verified.has(u.id) ? '<span class="badge-admin">معتمد لتقديم الخدمة</span>' : '<span class="badge-seeker">بانتظار مراجعة الخدمة</span>'}<br>${verifyButton(u, verified.has(u.id))}<br>${suspendButton(u)}` : '—'}</td>
     </tr>
   `).join('');
 
@@ -65,6 +66,79 @@ async function loadRegistrants(){
   const providers = rows.filter(u => u.account_type === 'provider').length;
 
   setStats(rows.length, providers, today, week);
+}
+
+let identityReviewRows = [];
+async function loadIdentityReviews(){
+  const box = document.getElementById('identityReviews');
+  const { data, error } = await supabaseClient.from('provider_identity_checks')
+    .select('id,provider_id,file_path,status,submitted_at').order('submitted_at', { ascending: false }).limit(100);
+  if (error) { box.textContent = 'تعذر تحميل مراجعات الهوية: ' + error.message; return; }
+  identityReviewRows = data || [];
+  const pending = identityReviewRows.filter(row => row.status === 'pending');
+  const cleanup = identityReviewRows.filter(row => row.status !== 'pending' && row.file_path);
+  const approved = identityReviewRows.filter(row => row.status === 'approved' && !row.file_path);
+  const registrants = await supabaseClient.rpc('get_all_registrants');
+  const names = new Map((registrants.data || []).map(row => [row.id, row.username]));
+  if (!pending.length && !cleanup.length && !approved.length) { box.textContent = 'لا توجد بطاقات تنتظر المراجعة أو الحذف.'; return; }
+  box.innerHTML = [...pending, ...cleanup, ...approved].map(row => `<div class="identity-review-item">
+    <div><strong>${escapeHtml(names.get(row.provider_id) || 'مقدم خدمة')}</strong><small>${formatDate(row.submitted_at)} · ${row.status === 'pending' ? 'بانتظار المراجعة' : row.file_path ? 'تمت المراجعة؛ احذف الملف' : 'الهوية موثقة'}</small></div>
+    ${row.file_path ? `<button class="outline" onclick="previewIdentity('${row.id}')">عرض البطاقة</button>` : ''}
+    ${row.status === 'pending' ? `<button onclick="reviewIdentity('${row.id}',true)">توثيق الهوية</button><button class="outline" onclick="reviewIdentity('${row.id}',false)">رفض</button>` : row.file_path ? `<button class="outline" onclick="clearIdentityFile('${row.id}')">حذف البطاقة</button>` : `<button class="outline" onclick="revokeIdentity('${row.id}')">سحب توثيق الهوية</button>`}
+  </div>`).join('');
+}
+
+let identityPreviewUrl = null;
+function closeIdentityPreview(){
+  const preview = document.getElementById('identityPreview');
+  preview.hidden = true;
+  document.getElementById('identityPreviewBody').replaceChildren();
+  if (identityPreviewUrl) URL.revokeObjectURL(identityPreviewUrl);
+  identityPreviewUrl = null;
+}
+async function previewIdentity(checkId){
+  const row = identityReviewRows.find(item => item.id === checkId);
+  if (!row?.file_path) return;
+  const { data, error } = await supabaseClient.storage.from('provider-identities').download(row.file_path);
+  if (error) { showToast('تعذر فتح البطاقة: ' + error.message, 'error'); return; }
+  closeIdentityPreview();
+  identityPreviewUrl = URL.createObjectURL(data);
+  const preview = document.getElementById('identityPreview');
+  const viewer = row.file_path.endsWith('.pdf') ? document.createElement('iframe') : document.createElement('img');
+  viewer.src = identityPreviewUrl;
+  viewer.setAttribute('aria-label', 'البطاقة المدنية للمراجعة');
+  document.getElementById('identityPreviewBody').append(viewer);
+  preview.hidden = false;
+  preview.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+async function reviewIdentity(checkId, approve){
+  if (!confirm(approve ? 'هل فتحت البطاقة وفحصت بياناتها بالفعل؟ سيُمنح توثيق الهوية لهذا الحساب.' : 'رفض البطاقة مع السماح للمستخدم برفع نسخة أخرى؟')) return;
+  const { error } = await supabaseClient.rpc('admin_review_provider_identity', { p_check_id: checkId, p_approve: approve });
+  if (error) { showToast('تعذرت المراجعة: ' + error.message, 'error'); return; }
+  await loadIdentityReviews();
+  showToast(approve ? 'تم توثيق الهوية. احذف صورة البطاقة بعد المراجعة.' : 'رُفضت البطاقة. احذف نسختها بعد المراجعة.', 'success');
+}
+
+async function clearIdentityFile(checkId){
+  const row = identityReviewRows.find(item => item.id === checkId);
+  if (!row || row.status === 'pending' || !row.file_path) return;
+  if (!confirm('حذف صورة البطاقة نهائيًا من التخزين مع إبقاء نتيجة المراجعة؟')) return;
+  closeIdentityPreview();
+  const { error: fileError } = await supabaseClient.storage.from('provider-identities').remove([row.file_path]);
+  if (fileError) { showToast('تعذر حذف البطاقة: ' + fileError.message, 'error'); return; }
+  const { error } = await supabaseClient.rpc('admin_clear_identity_file', { p_check_id: checkId });
+  if (error) { showToast('حُذف الملف، لكن تعذر تحديث السجل. أعد المحاولة: ' + error.message, 'error'); return; }
+  await loadIdentityReviews();
+  showToast('حُذفت صورة البطاقة، وبقيت نتيجة المراجعة.', 'success');
+}
+
+async function revokeIdentity(checkId){
+  if (!confirm('سحب شارة توثيق الهوية عن مقدم الخدمة؟ يمكنه تقديم بطاقة جديدة بعد ذلك.')) return;
+  const { error } = await supabaseClient.rpc('admin_revoke_provider_identity', { p_check_id: checkId });
+  if (error) { showToast('تعذر سحب التوثيق: ' + error.message, 'error'); return; }
+  await loadIdentityReviews();
+  showToast('سُحب توثيق الهوية.', 'success');
 }
 
 function suspendButton(u){
@@ -78,7 +152,7 @@ function verifyButton(u, isVerified){
 }
 
 async function toggleVerification(providerId, verified){
-  if (!confirm(verified ? 'هل راجعت هوية مقدم الخدمة ومؤهلاته وتوافق على ظهوره للباحثين؟' : 'سيُحجب مقدم الخدمة عن الطلبات الجديدة. متابعة؟')) return;
+  if (!confirm(verified ? 'هل راجعت أهلية مقدم الخدمة وملاءمة خدماته للظهور للباحثين؟ توثيق البطاقة المدنية إجراء مستقل.' : 'سيُحجب مقدم الخدمة عن الطلبات الجديدة. متابعة؟')) return;
   const { error } = await supabaseClient.rpc('admin_set_provider_verified', { p_provider_id: providerId, p_verified: verified });
   if (error) { showToast('تعذر تحديث الاعتماد: ' + error.message, 'error'); return; }
   await loadRegistrants();
